@@ -36,7 +36,7 @@ def getFrequency(cell_value):
 
 	for text in re.split(u'[\d\s,I]*\sн\.', cell_value):
 		if text:
-			content.append(re.sub(u'\n', ' ',text))
+			content.append(re.sub(r'\n', ' ',text))
 
 	found_frq = re.findall(u'[\d\s,I]*\sн\.', cell_value)
 	for i, frequency in enumerate(found_frq):
@@ -47,6 +47,11 @@ def getFrequency(cell_value):
 
 	return frequencies
 
+def getClassroom(cell_value):
+	if not cell_value:
+		return ['']
+	return re.findall(u'[А-Яа-яA-Za-z]*-\d*', cell_value)
+	
 
 def getLectionForGroup(group_name = u'ИКБО-04-15'):
 	timetable  = ''
@@ -61,11 +66,12 @@ def getLectionForGroup(group_name = u'ИКБО-04-15'):
 		if text_cell_value: 
 			day = dayFromRow(row_idx)
 			lection_numb = tt_native.cell_value(rowx = row_idx, colx = 2)[0]
-			classroom = tt_native.cell_value(rowx = row_idx, colx = group_colx+1)
+			classroom = getClassroom(tt_native.cell_value(rowx = row_idx, colx = group_colx+1))
 			frequency = getFrequency(text_cell_value)
-			for lection in frequency:
+			for i, lection in enumerate(frequency):
+				print i, classroom
 				timetable += u'day: %.20s, lection: %.5s, text: %.100s, classroom: %.5s, frequency: %.20s \n' % \
-				(day, lection_numb, lection[0], classroom, lection[1])
+				(day, lection_numb, lection[0], classroom[i], lection[1])
 	
 	return timetable
 
