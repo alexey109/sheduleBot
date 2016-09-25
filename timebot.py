@@ -3,7 +3,6 @@
 
 
 import xlrd
-import pandas as pd
 import re
 import datetime as dt
 import time
@@ -154,8 +153,10 @@ def getNextLections(group_name):
 
 def getLections(message):
 	group_name = u'ИКБО-04-15'
-	result = 'Error occured :('
+	result = ''
 
+	if not((u'пары' in message) or (u'лекции' in message)):
+		return result
 	if u'дальше' in message:
 		result = u'Следующие пары:\n\n' + getNextLections(group_name)
 	elif u'сегодня' in message:
@@ -165,8 +166,6 @@ def getLections(message):
 	elif u'завтра' in message:
 		result = u'Пары завтра:\n\n' + getTommorowLections(group_name)
 	
-	if result == '':
-		result = 'пар нет)'
 	return result
 
 ''' For debugging.
@@ -182,13 +181,19 @@ api = vk.API(session)
 counter = 0 
 
 # Scan enter messages and answer
-while counter < 3600:
+while counter < 3600*24*4:
 	counter += 1
 	response = api.messages.get(out=0, count=10, time_offset=20)
 	for message in response:
 		try:
-			if message['read_state'] == 0:
-				api.messages.send(user_id=message['uid'], message=getLections(message['body']))
-				time.sleep(2)
+			if message['read_state'] == 0: 
+				lections = getLections(message['body'])
+				if lections:
+					try:
+						api.messages.send(chat_id=message['chat_id'], message=lections)
+					except:
+						api.messages.send(user_id=message['uid'], message=lections)
+					time.sleep(1)
 		except:
 			time.sleep(1)
+
