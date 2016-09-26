@@ -176,18 +176,27 @@ print getLections(message.decode('utf-8'))
 '''
  
 # Open vkAPI session
-session = vk.AuthSession(app_id='5637421', user_login='+79296021208', user_password='timebot109', scope='4096')
-api = vk.API(session)
-counter = 0 
+success = False
+while not success:
+	try:
+		session = vk.AuthSession(app_id='5637421', user_login='+79296021208', user_password='timebot109', scope='4096')
+		api = vk.API(session)
+		success = True
+	except:
+		time.sleep(10)
 
 # Scan enter messages and answer
+counter = 0
 while counter < 3600*24*4:
 	counter += 1
-	response = api.messages.get(out=0, count=10, time_offset=20)
+	try:
+		response = api.messages.get(out=0, count=10, time_offset=20)
+	except:
+		response = []	
 	for message in response:
 		try:
 			if message['read_state'] == 0: 
-				lections = getLections(message['body'])
+				lections = getLections(message['body'].lower())
 				if lections:
 					try:
 						api.messages.send(chat_id=message['chat_id'], message=lections)
