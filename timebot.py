@@ -14,7 +14,16 @@ import parser
 # Bot intergated to socialnet and like a friend can tell you what next lection you will have.
 # Normal documentation will be in future.
 class timebot():
-
+	# Russian day names in dative.
+	__day_names=(
+		u'понедельник', 
+		u'вторник',
+		u'среду',
+		u'четверг',
+		u'пятницу',
+		u'субботу'
+	)
+	
 	def __init__(self):
 		self.api = self.openVkAPI()
 		self.schedule = parser.schedule()
@@ -36,30 +45,30 @@ class timebot():
 	# Return tommorow lections
 	# Return type: string
 	def getTommorowLections(self, group_name):
-		day_of_week = (dt.datetime.today() +  + dt.timedelta(days=1)).weekday()
+		day_numb = (dt.datetime.today() + dt.timedelta(days=1)).weekday()
 		week_numb = (dt.datetime.now() + dt.timedelta(days=1)).isocalendar()[1]
 
 		message = u'Пары завтра:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_of_week, week_numb)
+		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
 		return message
 
 	# Return after tommorow lections
 	# Return type: string
 	def getAfterTommorowLections(self, group_name):
-		day_of_week = (dt.datetime.today() + dt.timedelta(days=2)).weekday()
+		day_numb = (dt.datetime.today() + dt.timedelta(days=2)).weekday()
 		week_numb = (dt.datetime.now() + dt.timedelta(days=2)).isocalendar()[1]
 		message = u'Пары послезавтра:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_of_week, week_numb)
+		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
 		return message
 
 	# Return today lections
 	# Return type: string
 	def getTodayLections(self, group_name):
-		day_of_week = dt.datetime.today().weekday()
+		day_numb = dt.datetime.today().weekday()
 		week_numb = dt.datetime.now().isocalendar()[1]
 	
 		message = u'Пары сегодня:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_of_week, week_numb)
+		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
 		return message
 
 	# Return today next lection
@@ -68,12 +77,23 @@ class timebot():
 		week_numb = dt.datetime.now().isocalendar()[1]
 		lection_start = int(self.lectionFromTime(dt.datetime.now().time())) + 1
 		if lection_start == 7:
-			day_of_week = (dt.datetime.today() +  + dt.timedelta(days=1)).weekday()
+			day_numb = (dt.datetime.today() + dt.timedelta(days=1)).weekday()
 		else:
-			day_of_week = dt.datetime.today().weekday()
+			day_numb = dt.datetime.today().weekday()
 	
 		message = u'Следующие пары:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_of_week, week_numb, lection_start)
+		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb, lection_start)
+		return message
+
+	# Return lections for selected day
+	# Return type: string
+	def getLectionsByDay(self, group_name, day_numb):
+		week_numb = dt.datetime.now().isocalendar()[1]
+		if dt.datetime.today().weekday() >= day_numb:
+			week_numb += 1
+			
+		message = u'Пары в '+ self.__day_names[day_numb] + ':\n\n'
+		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
 		return message
 
 	# Retrun message that bot send back to user.
@@ -82,16 +102,22 @@ class timebot():
 		group_name = u'ИКБО-04-15'
 		answer = ''
 
-		if not((u'пары' in message) or (u'лекции' in message)):
+		if any(word in message for word in (u'пары', u'лекции')):
 			return answer
-		if u'дальше' in message or u'следующие' in message:
-			answer = self.getNextLections(group_name)
-		elif u'сегодня' in message:
+
+		if	 u'сегодня' in message:
 			answer = self.getTodayLections(group_name)
 		elif u'послезавтра' in message:
 			answer = self.getAfterTommorowLections(group_name)
 		elif u'завтра' in message:
 			answer = self.getTommorowLections(group_name)
+		elif any(word in message for word in (u'дальше', u'следующие')):
+			answer = self.getNextLections(group_name)
+		else:
+			for day_idx, day_name in enumerate(self.__day_names):
+				if day_name in message:
+					answer = self.getLectionsByDay(group_name, day_idx)
+			
 	
 		return answer
 
@@ -161,7 +187,6 @@ class timebot():
 			except Exception, e:
 				print 'Something goes wrong: \n' + str(e)
 				self.api = self.openVkAPI()
-
 
 
 bot = timebot()
