@@ -102,7 +102,7 @@ class timebot():
 		group_name = u'ИКБО-04-15'
 		answer = ''
 
-		if any(word in message for word in (u'пары', u'лекции')):
+		if not any(word in message for word in (u'пара', u'пары', u'лекции')):
 			return answer
 
 		if	 u'сегодня' in message:
@@ -117,7 +117,7 @@ class timebot():
 			for day_idx, day_name in enumerate(self.__day_names):
 				if day_name in message:
 					answer = self.getLectionsByDay(group_name, day_idx)
-			
+		
 	
 		return answer
 
