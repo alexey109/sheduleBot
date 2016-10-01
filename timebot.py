@@ -6,6 +6,7 @@ import time
 import string
 import vk
 import sys
+import re
 
 import parser 
 
@@ -25,7 +26,6 @@ class timebot():
 	)
 	
 	def __init__(self):
-		self.api = self.openVkAPI()
 		self.schedule = parser.schedule()
 
 	# Return lection number for specified time
@@ -37,7 +37,7 @@ class timebot():
 			dt.time(10,45,0) <= dt_time < dt.time(12,50,0): 2,
 			dt.time(12,50,0) <= dt_time < dt.time(14,35,0): 3,
 			dt.time(14,35,0) <= dt_time < dt.time(16,20,0): 4,
-			dt.time(16,20,0) <= dt_time < dt.time(18,0,0): 5,
+			dt.time(16,20,0) <= dt_time < dt.time(18,0,0):  5,
 			dt.time(18,0,0)  <= dt_time < dt.time(21,20,0): 6,
 			dt.time(21,20,0) <= dt_time: 7
 		}[True]
@@ -96,26 +96,44 @@ class timebot():
 		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
 		return message
 
+	# Get group name from any string
+	# Return type: string
+	def getGroupFromString(self, string):
+		match = re.search(u'[А-Яа-я]{4}-[0-9]{2}-[0-9]{2}', string)
+		return match.group(0) if match else ''
+		
 	# Retrun message that bot send back to user.
 	# Return type: string
-	def getLections(self, message):
-		group_name = u'ИКБО-04-15'
-		answer = ''
+	def getLections(self, title, text):
+		text = text.lower()
+		if not any(word in text for word in (u'пара', u'пары', u'лекции')):
+			return ''
 
-		if not any(word in message for word in (u'пара', u'пары', u'лекции')):
-			return answer
+		group_from_title = self.getGroupFromString(title)
+		group_from_msg = self.getGroupFromString(text)
+		if group_from_msg:		
+			group_name = group_from_msg.upper()
+		elif group_from_title:
+			group_name = group_from_title.upper()
+		else:
+			return u'Неудается распознать группу :(\n\n'\
+			+ u'Укажите группу в названии беседы или в сообщении.\n'\
+			+ u'Примеры сообщения:\n'\
+			+ u'"Какие пары завтра у группы ИКБО-04-15"\n'\
+			+ u'"Следующие лекции для ИКБО-04-15"'
 
-		if	 u'сегодня' in message:
+		answer = ''	
+		if	 u'сегодня' in text:
 			answer = self.getTodayLections(group_name)
-		elif u'послезавтра' in message:
+		elif u'послезавтра' in text:
 			answer = self.getAfterTommorowLections(group_name)
-		elif u'завтра' in message:
+		elif u'завтра' in text:
 			answer = self.getTommorowLections(group_name)
-		elif any(word in message for word in (u'дальше', u'следующие')):
+		elif any(word in text for word in (u'дальше', u'следующие')):
 			answer = self.getNextLections(group_name)
 		else:
 			for day_idx, day_name in enumerate(self.__day_names):
-				if day_name in message:
+				if day_name in text:
 					answer = self.getLectionsByDay(group_name, day_idx)
 		
 	
@@ -159,7 +177,7 @@ class timebot():
 		result = ''
 
 		try:
-			answer = self.getLections(message['body'].lower())
+			answer = self.getLections(message['title'], message['body'])
 			if answer: 
 				if self.is_exist(message, 'chat_id'):
 					self.api.messages.send(chat_id=message['chat_id'], message=answer)
@@ -170,16 +188,17 @@ class timebot():
 			result = 'Message not send: \n' + str(e)
 			self.api = self.openVkAPI()
 
-		time.sleep(1)
+		time.sleep(2)
 		return result
 
 	# Scan enter messages and answer
-	def run(self):
+	def run(self):		
+		self.api = self.openVkAPI()
 		while 1:
 			time.sleep(1)
 
 			try:
-				new_messages = self.api.messages.get(out=0, count=5, time_offset=10)
+				new_messages = self.api.messages.get(out=0, count=5, time_offset=20)	
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:

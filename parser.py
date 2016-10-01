@@ -35,10 +35,21 @@ class schedule:
 		5: (34,39)
 	}
 
-	
-	# Open document by xlrd module
-	def __init__(self):
-		self.xls_sheet = xlrd.open_workbook("it-2k.-16_17-osen.xls").sheet_by_index(0)
+	# Open excel-document with scpecified group
+	def openXlsForGroup(self, group_name):
+		result = True
+		try:
+			if group_name[-1:] == '4':
+				self.xls_sheet = xlrd.open_workbook("it-3k.-16_17-osen.xls").sheet_by_index(0)
+			elif group_name[-1:] == '5':
+				self.xls_sheet = xlrd.open_workbook("it-2k.-16_17-osen.xls").sheet_by_index(0)
+			elif group_name[-1:] == '6':
+				self.xls_sheet = xlrd.open_workbook("it-1k.-16_17-osen.xls").sheet_by_index(0)
+			else:
+				result = False
+		except:
+			result = False
+		return result
 
 	# Check if lection frequency match specified week number,
 	# it mean that function returns true if lection have to be on that week.
@@ -80,7 +91,6 @@ class schedule:
 		if not cell_value:
 			return ['-']
 		return re.findall(u'[А-Яа-я]*-[\dА-Яа-я]*', cell_value)
-	
 
 	# Primary function, that returns lection timetable from timetable document for special parametrs.
 	# Return type: string
@@ -88,9 +98,11 @@ class schedule:
 		row_start = self.rowFromDay[day_of_week][0]	
 		row_end   = self.rowFromDay[day_of_week][1]
 
+		if not self.openXlsForGroup(group_name):
+			return ''
 		group_colx = 0 
-		while (self.xls_sheet.cell_value(rowx = 2, colx = group_colx) != group_name)\
-		and(group_colx < self.xls_sheet.ncols) :
+		while (group_colx < (self.xls_sheet.ncols - 1)) \
+		and (self.xls_sheet.cell_value(rowx = 2, colx = group_colx) != group_name):
 			group_colx += 1
 
 		timetable  = ''
