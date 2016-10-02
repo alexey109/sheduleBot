@@ -15,7 +15,7 @@ import parser
 # Bot intergated to socialnet and like a friend can tell you what next lection you will have.
 # Normal documentation will be in future.
 class timebot():
-	# Russian day names in dative.
+	# Russian day names for searching in message
 	__day_names=(
 		u'понедельник', 
 		u'вторник',
@@ -23,6 +23,16 @@ class timebot():
 		u'четверг',
 		u'пятниц',
 		u'суббот'
+	)
+
+	# Russian day names in dative.
+	__day_names_human=(
+		u'понедельник', 
+		u'вторник',
+		u'среду',
+		u'четверг',
+		u'пятницу',
+		u'субботу'
 	)
 	
 	def __init__(self):
@@ -92,7 +102,7 @@ class timebot():
 		if dt.datetime.today().weekday() >= day_numb:
 			week_numb += 1
 			
-		message = u'Пары в '+ self.__day_names[day_numb] + ':\n\n'
+		message = u'Пары в '+ self.__day_names_human[day_numb] + ':\n\n'
 		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
 		return message
 
