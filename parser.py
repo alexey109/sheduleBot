@@ -112,6 +112,10 @@ class schedule:
 		and (self.xls_sheet.cell_value(rowx = 2, colx = group_colx) != group_name):
 			group_colx += 1
 
+		if group_colx == (self.xls_sheet.ncols - 1):
+			return u'Группа не найдена :(\nНазвание группы указано с ошибками,'\
+			+ u' либо расписание для данной группы пока недоступно.'
+
 		timetable  = ''
 		for row_idx in range(row_start, row_end):
 			text_cell_value = self.xls_sheet.cell_value(rowx = row_idx, colx = group_colx)
