@@ -106,7 +106,7 @@ class timebot():
 	# Return type: string
 	def getLections(self, title, text):
 		text = text.lower()
-		if not any(word in text for word in (u'пара', u'пары', u'лекции')):
+		if not any(word in text for word in (u'пара', u'пары', u'лекции', u'лекция')):
 			return ''
 
 		group_from_title = self.getGroupFromString(title)
@@ -116,7 +116,7 @@ class timebot():
 		elif group_from_title:
 			group_name = group_from_title.upper()
 		else:
-			return u'Неудается распознать группу :(\n\n'\
+			return u'Не удается распознать группу :(\n\n'\
 			+ u'Укажите группу в названии беседы или в сообщении.\n'\
 			+ u'Примеры сообщения:\n'\
 			+ u'"Какие пары завтра у группы ИКБО-04-15"\n'\

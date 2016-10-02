@@ -27,10 +27,10 @@ class schedule:
 	# Return row number of start and end for a day of week in sheet
 	# Return type: list of (start, end)
 	rowFromDay = {
-		0: (4,8),
-		1: (9,15),
-		2: (16,20),
-		3: (21,27),
+		0: (4,9),
+		1: (10,15),
+		2: (16,21),
+		3: (22,27),
 		4: (28,33),
 		5: (34,39)
 	}
@@ -61,6 +61,9 @@ class schedule:
 			result = True
 		elif 'I' in frequency:
 			result = (week_numb % 2 == 0) == (frequency.strip() == 'II')
+		elif '-' in frequency:
+			period = re.split('-', frequency)
+			result = (week_numb >= int(period[0])) and (week_numb <= int(period[1]))
 		else:
 			result = str(week_numb) in re.split(r'[\s,]', frequency)
 	
@@ -72,11 +75,14 @@ class schedule:
 		content = []
 		frequencies = []
 
-		for text in re.split(u'[\d\s,I]*\sн\.', cell_value):
+		if u'база' in cell_value.lower():
+			return [[cell_value, u'база']]
+
+		for text in re.split(u'[\d\s,-I]*\sн\.', cell_value):
 			if text:
 				content.append(text)
-
-		found_frq = re.findall(u'[\d\s,I]*\sн\.', cell_value)
+			
+		found_frq = re.findall(u'[\d\s,I-]*\sн\.', cell_value)
 		for i, frequency in enumerate(found_frq):
 			frequencies.append([content[i], re.sub(u'[\.\sн\n]', '',frequency)])
 
@@ -90,7 +96,7 @@ class schedule:
 	def getClassroom(self, cell_value):
 		if not cell_value:
 			return ['-']
-		return re.findall(u'[А-Яа-я]*-[\dА-Яа-я]*', cell_value)
+		return re.findall(u'[А-Яа-я]*-[\d]*[А-Яа-я]*', cell_value)
 
 	# Primary function, that returns lection timetable from timetable document for special parametrs.
 	# Return type: string
@@ -114,7 +120,7 @@ class schedule:
 				frequency = self.getFrequency(text_cell_value)
 				for i, lection in enumerate(frequency):
 					if self.isThatWeek(lection[1], week_numb) and int(lection_numb) >= int(lection_start):
-						timetable += u'\n%.5s пара (%.5s, %.11s):\n %.100s\n' % \
+						timetable += u'\n%.5s пара (%.5s, %.11s):\n%.100s\n' % \
 						(lection_numb, classroom[i], self.timeFromLection[int(lection_numb)],lection[0].strip())
 	
 		return timetable if timetable else u'\nпар нет :)'

@@ -189,9 +189,26 @@ vk_response = (
 	]
 )
 
+one_resp = [[
+		1, 
+		{
+			u'body': u'Пары в пятницу икбо-08-16', 
+			u'uid': 10151100, 
+			u'title': u'ИКБО-04-15', 
+			u'chat_active': 
+			u'10151100,294731596', 
+			u'mid': 764, 
+			u'users_count': 3, 
+			u'chat_id': 3, 
+			u'date': 1475341811, 
+			u'admin_id': 10151100, 
+			u'read_state': 0, 
+			u'out': 0
+		},
+	]]
 
 bot = timebot.timebot()
-for i, test in enumerate(vk_response):
+for i, test in enumerate(one_resp):#vk_response):
 	print '\n\nTest No', i, '(',test[0], ')', '-------------------------------'
 	del test[0]
 	for message in test:
