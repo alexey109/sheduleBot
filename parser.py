@@ -75,9 +75,6 @@ class schedule:
 		content = []
 		frequencies = []
 
-		if u'база' in cell_value.lower():
-			return [[cell_value, u'база']]
-
 		for text in re.split(u'[\d\s,-I]*\sн\.', cell_value):
 			if text:
 				content.append(text)
@@ -96,6 +93,10 @@ class schedule:
 	def getClassroom(self, cell_value):
 		if not cell_value:
 			return ['-']
+
+		if u'база' in cell_value.lower():
+			return [u'База']
+
 		return re.findall(u'[А-Яа-я]*-[\d]*[А-Яа-я]*', cell_value)
 
 	# Primary function, that returns lection timetable from timetable document for special parametrs.
