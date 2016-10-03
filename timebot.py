@@ -10,6 +10,54 @@ import re
 
 import parser 
 
+class CONST():
+	LOG				= True
+
+	NEXT 			= 1
+	TODAY 			= 2
+	TOMMOROW		= 3
+	AFTERTOMMOROW 	= 4
+	DAY_OF_WEEK 	= 5
+	WEEK_NUMB		= 6 #TODO Write implementation of this function
+
+	USER_MESSAGES = {
+		self.NEXT 			: u'Следующие пары:\n%',
+		self.TODAY 			: u'Пары сегодня:\n%',
+		self.TOMMOROW		: u'Пары завтра:\n%',
+		self.AFTERTOMMOROW 	: u'Пары послезавтра:\n%',
+		self.DAY_OF_WEEK 	: u'Пары в %:\n%',
+		self.WEEK_NUMB		: u'Сейчас идет % неделя:\n%'
+	}
+
+	DAY_NAMES_HUMAN = (
+		u'понедельник', 
+		u'вторник',
+		u'среду',
+		u'четверг',
+		u'пятницу',
+		u'субботу'
+	)
+
+	# Dictionary of lections start-end time
+	# Return type: string
+	LECTION_TIME = {
+		1: '9:00-10:35',
+		2: '10:45-12:20',
+		3: '12:50-14:25',
+		4: '14:35-16:10',
+		5: '16:20-17:55',
+		6: '18:00-21:20',
+	}
+
+
+	ERR_UNDEFINED 		= 0
+	ERR_GROUP_NOT_FOUND = 1
+	
+	USER_ERR_MESSAGES = {
+		self.ERR_UNDEFINED: u'Что-то пошло не так, повторите запрос еще раз :(',
+		self.ERR_GROUP_NOT_FOUND: u'Группа не найдена :(\nНазвание группы указано с ошибками,'\
+			+ u' либо расписание для данной группы пока недоступно',	
+	}
 
 # Class implement bot logic. The main idea of this bot to help everyone with schedule.
 # Bot intergated to socialnet and like a friend can tell you what next lection you will have.
@@ -145,6 +193,7 @@ class timebot():
 			for day_idx, day_name in enumerate(self.__day_names):
 				if day_name in text:
 					answer = self.getLectionsByDay(group_name, day_idx)
+					break
 		
 	
 		return answer
@@ -183,7 +232,7 @@ class timebot():
 	# Return type: string 
 	# TODO Add status code, or use boolean.
 	def sendAnswer(self, message):
-		print 'Got new message ' + str(dt.datetime.now()) 
+		#print 'Got new message ' + str(dt.datetime.now()) 
 		result = ''
 
 		try:
@@ -218,5 +267,5 @@ class timebot():
 				self.api = self.openVkAPI()
 
 
-bot = timebot()
-bot.run()
+#bot = timebot()
+#bot.run()
