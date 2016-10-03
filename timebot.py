@@ -212,6 +212,8 @@ class Timebot:
 			except Exception, e:
 				if isinstance(e.args[0], int):
 					my_answer = ct.CONST.ERR_MESSAGES[e.args[0]]
+				else:
+					print str(e)
 
 			if my_answer: 
 				if is_chat:
