@@ -204,14 +204,11 @@ class Timebot:
 	# Return type: string 
 	# TODO Add status code, or use boolean.
 	def sendMyAnswer(self, message):
-		#print 'Got new message ' + str(dt.datetime.now()) 
-		result = ''
-
 		try:
 			my_answer = ''
 			is_chat = self.is_exist(message, 'chat_id')
 			try:
-				my_answer  = self.getMyAnswer(message)
+				my_answer  = self.getMyAnswer(message, is_chat)
 			except Exception, e:
 				if isinstance(e.args[0], int):
 					my_answer = ct.CONST.ERR_MESSAGES[e.args[0]]
@@ -221,14 +218,11 @@ class Timebot:
 					self.api.messages.send(chat_id=message['chat_id'], message=my_answer)
 				else:
 					self.api.messages.send(user_id=message['uid'], message=my_answer)
-				result = 'Message send.'
+				print 'Message send.'
 				time.sleep(1)
 		except Exception, e:
-			result = 'Message not send: \n' + str(e)
+			print 'Message not send: \n' + str(e)
 			self.api = self.openVkAPI()
-
-
-		return result
 
 	# Scan enter messages and answer
 	def run(self):		
@@ -240,7 +234,7 @@ class Timebot:
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:
-						print self.sendMyAnswer(message)
+						self.sendMyAnswer(message)
 			except Exception, e:
 				print 'Error code: ' + str(e)
 				self.api = self.openVkAPI()
