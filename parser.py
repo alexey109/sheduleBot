@@ -6,23 +6,14 @@ import xlrd
 import re
 import datetime as dt
 
+import consts as ct
+
 
 # This class present schedule, wich store like regural excel-file. 
 # Now it can only show lection for special parameters, but in future
 # it'll could load ecxel document into database and work with it,
 # also new functions will be add like "when next lesson start" and etc.
-class schedule:
-
-	# Dictionary of lections start-end time
-	# Return type: string
-	timeFromLection = {
-		1: '9:00-10:35',
-		2: '10:45-12:20',
-		3: '12:50-14:25',
-		4: '14:35-16:10',
-		5: '16:20-17:55',
-		6: '18:00-21:20',
-	}
+class Schedule:
 	
 	# Return row number of start and end for a day of week in sheet
 	# Return type: list of (start, end)
@@ -37,6 +28,10 @@ class schedule:
 
 	# Open excel-document with scpecified group
 	def openXlsForGroup(self, group_name):
+		if ct.CONST.TEST:
+			self.xls_sheet = xlrd.open_workbook("test_mode.xls").sheet_by_index(0)
+			return True
+
 		result = True
 		try:
 			if group_name[-1:] == '4':
@@ -101,22 +96,22 @@ class schedule:
 
 	# Primary function, that returns lection timetable from timetable document for special parametrs.
 	# Return type: string
-	def getLectionForGroup(self, group_name, day_of_week, week_numb, lection_start = 0):
+	def getLections(self, group_name, day_of_week, week_numb, lection_start = 0 , lection_finish = 7):
 		row_start = self.rowFromDay[day_of_week][0]	
 		row_end   = self.rowFromDay[day_of_week][1]
 
 		if not self.openXlsForGroup(group_name):
-			return ''
+			return []
+
 		group_colx = 0 
 		while (group_colx < (self.xls_sheet.ncols - 1)) \
 		and (self.xls_sheet.cell_value(rowx = 2, colx = group_colx) != group_name):
 			group_colx += 1
 
 		if group_colx == (self.xls_sheet.ncols - 1):
-			return u'Группа не найдена :(\nНазвание группы указано с ошибками,'\
-			+ u' либо расписание для данной группы пока недоступно.'
+			raise Exception(ct.CONST.ERR_GROUP_NOT_FOUND)
 
-		timetable  = ''
+		timetable  = []
 		for row_idx in range(row_start, row_end):
 			text_cell_value = self.xls_sheet.cell_value(rowx = row_idx, colx = group_colx)
 			if text_cell_value:
@@ -124,9 +119,15 @@ class schedule:
 				classroom = self.getClassroom(self.xls_sheet.cell_value(rowx = row_idx, colx = group_colx+1))
 				frequency = self.getFrequency(text_cell_value)
 				for i, lection in enumerate(frequency):
-					if self.isThatWeek(lection[1], week_numb) and int(lection_numb) >= int(lection_start):
-						timetable += u'\n%.5s пара (%.5s, %.11s):\n%.100s\n' % \
-						(lection_numb, classroom[i], self.timeFromLection[int(lection_numb)],lection[0].strip())
+					if self.isThatWeek(lection[1], week_numb) \
+					and int(lection_numb) >= int(lection_start)\
+					and int(lection_numb) <= int(lection_finish):
+						timetable.append((
+							lection_numb, 
+							classroom[i], 
+							ct.CONST.LECTION_TIME[int(lection_numb)],
+							lection[0].strip()
+						))
 	
-		return timetable if timetable else u'\nпар нет :)'
+		return timetable
 
