@@ -16,7 +16,7 @@ class CONST:
 	CMD_AFTERTOMMOROW 	= 2 # It is important to be aftertommorow before tomorrow :)
 	CMD_TOMMOROW		= 3
 	CMD_DAY_OF_WEEK 	= 4
-	CMD_WEEK_NUMB		= 5 
+	CMD_WEEK_NUMB		= 5 # It is important to be aftertommorow before current lection :)
 	CMD_NOW				= 6 
 	CMD_TO_DEVELOPER	= 7 
 
@@ -33,7 +33,7 @@ class CONST:
 	CHAT_KEYWORDS = (u'рп,', u'расписание,', u'том,', u'луи,')
 	# Keywords for every command.
 	CMD_KEYWORDS = {
-		CMD_NEXT 			: [u'дальше', u'следующая', u'оставшиеся'],
+		CMD_NEXT 			: [u'дальше', u'следующая', u'следующие', u'оставшиеся', u'осталась'],
 		CMD_TODAY 			: [u'сегодня'],
 		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 		CMD_TOMMOROW		: [u'завтра'],
