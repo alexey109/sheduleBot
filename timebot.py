@@ -7,84 +7,18 @@ import string
 import vk
 import sys
 import re
+import codecs
 
 import parser 
+import consts as ct
 
-class CONST():
-	LOG				= True
-
-	NEXT 			= 1
-	TODAY 			= 2
-	TOMMOROW		= 3
-	AFTERTOMMOROW 	= 4
-	DAY_OF_WEEK 	= 5
-	WEEK_NUMB		= 6 #TODO Write implementation of this function
-
-	USER_MESSAGES = {
-		self.NEXT 			: u'Следующие пары:\n%',
-		self.TODAY 			: u'Пары сегодня:\n%',
-		self.TOMMOROW		: u'Пары завтра:\n%',
-		self.AFTERTOMMOROW 	: u'Пары послезавтра:\n%',
-		self.DAY_OF_WEEK 	: u'Пары в %:\n%',
-		self.WEEK_NUMB		: u'Сейчас идет % неделя:\n%'
-	}
-
-	DAY_NAMES_HUMAN = (
-		u'понедельник', 
-		u'вторник',
-		u'среду',
-		u'четверг',
-		u'пятницу',
-		u'субботу'
-	)
-
-	# Dictionary of lections start-end time
-	# Return type: string
-	LECTION_TIME = {
-		1: '9:00-10:35',
-		2: '10:45-12:20',
-		3: '12:50-14:25',
-		4: '14:35-16:10',
-		5: '16:20-17:55',
-		6: '18:00-21:20',
-	}
-
-
-	ERR_UNDEFINED 		= 0
-	ERR_GROUP_NOT_FOUND = 1
-	
-	USER_ERR_MESSAGES = {
-		self.ERR_UNDEFINED: u'Что-то пошло не так, повторите запрос еще раз :(',
-		self.ERR_GROUP_NOT_FOUND: u'Группа не найдена :(\nНазвание группы указано с ошибками,'\
-			+ u' либо расписание для данной группы пока недоступно',	
-	}
 
 # Class implement bot logic. The main idea of this bot to help everyone with schedule.
 # Bot intergated to socialnet and like a friend can tell you what next lection you will have.
 # Normal documentation will be in future.
-class timebot():
-	# Russian day names for searching in message
-	__day_names=(
-		u'понедельник', 
-		u'вторник',
-		u'сред',
-		u'четверг',
-		u'пятниц',
-		u'суббот'
-	)
-
-	# Russian day names in dative.
-	__day_names_human=(
-		u'понедельник', 
-		u'вторник',
-		u'среду',
-		u'четверг',
-		u'пятницу',
-		u'субботу'
-	)
-	
+class Timebot:
 	def __init__(self):
-		self.schedule = parser.schedule()
+		self.table = parser.Schedule()
 
 	# Return lection number for specified time
 	# Return type: integer
@@ -100,24 +34,32 @@ class timebot():
 			dt.time(21,20,0) <= dt_time: 7
 		}[True]
 
+	# Takes lection parametrs and put it message template
+	# Return type: string
+	def listToStr(self, params):
+		if params == []:
+			raise Exception(ct.CONST.ERR_NO_LECTIONS)
+
+		result = ''
+		for row in params:
+			result += ct.CONST.UNI_TEMPLATE % (row)
+		return result
+
 	# Return tommorow lections
 	# Return type: string
 	def getTommorowLections(self, group_name):
 		day_numb = (dt.datetime.today() + dt.timedelta(days=1)).weekday()
 		week_numb = (dt.datetime.now() + dt.timedelta(days=1)).isocalendar()[1]
 
-		message = u'Пары завтра:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
-		return message
+		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
 
 	# Return after tommorow lections
 	# Return type: string
 	def getAfterTommorowLections(self, group_name):
 		day_numb = (dt.datetime.today() + dt.timedelta(days=2)).weekday()
 		week_numb = (dt.datetime.now() + dt.timedelta(days=2)).isocalendar()[1]
-		message = u'Пары послезавтра:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
-		return message
+
+		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
 
 	# Return today lections
 	# Return type: string
@@ -125,9 +67,7 @@ class timebot():
 		day_numb = dt.datetime.today().weekday()
 		week_numb = dt.datetime.now().isocalendar()[1]
 	
-		message = u'Пары сегодня:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
-		return message
+		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
 
 	# Return today next lection
 	# Return type: string
@@ -139,9 +79,7 @@ class timebot():
 		else:
 			day_numb = dt.datetime.today().weekday()
 	
-		message = u'Следующие пары:\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb, lection_start)
-		return message
+		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb,lection_start))
 
 	# Return lections for selected day
 	# Return type: string
@@ -150,22 +88,43 @@ class timebot():
 		if dt.datetime.today().weekday() >= day_numb:
 			week_numb += 1
 			
-		message = u'Пары в '+ self.__day_names_human[day_numb] + ':\n\n'
-		message += self.schedule.getLectionForGroup(group_name, day_numb, week_numb)
-		return message
+		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
+
+	# Return current week number
+	# Return type: string
+	def getWeekNumb(self):
+		week_numb = dt.datetime.now().isocalendar()[1] - dt.date(2016, 9, 1).isocalendar()[1] + 1
+		return str(week_numb)
+
+	# Return today lections
+	# Return type: string
+	def getNowLection(self, group_name):
+		day_numb = dt.datetime.today().weekday()
+		week_numb = dt.datetime.now().isocalendar()[1]
+		lection = int(self.lectionFromTime(dt.datetime.now().time()))
+	
+		return self.listToStr(self.table.getLections(group_name,day_numb,week_numb,lection,lection))
+
 
 	# Get group name from any string
 	# Return type: string
 	def getGroupFromString(self, string):
-		match = re.search(u'[А-Яа-я]{4}-[0-9]{2}-[0-9]{2}', string)
+		match = re.search(u'[а-я]{4}-[0-9]{2}-[0-9]{2}', string)
 		return match.group(0) if match else ''
 		
-	# Retrun message that bot send back to user.
+	# Check is any word in text
+	# Return type: boolean
+	def wordsInTxt(self, words, text):
+		return any(word[:-1] in text for word in words)
+
+	# Takes message and prepare answer for it.
 	# Return type: string
-	def getLections(self, title, text):
-		text = text.lower()
-		if not any(word in text for word in (u'пара', u'пары', u'лекции', u'лекция')):
-			return ''
+	def getMyAnswer(self, message, is_chat):
+		title = message['title'].lower()
+		text = message['body'].lower()
+
+		if is_chat and not self.wordsInTxt(ct.CONST.CHAT_KEYWORDS, text):
+			raise Exception(ct.CONST.ERR_SKIP)
 
 		group_from_title = self.getGroupFromString(title)
 		group_from_msg = self.getGroupFromString(text)
@@ -174,39 +133,42 @@ class timebot():
 		elif group_from_title:
 			group_name = group_from_title.upper()
 		else:
-			return u'Не удается распознать группу :(\n\n'\
-			+ u'Укажите группу в названии беседы или в сообщении.\n'\
-			+ u'Примеры сообщения:\n'\
-			+ u'"Какие пары завтра у группы ИКБО-04-15"\n'\
-			+ u'"Следующие лекции для ИКБО-04-15"'
+			raise Exception(ct.CONST.ERR_NO_GROUP_NAME)
 
-		answer = ''	
-		if	 u'сегодня' in text:
-			answer = self.getTodayLections(group_name)
-		elif u'послезавтра' in text:
-			answer = self.getAfterTommorowLections(group_name)
-		elif u'завтра' in text:
-			answer = self.getTommorowLections(group_name)
-		elif any(word in text for word in (u'дальше', u'следующие')):
-			answer = self.getNextLections(group_name)
-		else:
-			for day_idx, day_name in enumerate(self.__day_names):
-				if day_name in text:
-					answer = self.getLectionsByDay(group_name, day_idx)
-					break
+		answer = ''
+		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
+			if self.wordsInTxt(keywords, text):		
+				template = ct.CONST.USER_PREMESSAGE[command]
+				if command == ct.CONST.CMD_NEXT:
+					answer = template % (self.getNextLections(group_name))
+				elif command == ct.CONST.CMD_TODAY:
+					answer = template % (self.getTodayLections(group_name))
+				elif command == ct.CONST.CMD_AFTERTOMMOROW:
+					answer = template % (self.getAfterTommorowLections(group_name))
+				elif command == ct.CONST.CMD_TOMMOROW:
+					answer = template % (self.getTommorowLections(group_name))
+				elif command == ct.CONST.CMD_WEEK_NUMB:
+					answer = template % (self.getWeekNumb())
+				elif command == ct.CONST.CMD_NOW:
+					answer = template % (self.getNowLection(group_name))
+				elif command == ct.CONST.CMD_TO_DEVELOPER:
+					with codecs.open('msg_to_me.txt', mode='a', encoding='utf-8') as txt_file:
+						txt_file.write('\n' + text + '\n')
+					answer = ct.CONST.USER_PREMESSAGE[ct.CONST.CMD_TO_DEVELOPER]
+				elif command == ct.CONST.CMD_DAY_OF_WEEK:
+					for day_idx, day_name in enumerate(keywords):
+						if day_name[:-1] in text:
+							answer = template % (day_name, self.getLectionsByDay(group_name, day_idx))
+							break
+				else:
+					raise Exception(ct.CONST.ERR_UNDEFINED)
+				break
+		if not answer:
+			raise Exception(ct.CONST.ERR_NO_COMMAND)
 		
-	
 		return answer
-
-	# Check element of tuple by index for existance
-	# Return type: boolean
-	def is_exist(self, tupl, index_name):
-		try:
-			tmp = tupl[index_name]
-			result =  True
-		except:
-			result = False
-		return result
+				
+			
 
 	# Open vkAPI session
 	# Return type: vk.api object
@@ -225,29 +187,47 @@ class timebot():
 				print 'New session opened.'
 			except:
 				print 'Error ocured when tried to open session!'
-				time.sleep(4)
+				time.sleep(3)
 		return api
+
+	# Check element of tuple by index for existance
+	# Return type: boolean
+	def is_exist(self, tupl, index_name):
+		try:
+			tmp = tupl[index_name]
+			result =  True
+		except:
+			result = False
+		return result
 
 	# Send answer for enter message
 	# Return type: string 
 	# TODO Add status code, or use boolean.
-	def sendAnswer(self, message):
+	def sendMyAnswer(self, message):
 		#print 'Got new message ' + str(dt.datetime.now()) 
 		result = ''
 
 		try:
-			answer = self.getLections(message['title'], message['body'])
-			if answer: 
-				if self.is_exist(message, 'chat_id'):
-					self.api.messages.send(chat_id=message['chat_id'], message=answer)
+			my_answer = ''
+			is_chat = self.is_exist(message, 'chat_id')
+			try:
+				my_answer  = self.getMyAnswer(message)
+			except Exception, e:
+				if isinstance(e.args[0], int):
+					my_answer = ct.CONST.ERR_MESSAGES[e.args[0]]
+
+			if my_answer: 
+				if is_chat:
+					self.api.messages.send(chat_id=message['chat_id'], message=my_answer)
 				else:
-					self.api.messages.send(user_id=message['uid'], message=answer)
+					self.api.messages.send(user_id=message['uid'], message=my_answer)
 				result = 'Message send.'
+				time.sleep(1)
 		except Exception, e:
 			result = 'Message not send: \n' + str(e)
 			self.api = self.openVkAPI()
 
-		time.sleep(2)
+
 		return result
 
 	# Scan enter messages and answer
@@ -255,17 +235,16 @@ class timebot():
 		self.api = self.openVkAPI()
 		while 1:
 			time.sleep(1)
-
 			try:
-				new_messages = self.api.messages.get(out=0, count=5, time_offset=20)	
+				new_messages = self.api.messages.get(out=0, count=5, time_offset=15)	
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:
-						print self.sendAnswer(message)
+						print self.sendMyAnswer(message)
 			except Exception, e:
-				print 'Something goes wrong: \n' + str(e)
+				print 'Error code: ' + str(e)
 				self.api = self.openVkAPI()
 
 
-#bot = timebot()
-#bot.run()
+bot = Timebot()
+bot.run()
