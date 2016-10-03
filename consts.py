@@ -40,7 +40,7 @@ class CONST:
 		CMD_WEEK_NUMB		: [u'неделя'],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
-		CMD_TO_DEVELOPER	: [u'<разработчику>', u'<предложение>', u'<ошибка>']
+		CMD_TO_DEVELOPER	: [u'разработчику', u'предложение', u'ошибка']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
