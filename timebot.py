@@ -145,7 +145,7 @@ class Timebot:
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
 			else:
 				try:
-					group_name = self.db.users.find({'vk_id':message['user_id']})[0]['group_name']
+					group_name = self.db.users.find({'vk_id':message['uid']})[0]['group_name']
 				except:
 					raise Exception(ct.CONST.ERR_NO_GROUP_NAME)				
 		group_name = group_name.upper()

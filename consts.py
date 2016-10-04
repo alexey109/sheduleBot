@@ -11,14 +11,17 @@ class CONST:
 
 
 	# Commands (CMD)
-	CMD_NEXT 			= 0
-	CMD_TODAY 			= 1
-	CMD_AFTERTOMMOROW 	= 2 # It is important to be aftertommorow before tomorrow :)
-	CMD_TOMMOROW		= 3
-	CMD_DAY_OF_WEEK 	= 4
-	CMD_WEEK_NUMB		= 5 # It is important to be aftertommorow before current lection :)
-	CMD_NOW				= 6 
-	CMD_TO_DEVELOPER	= 7 
+	CMD_TO_DEVELOPER	= 100 
+	CMD_NEXT 			= 110
+	CMD_TODAY 			= 120
+	CMD_AFTERTOMMOROW 	= 130 # It is important to be aftertommorow before tomorrow :)
+	CMD_TOMMOROW		= 140
+	CMD_DAY_OF_WEEK 	= 150
+	CMD_WEEK_NUMB		= 160 # It is important to be aftertommorow before current lection :)
+	CMD_NOW				= 170 
+	CMD_WHERE_LECTION	= 180 #TODO Add implementation
+
+	SAVED_GROUP_NAME	= 1000
 
 	DAY_NAMES = (
 		u'понедельник', 
@@ -30,7 +33,7 @@ class CONST:
 	)
 
 	# Keywords using when send message from group's chat.
-	CHAT_KEYWORDS = (u'рп,', u'расписание,', u'том,', u'луи,')
+	CHAT_KEYWORDS = (u'рп,,', u'расписание,,', u'том,,', u'луи,,', u'бот,,')
 	# Keywords for every command.
 	CMD_KEYWORDS = {
 		CMD_NEXT 			: [u'дальше', u'следующая', u'следующие', u'оставшиеся', u'осталась'],
@@ -40,7 +43,7 @@ class CONST:
 		CMD_WEEK_NUMB		: [u'неделя'],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
-		CMD_TO_DEVELOPER	: [u'разработчику', u'предложение', u'ошибка']
+		CMD_TO_DEVELOPER	: [u'(разработчику)', u'(предложение)', u'(ошибка)']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
@@ -54,7 +57,8 @@ class CONST:
 		CMD_WEEK_NUMB		: u'Сейчас идет %s неделя.',
 		CMD_NOW				: u'Текущая пара:\n%s',
 		CMD_DAY_OF_WEEK 	: u'Пары в %s:\n%s', # One new parametr: day of week
-		CMD_TO_DEVELOPER	: u'Сообщение принято и обязательно будет рассмотрено, спасибо :)'
+		CMD_TO_DEVELOPER	: u'Сообщение принято и обязательно будет рассмотрено, спасибо :)',
+		SAVED_GROUP_NAME	: u'Я запомнил, что ты из %s.\n\n'
 	}
 
 	# Dictionary of lections start-end time for using in messages
