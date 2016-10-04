@@ -143,6 +143,7 @@ class Timebot:
 			try:
 				group_name = self.db.users.find({'vk_id':message['uid']})[0]['group_name']
 				if group_from_msg:
+					group_name = group_from_msg
 					self.db.users.update_one(
 						{'vk_id':message['uid']},
 						{'$set': {'group_name': group_from_msg}}
