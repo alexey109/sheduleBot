@@ -141,7 +141,7 @@ class Timebot:
 
 		if not is_chat:
 			if group_from_msg:
-				if self.db.users.insert_one({'vk_id': message['user_id'], 'group_name': group_from_msg}):
+				if self.db.users.insert_one({'vk_id': message['uid'], 'group_name': group_from_msg}):
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
 			else:
 				try:
