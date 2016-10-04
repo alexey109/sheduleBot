@@ -140,14 +140,21 @@ class Timebot:
 			raise Exception(ct.CONST.ERR_NO_GROUP_NAME)
 
 		if not is_chat:
-			if group_from_msg:
-				if self.db.users.insert_one({'vk_id': message['uid'], 'group_name': group_from_msg}):
+			try:
+				group_name = self.db.users.find({'vk_id':message['uid']})[0]['group_name']
+				if group_from_msg
+					self.db.users.update_one(
+						{'vk_id':message['uid']},
+						{'$set': {'group_name': group_from_msg}}
+					)
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
-			else:
-				try:
-					group_name = self.db.users.find({'vk_id':message['uid']})[0]['group_name']
-				except:
-					raise Exception(ct.CONST.ERR_NO_GROUP_NAME)				
+			except:
+				if group_from_msg:
+					self.db.users.insert_one({'vk_id': message['uid'], 'group_name': group_from_msg}):
+					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
+				else:
+					raise Exception(ct.CONST.ERR_NO_GROUP_NAME)	
+			
 		group_name = group_name.upper()
 
 		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
