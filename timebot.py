@@ -150,7 +150,7 @@ class Timebot:
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
 			except:
 				if group_from_msg:
-					self.db.users.insert_one({'vk_id': message['uid'], 'group_name': group_from_msg}):
+					self.db.users.insert_one({'vk_id': message['uid'], 'group_name': group_from_msg})
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
 				else:
 					raise Exception(ct.CONST.ERR_NO_GROUP_NAME)	
