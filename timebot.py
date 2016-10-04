@@ -8,6 +8,7 @@ import vk
 import sys
 import re
 import codecs
+from pymongo import MongoClient
 
 import parser 
 import consts as ct
@@ -19,6 +20,7 @@ import consts as ct
 class Timebot:
 	def __init__(self):
 		self.table = parser.Schedule()
+		self.db = MongoClient().timebot
 
 	# Return lection number for specified time
 	# Return type: integer
@@ -117,9 +119,11 @@ class Timebot:
 	def wordsInTxt(self, words, text):
 		return any(word[:-1] in text for word in words)
 
+
 	# Takes message and prepare answer for it.
 	# Return type: string
 	def getMyAnswer(self, message, is_chat):
+		answer = ''
 		title = message['title'].lower()
 		text = message['body'].lower()
 
@@ -129,36 +133,46 @@ class Timebot:
 		group_from_title = self.getGroupFromString(title)
 		group_from_msg = self.getGroupFromString(text)
 		if group_from_msg:		
-			group_name = group_from_msg.upper()
+			group_name = group_from_msg
 		elif group_from_title:
-			group_name = group_from_title.upper()
-		else:
+			group_name = group_from_title		
+		elif is_chat:
 			raise Exception(ct.CONST.ERR_NO_GROUP_NAME)
 
-		answer = ''
+		if not is_chat:
+			if group_from_msg:
+				if self.db.users.insert_one({'vk_id': message['user_id'], 'group_name': group_from_msg}):
+					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
+			else:
+				try:
+					group_name = self.db.users.find({'vk_id':message['user_id']})[0]['group_name']
+				except:
+					raise Exception(ct.CONST.ERR_NO_GROUP_NAME)				
+		group_name = group_name.upper()
+
 		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
 			if self.wordsInTxt(keywords, text):		
 				template = ct.CONST.USER_PREMESSAGE[command]
 				if command == ct.CONST.CMD_NEXT:
-					answer = template % (self.getNextLections(group_name))
+					answer += template % (self.getNextLections(group_name))
 				elif command == ct.CONST.CMD_TODAY:
-					answer = template % (self.getTodayLections(group_name))
+					answer += template % (self.getTodayLections(group_name))
 				elif command == ct.CONST.CMD_AFTERTOMMOROW:
-					answer = template % (self.getAfterTommorowLections(group_name))
+					answer += template % (self.getAfterTommorowLections(group_name))
 				elif command == ct.CONST.CMD_TOMMOROW:
-					answer = template % (self.getTommorowLections(group_name))
+					answer += template % (self.getTommorowLections(group_name))
 				elif command == ct.CONST.CMD_WEEK_NUMB:
-					answer = template % (self.getWeekNumb())
+					answer += template % (self.getWeekNumb())
 				elif command == ct.CONST.CMD_NOW:
-					answer = template % (self.getNowLection(group_name))
+					answer += template % (self.getNowLection(group_name))
 				elif command == ct.CONST.CMD_TO_DEVELOPER:
 					with codecs.open('msg_to_me.txt', mode='a', encoding='utf-8') as txt_file:
 						txt_file.write('\n' + text + '\n')
-					answer = ct.CONST.USER_PREMESSAGE[ct.CONST.CMD_TO_DEVELOPER]
+					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.CMD_TO_DEVELOPER]
 				elif command == ct.CONST.CMD_DAY_OF_WEEK:
 					for day_idx, day_name in enumerate(keywords):
 						if day_name[:-1] in text:
-							answer = template % (day_name, self.getLectionsByDay(group_name, day_idx))
+							answer += template % (day_name, self.getLectionsByDay(group_name, day_idx))
 							break
 				else:
 					raise Exception(ct.CONST.ERR_UNDEFINED)
