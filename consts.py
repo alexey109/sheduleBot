@@ -33,14 +33,14 @@ class CONST:
 	)
 
 	# Keywords using when send message from group's chat.
-	CHAT_KEYWORDS = (u'рп,,', u'расписание,,', u'том,,', u'луи,,', u'бот,,')
+	CHAT_KEYWORDS = (u'рп,+', u'расписание,+', u'том,+', u'луи,+', u'бот,+')
 	# Keywords for every command.
 	CMD_KEYWORDS = {
-		CMD_NEXT 			: [u'дальше', u'следующая', u'следующие', u'оставшиеся', u'осталась'],
+		CMD_NEXT 			: [u'дальше', u'следующая', u'следующие', u'оставшиеся', u'остались'],
 		CMD_TODAY 			: [u'сегодня'],
 		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 		CMD_TOMMOROW		: [u'завтра'],
-		CMD_WEEK_NUMB		: [u'неделя'],
+		CMD_WEEK_NUMB		: [u'неделя+'],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
 		CMD_TO_DEVELOPER	: [u'(разработчику)', u'(предложение)', u'(ошибка)']
@@ -88,8 +88,8 @@ class CONST:
 		ERR_NO_GROUP_NAME: u'Не удается распознать группу :(\n\n'\
 			+ u'Укажите группу в названии беседы или в сообщении.\n'\
 			+ u'Примеры сообщения:\n'\
-			+ u'"Какие пары завтра у группы ИКБО-04-15"\n'\
-			+ u'"Следующие лекции для ИКБО-04-15"',
+			+ u'"Расписание, какие пары завтра у группы ИКБО-04-15"\n'\
+			+ u'"Расписание, что во вторник?"',
 		ERR_NO_COMMAND: u'Неизвестная команда :(',
 		ERR_NO_LECTIONS: u'Пар нет :)'
 	}
