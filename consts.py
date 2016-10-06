@@ -57,7 +57,7 @@ class CONST:
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
 		CMD_TO_DEVELOPER	: [u'разработчику', u'предложение', u'ошибка', u'классно будет', u'здорово'],
-		CMD_HELP			: [u'инструкция', u'справка', u'помощь', u'help', u'как ты работаешь'],
+		CMD_HELP			: [u'инструкция', u'справка', u'помощь', u'help', u'работаешь', u'пользоваться'],
 		CMD_LECTION_NUMB	: ['1+','2+','3+','4+','5+'] + NUMB_NAMES,
 		CMD_POLITE			: [u'спасибо']
 	}
