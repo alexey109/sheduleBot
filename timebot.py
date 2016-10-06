@@ -194,7 +194,7 @@ class Timebot:
 				elif command == ct.CONST.CMD_NOW:
 					answer += template % (self.getNowLection(group_name))
 				elif command == ct.CONST.CMD_DAY_OF_WEEK:
-					answer += template % (day_name, self.getLectionsByDay(group_name, found_word['idx']))
+					answer += template % (found_word['word'], self.getLectionsByDay(group_name, found_word['idx']))
 				elif command == ct.CONST.CMD_LECTION_NUMB:
 					answer += template % (self.getLectionByNumb(group_name, found_word['word']))
 				elif command == ct.CONST.CMD_HELP:

@@ -39,7 +39,7 @@ class CONST:
 	NUMB_NAMES = [
 		u'нулевая+',
 		u'перв+',
-		u'втор+',
+		u'втора+',
 		u'треть+',
 		u'четверт+',
 		u'пятая+'
@@ -52,7 +52,7 @@ class CONST:
 		CMD_NEXT 			: [u'дальше', u'следующ+', u'оставшиеся', u'остались'],
 		CMD_TODAY 			: [u'сегодня'],
 		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
-		CMD_TOMMOROW		: [u' завтра'],
+		CMD_TOMMOROW		: [u'завтра'],
 		CMD_WEEK_NUMB		: [u'неделя+'],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
