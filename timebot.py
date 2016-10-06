@@ -107,6 +107,17 @@ class Timebot:
 	
 		return self.listToStr(self.table.getLections(group_name,day_numb,week_numb,lection,lection))
 
+	# Return lections by number
+	# Return type: string
+	def getLectionByNumb(self, group_name, lection_in):
+		day_numb = dt.datetime.today().weekday()
+		week_numb = dt.datetime.now().isocalendar()[1]
+		if lection_in in ct.CONST.NUMB_NAMES:
+			lection = ct.CONST.NUMB_NAMES.index(lection_in)
+		else:
+			lection = int(lection_in[:-1])
+	
+		return self.listToStr(self.table.getLections(group_name,day_numb,week_numb,lection,lection))
 
 	# Get group name from any string
 	# Return type: string
@@ -117,7 +128,12 @@ class Timebot:
 	# Check is any word in text
 	# Return type: boolean
 	def wordsInTxt(self, words, text):
-		return any(word[:-1] in text for word in words)
+		result = {}
+		for idx, word in enumerate(words):
+			if word[:-1] in text:
+				result = {'idx': idx, 'word': word}
+				break
+		return result# any(word[:-1] in text for word in words)
 
 
 	# Takes message and prepare answer for it.
@@ -159,9 +175,13 @@ class Timebot:
 		group_name = group_name.upper()
 
 		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
-			if self.wordsInTxt(keywords, text):		
+			found_word = self.wordsInTxt(keywords, text)
+			if found_word:	
 				template = ct.CONST.USER_PREMESSAGE[command]
-				if command == ct.CONST.CMD_NEXT:
+
+				if command == ct.CONST.CMD_POLITE:
+					answer += ct.CONST.USER_PREMESSAGE[command]
+				elif command == ct.CONST.CMD_NEXT:
 					answer += template % (self.getNextLections(group_name))
 				elif command == ct.CONST.CMD_TODAY:
 					answer += template % (self.getTodayLections(group_name))
@@ -173,15 +193,16 @@ class Timebot:
 					answer += template % (self.getWeekNumb())
 				elif command == ct.CONST.CMD_NOW:
 					answer += template % (self.getNowLection(group_name))
+				elif command == ct.CONST.CMD_DAY_OF_WEEK:
+					answer += template % (day_name, self.getLectionsByDay(group_name, found_word['idx']))
+				elif command == ct.CONST.CMD_LECTION_NUMB:
+					answer += template % (self.getLectionByNumb(group_name, found_word['word']))
+				elif command == ct.CONST.CMD_HELP:
+					answer += template
 				elif command == ct.CONST.CMD_TO_DEVELOPER:
 					with codecs.open('msg_to_me.txt', mode='a', encoding='utf-8') as txt_file:
 						txt_file.write('\n' + text + '\n')
-					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.CMD_TO_DEVELOPER]
-				elif command == ct.CONST.CMD_DAY_OF_WEEK:
-					for day_idx, day_name in enumerate(keywords):
-						if day_name[:-1] in text:
-							answer += template % (day_name, self.getLectionsByDay(group_name, day_idx))
-							break
+					answer += template
 				else:
 					raise Exception(ct.CONST.ERR_UNDEFINED)
 				break

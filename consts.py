@@ -10,7 +10,7 @@ class CONST:
 	TEST = False
 
 
-	# Commands (CMD)
+	# Commands (CMD) Order is important
 	CMD_TO_DEVELOPER	= 100 
 	CMD_NEXT 			= 110
 	CMD_TODAY 			= 120
@@ -19,31 +19,47 @@ class CONST:
 	CMD_DAY_OF_WEEK 	= 150
 	CMD_WEEK_NUMB		= 160 # It is important to be aftertommorow before current lection :)
 	CMD_NOW				= 170 
-	CMD_WHERE_LECTION	= 180 #TODO Add implementation
+	CMD_HELP			= 180 
+	CMD_STARTTIME		= 190 #TODO write implementation
+	CMD_ENDTIME			= 200 #TODO write implementation
+	CMD_LECTION_NUMB	= 210 
+	CMD_POLITE			= 220
 
 	SAVED_GROUP_NAME	= 1000
 
-	DAY_NAMES = (
+	DAY_NAMES = [
 		u'понедельник', 
 		u'вторник',
 		u'среду',
 		u'четверг',
 		u'пятницу',
 		u'субботу'
-	)
+	]
+
+	NUMB_NAMES = [
+		u'нулевая+',
+		u'перв+',
+		u'втор+',
+		u'треть+',
+		u'четверт+',
+		u'пятая+'
+	]
 
 	# Keywords using when send message from group's chat.
-	CHAT_KEYWORDS = (u'рп,+', u'расписание,+', u'том,+', u'луи,+', u'бот,+')
+	CHAT_KEYWORDS = (u'рп,+', u'расписание,+', u'том,+', u'луи,+', u'бот,+', u'расписание пар+')
 	# Keywords for every command.
 	CMD_KEYWORDS = {
-		CMD_NEXT 			: [u'дальше', u'следующая', u'следующие', u'оставшиеся', u'остались'],
+		CMD_NEXT 			: [u'дальше', u'следующ+', u'оставшиеся', u'остались'],
 		CMD_TODAY 			: [u'сегодня'],
 		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
-		CMD_TOMMOROW		: [u'завтра'],
+		CMD_TOMMOROW		: [u' завтра'],
 		CMD_WEEK_NUMB		: [u'неделя+'],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
-		CMD_TO_DEVELOPER	: [u'(разработчику)', u'(предложение)', u'(ошибка)']
+		CMD_TO_DEVELOPER	: [u'разработчику', u'предложение', u'ошибка', u'классно будет', u'здорово'],
+		CMD_HELP			: [u'инструкция', u'справка', u'помощь', u'help', u'как ты работаешь'],
+		CMD_LECTION_NUMB	: ['1+','2+','3+','4+','5+'] + NUMB_NAMES,
+		CMD_POLITE			: [u'спасибо']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
@@ -58,7 +74,17 @@ class CONST:
 		CMD_NOW				: u'Текущая пара:\n%s',
 		CMD_DAY_OF_WEEK 	: u'Пары в %s:\n%s', # One new parametr: day of week
 		CMD_TO_DEVELOPER	: u'Сообщение принято и обязательно будет рассмотрено, спасибо :)',
-		SAVED_GROUP_NAME	: u'Я запомнил, что ты из %s.\n\n'
+		CMD_HELP			: u'Инструкция:\nПросто спросите что вы хотите узнать по расписанию пар. '\
+			+ u'Если на ваш вопрос нет ответа, то попробуйте спросить по-другому, со временем бот '\
+			+ u'научиться отвечать на любые формы вопросов.\nПримеры:\n'\
+			+ u'"Какие пары завтра?"\n"Следующие лекции"\n"Пары во вторник"\n\n'
+			+ u'В личной беседе достаточно один раз написать название группы.\n'\
+			+ u'В групповой беседе название должно быть указано в теме группы или в каждом сообщении, '\
+			+ u'так же надо сначала обратиться боту:\n"Расписание, что завтра у ИКБО-04-15?"\n\n'
+			+ u'Более полная инструкция есть на странице бота.',
+		CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
+		SAVED_GROUP_NAME	: u'Я запомнил, что ты из %s.\n\n',
+		CMD_LECTION_NUMB	: u'%s\nP.S. пара сегодня'
 	}
 
 	# Dictionary of lections start-end time for using in messages
@@ -83,8 +109,8 @@ class CONST:
 	ERR_MESSAGES = {
 		ERR_UNDEFINED: u'Что-то пошло не так, повторите запрос еще раз :(',
 		ERR_SKIP: '',
-		ERR_GROUP_NOT_FOUND: u'Группа не найдена :(\nНазвание группы указано с ошибками,'\
-			+ u' либо расписание для данной группы пока недоступно.',
+		ERR_GROUP_NOT_FOUND: u'Группа не найдена :(\nРасписание для данной группы пока недоступно,'\
+			+ u' либо название группы указано с ошибками,.',
 		ERR_NO_GROUP_NAME: u'Не удается распознать группу :(\n\n'\
 			+ u'Укажите группу в названии беседы или в сообщении.\n'\
 			+ u'Примеры сообщения:\n'\
