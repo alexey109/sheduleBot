@@ -174,7 +174,6 @@ class Timebot:
 		group_name = group_name.upper()
 
 		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
-			print command
 			found_word = self.wordsInTxt(keywords, text)
 			if found_word:	
 				template = ct.CONST.USER_PREMESSAGE[command]
