@@ -112,7 +112,7 @@ class CONST:
 			+ u'Более полная инструкция есть на странице бота.',
 		CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
 		SAVED_GROUP_NAME	: u'Я запомнил, что ты из %s.\n\n',
-		CMD_LECTION_NUMB	: u'%s\nP.S. пара сегодня'
+		CMD_LECTION_NUMB	: u'%s\nP.S. пара сегодня',
 		CMD_HELLO			: u'Привет ;)'
 	}
 
