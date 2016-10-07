@@ -142,7 +142,6 @@ class Timebot:
 		answer = ''
 		title = message['title'].lower()
 		text = message['body'].lower()
-
 		if is_chat and not self.wordsInTxt(ct.CONST.CHAT_KEYWORDS, text):
 			raise Exception(ct.CONST.ERR_SKIP)
 
@@ -175,11 +174,14 @@ class Timebot:
 		group_name = group_name.upper()
 
 		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
+			print command
 			found_word = self.wordsInTxt(keywords, text)
 			if found_word:	
 				template = ct.CONST.USER_PREMESSAGE[command]
 
-				if command == ct.CONST.CMD_POLITE:
+				if command == ct.CONST.CMD_HELLO:
+					answer += ct.CONST.USER_PREMESSAGE[command]
+				elif command == ct.CONST.CMD_POLITE:
 					answer += ct.CONST.USER_PREMESSAGE[command]
 				elif command == ct.CONST.CMD_NEXT:
 					answer += template % (self.getNextLections(group_name))

@@ -25,6 +25,7 @@ class CONST:
 	CMD_LECTION_NUMB	= 210 
 	CMD_POLITE			= 220
 	CMD_LECTION_TIME	= 230 #TODO write implementation
+	CMD_HELLO			= 240
 
 	SAVED_GROUP_NAME	= 1000
 
@@ -46,6 +47,16 @@ class CONST:
 		u'пятая+'
 	]
 
+	# Dictionary of lections start-end time for using in messages
+	LECTION_TIME = {
+		1: '9:00-10:35',
+		2: '10:45-12:20',
+		3: '12:50-14:25',
+		4: '14:35-16:10',
+		5: '16:20-17:55',
+		6: '18:00-21:20',
+	}
+
 	# Keywords using when send message from group's chat.
 	CHAT_KEYWORDS = (u'рп,+', u'расписание,+', u'том,+', u'луи,+', u'бот,+', u'расписание пар+')
 	# Keywords for every command.
@@ -57,7 +68,13 @@ class CONST:
 		CMD_WEEK_NUMB		: [u'неделя+'],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
-		CMD_TO_DEVELOPER	: [u'разработчику', u'предложение', u'ошибка', u'классно будет', u'здорово'],
+		CMD_TO_DEVELOPER	: [
+			u'разработчику', 
+			u'предложение', 
+			u'ошибка', 
+			u'классно будет', 
+			u'здорово'
+		],
 		CMD_HELP			: [
 			u'инструкция', 
 			u'справка', 
@@ -69,7 +86,8 @@ class CONST:
 			u'делаешь'
 		],
 		CMD_LECTION_NUMB	: ['1 +','2 +','3 +','4 +','5 +'] + NUMB_NAMES,
-		CMD_POLITE			: [u'спасибо']
+		CMD_POLITE			: [u'спасибо'],
+		CMD_HELLO			: [u'привет']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
@@ -95,18 +113,8 @@ class CONST:
 		CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
 		SAVED_GROUP_NAME	: u'Я запомнил, что ты из %s.\n\n',
 		CMD_LECTION_NUMB	: u'%s\nP.S. пара сегодня'
+		CMD_HELLO			: u'Привет ;)'
 	}
-
-	# Dictionary of lections start-end time for using in messages
-	LECTION_TIME = {
-		1: '9:00-10:35',
-		2: '10:45-12:20',
-		3: '12:50-14:25',
-		4: '14:35-16:10',
-		5: '16:20-17:55',
-		6: '18:00-21:20',
-	}
-
 
 	# Error codes, will raise as exceptions.
 	ERR_UNDEFINED 		= 0
