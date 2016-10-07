@@ -24,6 +24,7 @@ class CONST:
 	CMD_ENDTIME			= 200 #TODO write implementation
 	CMD_LECTION_NUMB	= 210 
 	CMD_POLITE			= 220
+	CMD_LECTION_TIME	= 230 #TODO write implementation
 
 	SAVED_GROUP_NAME	= 1000
 
@@ -65,9 +66,9 @@ class CONST:
 			u'работаешь', 
 			u'пользоваться',
 			u'умеешь'
-			u'деалешь'
+			u'делаешь'
 		],
-		CMD_LECTION_NUMB	: ['1+','2+','3+','4+','5+'] + NUMB_NAMES,
+		CMD_LECTION_NUMB	: ['1 +','2 +','3 +','4 +','5 +'] + NUMB_NAMES,
 		CMD_POLITE			: [u'спасибо']
 	}
 
