@@ -86,7 +86,7 @@ class CONST:
 			u'умеешь'
 			u'делаешь'
 		],
-		CMD_LECTION_NUMB	: ['1 +','2 +','3 +','4 +','5 +'] + NUMB_NAMES,
+		CMD_LECTION_NUMB	: NUMB_NAMES,
 		CMD_POLITE			: [u'спасибо'],
 		CMD_HELLO			: [u'привет']
 	}
