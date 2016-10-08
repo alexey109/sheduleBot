@@ -23,7 +23,8 @@ class Schedule:
 		2: (16,21),
 		3: (22,27),
 		4: (28,33),
-		5: (34,39)
+		5: (34,39),
+		6: (39,39) # TODO Fix this
 	}
 
 	# Open excel-document with scpecified group
