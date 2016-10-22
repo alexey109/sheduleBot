@@ -29,6 +29,7 @@ class CONST:
 	CMD_YESTERDAY		= 250 #TODO write implementation
 	CMD_FOR_DAY			= 260 #TODO write implementation
 	CMD_GROUP			= 270 #TODO write implementation
+	CMD_TEACHER			= 270 #TODO write implementation
 
 	SAVED_GROUP_NAME	= 1000
 
@@ -71,28 +72,12 @@ class CONST:
 	)
 	# Keywords for every command.
 	CMD_KEYWORDS = {
-		CMD_NEXT 			: [
-			u'дальше',
-			u'следующ+', 
-			u'оставшиеся', 
-			u'остались'
-		],
-		CMD_TODAY 			: [
-			u'сегодня'
-		],
-		CMD_AFTERTOMMOROW 	: [
-			u'послезавтра'
-		], 
-		CMD_TOMMOROW		: [
-			u'завтра'
-		],
-		CMD_WEEK_NUMB		: [
-			u'неделя+'
-		],
-		CMD_NOW				: [
-			u'сейчас', 
-			u'текущая'
-		],
+		CMD_NEXT 			: [u'дальше', u'следующ+',  u'оставшиеся',  u'остались'],
+		CMD_TODAY 			: [u'сегодня'],
+		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
+		CMD_TOMMOROW		: [u'завтра'],
+		CMD_WEEK_NUMB		: [u'неделя+'],
+		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
 		CMD_TO_DEVELOPER	: [
 			u'разработчику', 
@@ -113,12 +98,8 @@ class CONST:
 			u'команды'
 		],
 		CMD_LECTION_NUMB	: NUMB_NAMES,
-		CMD_POLITE			: [
-			u'спасибо'
-		],
-		CMD_HELLO			: [
-			u'привет'
-		]
+		CMD_POLITE			: [u'спасибо'],
+		CMD_HELLO			: [u'привет']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
