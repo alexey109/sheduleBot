@@ -358,7 +358,7 @@ class Timebot:
 					my_answer = ct.CONST.ERR_MESSAGES[e.args[0]]
 				else:
 					self.logger.log(ct.CONST.LOG_ERROR, e)
-			return
+					return
 			if my_answer: 
 				if is_chat:
 					self.api.messages.send(chat_id=message['chat_id'], message=my_answer)
