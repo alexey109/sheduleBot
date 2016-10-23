@@ -253,12 +253,12 @@ class Timebot:
 					group = group_from_msg
 					self.db.users.update_one(
 						{'vk_id':message['uid']},
-						{'$set': {'group': group_from_msg}}
+						{'$set': {'group_name': group_from_msg}}
 					)
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP] % (group_from_msg)
 			except:
 				if group_from_msg:
-					self.db.users.insert_one({'vk_id': message['uid'], 'group': group_from_msg})
+					self.db.users.insert_one({'vk_id': message['uid'], 'group_name': group_from_msg})
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP] % (group_from_msg)
 				else:
 					raise Exception(ct.CONST.ERR_NO_GROUP)	
@@ -358,7 +358,6 @@ class Timebot:
 					my_answer = ct.CONST.ERR_MESSAGES[e.args[0]]
 				else:
 					self.logger.log(ct.CONST.LOG_ERROR, e)
-			print message, my_answer
 			return
 			if my_answer: 
 				if is_chat:
