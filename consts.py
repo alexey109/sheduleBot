@@ -81,8 +81,8 @@ class CONST:
 
 	# Keywords using when send message from group's chat.
 	CHAT_KEYWORDS = (
-		u'расписание,+',
-		u'бот,+'
+		u'расписание+',
+		u'бот+'
 	)
 	# Keywords for every command.
 	CMD_KEYWORDS = {
