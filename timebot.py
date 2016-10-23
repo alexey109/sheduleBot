@@ -262,8 +262,6 @@ class Timebot:
 					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP] % (group_from_msg)
 				else:
 					raise Exception(ct.CONST.ERR_NO_GROUP)	
-			
-		group = group.upper()
 
 		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
 			found_word = self.wordsInTxt(keywords, text)
