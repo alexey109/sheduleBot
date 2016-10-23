@@ -6,9 +6,26 @@
 class CONST:
 	# Enable/disable logging everything.
 	LOG	 = True
+	LOG_DIR = 'log/'
+
+	# Log type codes
+	LOG_ERROR	= 10
+	LOG_WLOAD	= 20
+	LOG_FBACK	= 30
+	LOG_MESGS	= 40
+	LOG_PARSE	= 50
+
+	# Log file names
+	LOG_ERROR_FILE 	= 'exceptions.txt'
+	LOG_WLOAD_FILE  = 'workload.txt'
+	LOG_FBACK_FILE	= 'feedback.txt'
+	LOG_MESGS_FILE	= 'messages.txt'
+	LOG_PARSE_FILE	= 'parser.txt'
+
 	# Enable/disable test mode
 	TEST = False
 
+	SCHEDULE_DIR = 'schedules/'
 
 	# Commands (CMD) Order is important
 	CMD_TO_DEVELOPER	= 100 
@@ -17,21 +34,21 @@ class CONST:
 	CMD_AFTERTOMMOROW 	= 130 # It is important to be aftertommorow before tomorrow :)
 	CMD_TOMMOROW		= 140
 	CMD_DAY_OF_WEEK 	= 150
-	CMD_WEEK_NUMB		= 160 # It is important to be aftertommorow before current lection :)
+	CMD_WEEK			= 160 # It is important to be aftertommorow before current lection :)
 	CMD_NOW				= 170 
 	CMD_HELP			= 180 
 	CMD_STARTTIME		= 190 #TODO write implementation
 	CMD_ENDTIME			= 200 #TODO write implementation
 	CMD_LECTION_NUMB	= 210 
 	CMD_POLITE			= 220
-	CMD_LECTION_TIME	= 230 #TODO write implementation
-	CMD_HELLO			= 240 #TODO write implementation
-	CMD_YESTERDAY		= 250 #TODO write implementation
+	CMD_LECTION_TIME	= 230 
+	CMD_HELLO			= 240 
+	CMD_YESTERDAY		= 250 
 	CMD_FOR_DAY			= 260 #TODO write implementation
-	CMD_GROUP			= 270 #TODO write implementation
-	CMD_TEACHER			= 270 #TODO write implementation
+	CMD_GROUP			= 270 #TODO write implementation ???
+	CMD_TEACHER			= 280 #TODO write implementation
 
-	SAVED_GROUP_NAME	= 1000
+	SAVED_GROUP	= 1000
 
 	DAY_NAMES = [
 		u'понедельник', 
@@ -64,11 +81,8 @@ class CONST:
 
 	# Keywords using when send message from group's chat.
 	CHAT_KEYWORDS = (
-		u'рп,+', 
 		u'расписание,+',
-		u'луи,+', 
-		u'бот,+', 
-		u'расписание пар+'
+		u'бот,+'
 	)
 	# Keywords for every command.
 	CMD_KEYWORDS = {
@@ -76,7 +90,8 @@ class CONST:
 		CMD_TODAY 			: [u'сегодня'],
 		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 		CMD_TOMMOROW		: [u'завтра'],
-		CMD_WEEK_NUMB		: [u'неделя+'],
+		CMD_YESTERDAY		: [u'вчера'],
+		CMD_WEEK		: [u'неделя+'],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
 		CMD_TO_DEVELOPER	: [
@@ -99,7 +114,9 @@ class CONST:
 		],
 		CMD_LECTION_NUMB	: NUMB_NAMES,
 		CMD_POLITE			: [u'спасибо'],
-		CMD_HELLO			: [u'привет']
+		CMD_HELLO			: [u'привет'],
+		CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель'],
+		CMD_LECTION_TIME	: [u'время', u'расписание']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
@@ -109,9 +126,11 @@ class CONST:
 		CMD_NEXT 			: u'Следующие пары:\n%s',
 		CMD_TODAY 			: u'Пары сегодня:\n%s',
 		CMD_TOMMOROW		: u'Пары завтра:\n%s',
+		CMD_YESTERDAY		: u'Пары вчера:\n%s',
 		CMD_AFTERTOMMOROW 	: u'Пары послезавтра:\n%s',
-		CMD_WEEK_NUMB		: u'Сейчас идет %s неделя.',
+		CMD_WEEK			: u'Сейчас идет %s неделя.',
 		CMD_NOW				: u'Текущая пара:\n%s',
+		CMD_LECTION_TIME	: u'Время начала-конца пар\n\n%s',
 		CMD_DAY_OF_WEEK 	: u'Пары в %s:\n%s', # One new parametr: day of week
 		CMD_TO_DEVELOPER	: u'Сообщение принято и обязательно будет рассмотрено, спасибо :)',
 		CMD_HELP			: u'Инструкция:\nПросто спросите что вы хотите узнать по расписанию пар. '\
@@ -123,33 +142,32 @@ class CONST:
 			+ u'так же надо сначала обратиться боту:\n"Расписание, что завтра у ИКБО-04-15?"\n\n'
 			+ u'Более полная инструкция есть на странице бота.',
 		CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
-		SAVED_GROUP_NAME	: u'Я запомнил, что ты из %s.\n\n',
+		SAVED_GROUP			: u'Я запомнил, что ты из %s.\n\n',
 		CMD_LECTION_NUMB	: u'%s\nP.S. пара сегодня',
-		CMD_HELLO			: u'Привет ;)'
+		CMD_HELLO			: u'Привет ;)',
+		CMD_TEACHER			: u'Сейчас ведет пару:\n%s'
 	}
 
 	# Error codes, will raise as exceptions.
 	ERR_UNDEFINED 		= 0
 	ERR_SKIP			= 1
 	ERR_GROUP_NOT_FOUND = 2
-	ERR_NO_GROUP_NAME	= 3
+	ERR_NO_GROUP		= 3
 	ERR_NO_COMMAND		= 4
 	ERR_NO_LECTIONS		= 5
+	ERR_NO_TEACHER		= 6
 	
 	ERR_MESSAGES = {
 		ERR_UNDEFINED: u'Что-то пошло не так, повторите запрос еще раз :(',
 		ERR_SKIP: '',
 		ERR_GROUP_NOT_FOUND: u'Группа не найдена :(\nРасписание для данной группы пока недоступно,'\
 			+ u' либо название группы указано с ошибками,.',
-		ERR_NO_GROUP_NAME: u'Не удается распознать группу :(\n\n'\
+		ERR_NO_GROUP: u'Не удается распознать группу :(\n\n'\
 			+ u'Укажите группу в названии беседы или в сообщении.\n'\
 			+ u'Примеры сообщения:\n'\
 			+ u'"Расписание, какие пары завтра у группы ИКБО-04-15"\n'\
 			+ u'"Расписание, что во вторник?"',
 		ERR_NO_COMMAND: u'Неизвестная команда :(',
-		ERR_NO_LECTIONS: u'Пар нет :)'
+		ERR_NO_LECTIONS: u'Пар нет :)',
+		ERR_NO_TEACHER: u'В расписании преподаватель не указан.'
 	}
-
-# Class, which save bot activity.
-#class Logger():
-# TODO: write implementation of this class

@@ -12,6 +12,7 @@ from pymongo import MongoClient
 
 import parser 
 import consts as ct
+import logger as lg
 
 
 # Class implement bot logic. The main idea of this bot to help everyone with schedule.
@@ -19,8 +20,45 @@ import consts as ct
 # Normal documentation will be in future.
 class Timebot:
 	def __init__(self):
-		self.table = parser.Schedule()
 		self.db = MongoClient().timebot
+		self.logger = lg.Logger()
+
+	# Check if lection frequency match specified week number,
+	# it mean that function returns true if lection have to be on that week.
+	# Return type: boolean
+	def isThatWeek(self, native_week, base_week):
+		base_week = base_week - dt.date(2016, 9, 1).isocalendar()[1] + 1
+	
+		if native_week == '':
+			result = True
+		elif 'I' in native_week:
+			result = (base_week % 2 == 0) == (native_week.strip() == 'II')
+		elif '-' in native_week:
+			period = re.split('-', native_week)
+			result = (base_week >= int(period[0])) and (base_week <= int(period[1]))
+		else:
+			result = str(base_week) in re.split(r'[\s,]', native_week)
+		return result
+
+	def getLessons(self, group, day, week, lstart = 1, lfinish = 6):
+		try:
+			schedule = self.db.schedule.find({'group':group})[0]['schedule']
+		except:
+			raise Exception(ct.CONST.ERR_GROUP_NOT_FOUND)
+		
+		lessons = []
+		for lesson in schedule:
+			if (lesson['day'] == day) \
+			and (self.isThatWeek(lesson['week'], week))\
+			and (lesson['numb'] >= lstart)\
+			and (lesson['numb'] <= lfinish):
+				lessons.append((
+					str(lesson['numb']),#TODO Remove to string 
+					lesson['room'], 
+					ct.CONST.LECTION_TIME[lesson['numb']],
+					lesson['name']				
+				))
+		return lessons
 
 	# Return lection number for specified time
 	# Return type: integer
@@ -38,7 +76,7 @@ class Timebot:
 
 	# Takes lection parametrs and put it message template
 	# Return type: string
-	def listToStr(self, params):
+	def lFormat(self, params):
 		if params == []:
 			raise Exception(ct.CONST.ERR_NO_LECTIONS)
 
@@ -47,82 +85,124 @@ class Timebot:
 			result += ct.CONST.UNI_TEMPLATE % (row)
 		return result
 
-	# Return tommorow lections
+	# Return tommorow 
 	# Return type: string
-	def getTommorowLections(self, group_name):
-		day_numb = (dt.datetime.today() + dt.timedelta(days=1)).weekday()
-		week_numb = (dt.datetime.now() + dt.timedelta(days=1)).isocalendar()[1]
+	def getTommorow(self, group):
+		day = (dt.datetime.today() + dt.timedelta(days=1)).weekday()
+		week = (dt.datetime.now() + dt.timedelta(days=1)).isocalendar()[1]
+		
+		return self.lFormat(self.getLessons(group, day, week))
 
-		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
-
-	# Return after tommorow lections
+	# Return yesterday 
 	# Return type: string
-	def getAfterTommorowLections(self, group_name):
-		day_numb = (dt.datetime.today() + dt.timedelta(days=2)).weekday()
-		week_numb = (dt.datetime.now() + dt.timedelta(days=2)).isocalendar()[1]
+	def getYesterday(self, group):
+		day = (dt.datetime.today() - dt.timedelta(days=1)).weekday()
+		week = (dt.datetime.now() - dt.timedelta(days=1)).isocalendar()[1]
 
-		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
+		return self.lFormat(self.getLessons(group, day, week))
 
-	# Return today lections
+	# Return after tommorow 
 	# Return type: string
-	def getTodayLections(self, group_name):
-		day_numb = dt.datetime.today().weekday()
-		week_numb = dt.datetime.now().isocalendar()[1]
+	def getAfterTommorow(self, group):
+		day = (dt.datetime.today() + dt.timedelta(days=2)).weekday()
+		week = (dt.datetime.now() + dt.timedelta(days=2)).isocalendar()[1]
+
+		return self.lFormat(self.getLessons(group, day, week))
+
+	# Return today 
+	# Return type: string
+	def getToday(self, group):
+		day = dt.datetime.today().weekday()
+		week = dt.datetime.now().isocalendar()[1]
 	
-		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
+		return self.lFormat(self.getLessons(group, day, week))
 
 	# Return today next lection
 	# Return type: string
-	def getNextLections(self, group_name):
-		week_numb = dt.datetime.now().isocalendar()[1]
+	def getNext(self, group):
+		week = dt.datetime.now().isocalendar()[1]
 		lection_start = int(self.lectionFromTime(dt.datetime.now().time())) + 1
 		if lection_start == 7:
-			day_numb = (dt.datetime.today() + dt.timedelta(days=1)).weekday()
+			day = (dt.datetime.today() + dt.timedelta(days=1)).weekday()
 		else:
-			day_numb = dt.datetime.today().weekday()
+			day = dt.datetime.today().weekday()
 	
-		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb,lection_start))
+		return self.lFormat(self.getLessons(group, day, week,lection_start))
 
-	# Return lections for selected day
+	# Return  for selected day
 	# Return type: string
-	def getLectionsByDay(self, group_name, day_numb):
-		week_numb = dt.datetime.now().isocalendar()[1]
-		if dt.datetime.today().weekday() >= day_numb:
-			week_numb += 1
+	def getByDay(self, group, day):
+		week = dt.datetime.now().isocalendar()[1]
+		if dt.datetime.today().weekday() >= day:
+			week += 1
 			
-		return self.listToStr(self.table.getLections(group_name, day_numb, week_numb))
+		return self.lFormat(self.getLessons(group, day, week))
 
 	# Return current week number
 	# Return type: string
 	def getWeekNumb(self):
-		week_numb = dt.datetime.now().isocalendar()[1] - dt.date(2016, 9, 1).isocalendar()[1] + 1
-		return str(week_numb)
+		week = dt.datetime.now().isocalendar()[1] - dt.date(2016, 9, 1).isocalendar()[1] + 1
+		return str(week)
 
-	# Return today lections
+	# Return today 
 	# Return type: string
-	def getNowLection(self, group_name):
-		day_numb = dt.datetime.today().weekday()
-		week_numb = dt.datetime.now().isocalendar()[1]
+	def getNowLection(self, group):
+		day = dt.datetime.today().weekday()
+		week = dt.datetime.now().isocalendar()[1]
 		lection = int(self.lectionFromTime(dt.datetime.now().time()))
 	
-		return self.listToStr(self.table.getLections(group_name,day_numb,week_numb,lection,lection))
+		return self.lFormat(self.getLessons(group, day, week, lection, lection))
 
-	# Return lections by number
+	# Return  by number
 	# Return type: string
-	def getLectionByNumb(self, group_name, lection_in):
-		day_numb = dt.datetime.today().weekday()
-		week_numb = dt.datetime.now().isocalendar()[1]
+	def getLectionByNumb(self, group, lection_in):
+		day = dt.datetime.today().weekday()
+		week = dt.datetime.now().isocalendar()[1]
 		if lection_in in ct.CONST.NUMB_NAMES:
 			lection = ct.CONST.NUMB_NAMES.index(lection_in)
 		else:
 			lection = int(lection_in[:-1])
 	
-		return self.listToStr(self.table.getLections(group_name,day_numb,week_numb,lection,lection))
+		return self.lFormat(self.getLessons(group,day,week,lection,lection))
+
+	# Return timing 
+	# Return type: string
+	def getLectionTime(self):
+		msg = ''
+		for i in ct.CONST.LECTION_TIME:
+			msg += u'%s пара: %s\n' % (str(i), ct.CONST.LECTION_TIME[i])
+
+		return msg
+
+	def getTeacher(self, group):
+		day	 = dt.datetime.today().weekday()
+		week = dt.datetime.now().isocalendar()[1]
+		numb = int(self.lectionFromTime(dt.datetime.now().time()))
+
+		try:
+			schedule = self.db.schedule.find({'group':group})[0]['schedule']
+		except:
+			raise Exception(ct.CONST.ERR_GROUP_NOT_FOUND)
+		
+		teacher = ''
+		for lesson in schedule:
+			if (lesson['day'] == day) \
+			and (self.isThatWeek(lesson['week'], week))\
+			and (lesson['numb'] == numb):
+				teacher = lesson['teacher']
+				if not teacher:
+					raise Exception(ct.CONST.ERR_NO_TEACHER)
+
+		if not teacher:
+			raise Exception(ct.CONST.ERR_NO_LECTIONS)
+		
+		return teacher
+
 
 	# Get group name from any string
 	# Return type: string
 	def getGroupFromString(self, string):
-		match = re.search(u'[а-я]{4}-[0-9]{2}-[0-9]{2}', string)
+		match = re.search(u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}', string)
 		return match.group(0) if match else ''
 		
 	# Check is any word in text
@@ -133,45 +213,57 @@ class Timebot:
 			if word[:-1] in text:
 				result = {'idx': idx, 'word': word}
 				break
-		return result# any(word[:-1] in text for word in words)
+		return result
 
+	def retriveBody(self, message):
+		msg = message.copy()
+		go_deeper = True
+		while go_deeper:
+			if self.is_exist(msg, 'fwd_messages'):
+				msg = msg['fwd_messages'][0]
+			else:
+				go_deeper = False
+
+		return msg['body']
 
 	# Takes message and prepare answer for it.
 	# Return type: string
 	def getMyAnswer(self, message, is_chat):
 		answer = ''
 		title = message['title'].lower()
-		text = message['body'].lower()
-		if is_chat and not self.wordsInTxt(ct.CONST.CHAT_KEYWORDS, text):
+		text = self.retriveBody(message)
+		text = text.lower()
+
+		if is_chat and not any(text.startswith(word) for word in ct.CONST.CHAT_KEYWORDS):
 			raise Exception(ct.CONST.ERR_SKIP)
 
 		group_from_title = self.getGroupFromString(title)
 		group_from_msg = self.getGroupFromString(text)
 		if group_from_msg:		
-			group_name = group_from_msg
+			group = group_from_msg
 		elif group_from_title:
-			group_name = group_from_title		
+			group = group_from_title		
 		elif is_chat:
-			raise Exception(ct.CONST.ERR_NO_GROUP_NAME)
+			raise Exception(ct.CONST.ERR_NO_GROUP)
 
 		if not is_chat:
 			try:
-				group_name = self.db.users.find({'vk_id':message['uid']})[0]['group_name']
+				group = self.db.users.find({'vk_id':message['uid']})[0]['group_name']
 				if group_from_msg:
-					group_name = group_from_msg
+					group = group_from_msg
 					self.db.users.update_one(
 						{'vk_id':message['uid']},
-						{'$set': {'group_name': group_from_msg}}
+						{'$set': {'group': group_from_msg}}
 					)
-					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
+					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP] % (group_from_msg)
 			except:
 				if group_from_msg:
-					self.db.users.insert_one({'vk_id': message['uid'], 'group_name': group_from_msg})
-					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP_NAME] % (group_from_msg)
+					self.db.users.insert_one({'vk_id': message['uid'], 'group': group_from_msg})
+					answer += ct.CONST.USER_PREMESSAGE[ct.CONST.SAVED_GROUP] % (group_from_msg)
 				else:
-					raise Exception(ct.CONST.ERR_NO_GROUP_NAME)	
+					raise Exception(ct.CONST.ERR_NO_GROUP)	
 			
-		group_name = group_name.upper()
+		group = group.upper()
 
 		for command, keywords in ct.CONST.CMD_KEYWORDS.items():
 			found_word = self.wordsInTxt(keywords, text)
@@ -183,21 +275,27 @@ class Timebot:
 				elif command == ct.CONST.CMD_POLITE:
 					answer += ct.CONST.USER_PREMESSAGE[command]
 				elif command == ct.CONST.CMD_NEXT:
-					answer += template % (self.getNextLections(group_name))
+					answer += template % (self.getNext(group))
 				elif command == ct.CONST.CMD_TODAY:
-					answer += template % (self.getTodayLections(group_name))
+					answer += template % (self.getToday(group))
 				elif command == ct.CONST.CMD_AFTERTOMMOROW:
-					answer += template % (self.getAfterTommorowLections(group_name))
+					answer += template % (self.getAfterTommorow(group))
+				elif command == ct.CONST.CMD_YESTERDAY:
+					answer += template % (self.getYesterday(group))
 				elif command == ct.CONST.CMD_TOMMOROW:
-					answer += template % (self.getTommorowLections(group_name))
-				elif command == ct.CONST.CMD_WEEK_NUMB:
+					answer += template % (self.getTommorow(group))
+				elif command == ct.CONST.CMD_WEEK:
 					answer += template % (self.getWeekNumb())
 				elif command == ct.CONST.CMD_NOW:
-					answer += template % (self.getNowLection(group_name))
+					answer += template % (self.getNowLection(group))
+				elif command == ct.CONST.CMD_LECTION_TIME:
+					answer += template % (self.getLectionTime())
+				elif command == ct.CONST.CMD_TEACHER:
+					answer += template % (self.getTeacher(group))
 				elif command == ct.CONST.CMD_DAY_OF_WEEK:
-					answer += template % (found_word['word'], self.getLectionsByDay(group_name, found_word['idx']))
+					answer += template % (found_word['word'], self.getByDay(group, found_word['idx']))
 				elif command == ct.CONST.CMD_LECTION_NUMB:
-					answer += template % (self.getLectionByNumb(group_name, found_word['word']))
+					answer += template % (self.getLectionByNumb(group, found_word['word']))
 				elif command == ct.CONST.CMD_HELP:
 					answer += template
 				elif command == ct.CONST.CMD_TO_DEVELOPER:
@@ -205,9 +303,11 @@ class Timebot:
 						txt_file.write('\n' + text + '\n')
 					answer += template
 				else:
+					self.logger.log(ct.CONST.LOG_MESGS, 'UNDEFINED: ' + text)
 					raise Exception(ct.CONST.ERR_UNDEFINED)
 				break
 		if not answer:
+			self.logger.log(ct.CONST.LOG_MESGS, 'UNDEFINED: ' + text)
 			raise Exception(ct.CONST.ERR_NO_COMMAND)
 		
 		return answer
@@ -220,7 +320,7 @@ class Timebot:
 		success = False
 		while not success:
 			try:
-				print 'Try to open new session.'
+				self.logger.log(ct.CONST.LOG_WLOAD, 'Try to open new session.')
 				session = vk.AuthSession(
 					app_id='5637421', 
 					user_login='+79296021208', 
@@ -228,9 +328,10 @@ class Timebot:
 					scope='4096')
 				api = vk.API(session)
 				success = True
-				print 'New session opened.'
-			except:
-				print 'Error ocured when tried to open session!'
+				self.logger.log(ct.CONST.LOG_WLOAD, 'New session opened.')
+			except Exception as e:
+				self.logger.log(ct.CONST.LOG_WLOAD, 'New session not opened!')
+				self.logger.log(ct.CONST.LOG_ERROR, e)
 				time.sleep(3)
 		return api
 
@@ -246,7 +347,6 @@ class Timebot:
 
 	# Send answer for enter message
 	# Return type: string 
-	# TODO Add status code, or use boolean.
 	def sendMyAnswer(self, message):
 		try:
 			my_answer = ''
@@ -257,17 +357,18 @@ class Timebot:
 				if isinstance(e.args[0], int):
 					my_answer = ct.CONST.ERR_MESSAGES[e.args[0]]
 				else:
-					print str(e)
-
+					self.logger.log(ct.CONST.LOG_ERROR, e)
+			print message, my_answer
+			return
 			if my_answer: 
 				if is_chat:
 					self.api.messages.send(chat_id=message['chat_id'], message=my_answer)
 				else:
 					self.api.messages.send(user_id=message['uid'], message=my_answer)
-				print 'Message send.'
 				time.sleep(1)
 		except Exception, e:
-			print 'Message not send: \n' + str(e)
+			self.logger.log(ct.CONST.LOG_WLOAD, 'Message not send!')
+			self.logger.log(ct.CONST.LOG_ERROR, e)
 			self.api = self.openVkAPI()
 
 	# Scan enter messages and answer
@@ -276,13 +377,13 @@ class Timebot:
 		while 1:
 			time.sleep(1)
 			try:
-				new_messages = self.api.messages.get(out=0, count=5, time_offset=15)	
+				new_messages = self.api.messages.get(out=0, count=5, time_offset=20)	
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:
 						self.sendMyAnswer(message)
 			except Exception, e:
-				print 'Error code: ' + str(e)
+				self.logger.log(ct.CONST.LOG_ERROR, e)
 				self.api = self.openVkAPI()
 
 

@@ -4,85 +4,91 @@
 
 import xlrd
 import re
-import datetime as dt
-
-import consts as ct
-
 
 # This class present schedule, wich store like regural excel-file. 
 # Now it can only show lection for special parameters, but in future
 # it'll could load ecxel document into database and work with it,
 # also new functions will be add like "when next lesson start" and etc.
-class Schedule:
-	
-	# Return row number of start and end for a day of week in sheet
-	# Return type: list of (start, end)
-	rowFromDay = {
-		0: (4,9),
-		1: (10,15),
-		2: (16,21),
-		3: (22,27),
-		4: (28,33),
-		5: (34,39),
-		6: (39,39) # TODO Fix this
-	}
+class Parser:
 
 	# Open excel-document with scpecified group
-	def openXlsForGroup(self, group_name):
-		if ct.CONST.TEST:
-			self.xls_sheet = xlrd.open_workbook("test_mode.xls").sheet_by_index(0)
-			return True
-
+	def openDoc(self, doc_name):
 		result = True
 		try:
-			if group_name[-1:] == '4':
-				self.xls_sheet = xlrd.open_workbook("it-3k.-16_17-osen.xls").sheet_by_index(0)
-			elif group_name[-1:] == '5':
-				self.xls_sheet = xlrd.open_workbook("it-2k.-16_17-osen.xls").sheet_by_index(0)
-			elif group_name[-1:] == '6':
-				self.xls_sheet = xlrd.open_workbook("it-1k.-16_17-osen.xls").sheet_by_index(0)
-			else:
-				result = False
+			self.sheet = xlrd.open_workbook(doc_name, formatting_info=True).sheet_by_index(0)
+			self.merged_cells = self.sheet.merged_cells
 		except:
 			result = False
 		return result
 
-	# Check if lection frequency match specified week number,
-	# it mean that function returns true if lection have to be on that week.
-	# Return type: boolean
-	def isThatWeek(self, frequency, week_numb):
-		week_numb = week_numb - dt.date(2016, 9, 1).isocalendar()[1] + 1
-	
-		if frequency == 'all':
-			result = True
-		elif 'I' in frequency:
-			result = (week_numb % 2 == 0) == (frequency.strip() == 'II')
-		elif '-' in frequency:
-			period = re.split('-', frequency)
-			result = (week_numb >= int(period[0])) and (week_numb <= int(period[1]))
-		else:
-			result = str(week_numb) in re.split(r'[\s,]', frequency)
-	
-		return result
-
 	# Get frequency value from cell with lections name.
 	# Return type: list of (lection_name, frequency)
-	def getFrequency(self, cell_value):
-		content = []
-		frequencies = []
+	def splitBody(self, text): 
+		text = text.replace(u'\n', ' ')		
+		text = text.replace(u'н.', '') + '.' # Bag fix :(
 
-		for text in re.split(u'[\d\s,-I]*\sн\.', cell_value):
-			if text:
-				content.append(text)
-			
-		found_frq = re.findall(u'[\d\s,I-]*\sн\.', cell_value)
-		for i, frequency in enumerate(found_frq):
-			frequencies.append([content[i], re.sub(u'[\.\sн\n]', '',frequency)])
+		ST_BODY 	= 0
+		ST_PARAMS	= 1
+		ST_WEEK 	= 2
 
-		if not found_frq:	
-			frequencies = [[cell_value, 'all']]	
+		teacher_kwd = [u'асс',u'доц',u'проф',u'ст.пр',u'преп',]
 
-		return frequencies
+		rules = {
+			ST_BODY: [
+				{'expr': u'[А-Яа-я\./\s]', 'link': ST_BODY, 'ext': False, 'new_param': False},
+				{'expr': '[0-9I]', 'link': ST_WEEK, 'ext': True, 'new_param': False},
+				{'expr': '\(', 'link': ST_PARAMS, 'ext': False, 'new_param': True},
+			],
+			ST_PARAMS: [
+				{'expr': '[^\)]', 'link': ST_PARAMS, 'ext': False, 'new_param': False},
+				{'expr': '\)', 'link': ST_BODY, 'ext': False, 'new_param': False},
+			],
+			ST_WEEK: [
+				{'expr': '[0-9I,\-\s]', 'link': ST_WEEK, 'ext': False, 'new_param': False},
+				{'expr': '[^0-9I,\-\s]', 'link': ST_BODY, 'ext': False, 'new_param': False},
+			]
+		}
+
+		status 	= ST_BODY
+		i 		= 0
+		body 	= {}
+		params 	= []
+		name = week = teacher = ''
+		for idx, l in enumerate(text):
+			for rule in rules[status]:
+				if re.search(rule['expr'], l):
+					status = rule['link']
+					if (rule['ext'] and name) or (idx == len(text) - 1):
+						for word in teacher_kwd:
+							pos = name.find(word)
+							if pos>0:
+								teacher = name[pos:]
+								name	= name[:pos]
+								break
+
+						body[i] = {}
+						body[i]['name'] 	= name.strip()
+						body[i]['teacher'] 	= teacher.strip()
+						body[i]['params'] 	= params
+						body[i]['week'] 	= week.strip()
+						name = week = teacher = ''
+						params = []
+						i+=1
+					if rule['new_param']:
+						params.append('')
+					break 						
+
+			if l in ['(',')']:
+				continue
+
+			if status == ST_BODY:
+				name += l
+			elif status == ST_PARAMS:
+				params[-1] += l
+			elif status == ST_WEEK:
+				week += l
+		
+		return body
 
 	# Get classrooms values from cell with classroom
 	# Return type: list of strings
@@ -90,45 +96,126 @@ class Schedule:
 		if not cell_value:
 			return ['-']
 
-		if u'база' in cell_value.lower():
-			return [u'База']
-
-		return re.findall(u'[А-Яа-я]*-[\d]*[А-Яа-я]*', cell_value)
+		rooms = []
+		for room in cell_value.split('\n'):	
+			if room:
+				rooms.append(room)
+		return rooms
+		#return re.findall(u'[А-Яа-я]*-[\d]*[А-Яа-я\-\d]*', cell_value)
 
 	# Primary function, that returns lection timetable from timetable document for special parametrs.
 	# Return type: string
-	def getLections(self, group_name, day_of_week, week_numb, lection_start = 0 , lection_finish = 7):
-		row_start = self.rowFromDay[day_of_week][0]	
-		row_end   = self.rowFromDay[day_of_week][1]
-
-		if not self.openXlsForGroup(group_name):
-			return []
-
-		group_colx = 0 
-		while (group_colx < (self.xls_sheet.ncols - 1)) \
-		and (self.xls_sheet.cell_value(rowx = 2, colx = group_colx) != group_name):
-			group_colx += 1
-
-		if group_colx == (self.xls_sheet.ncols - 1):
-			raise Exception(ct.CONST.ERR_GROUP_NOT_FOUND)
-
+	def getGroupSchdl(self, group_row, group_col):
 		timetable  = []
-		for row_idx in range(row_start, row_end):
-			text_cell_value = self.xls_sheet.cell_value(rowx = row_idx, colx = group_colx)
+		cell_number = 0
+		for cell_row in range(group_row, group_row + 6*6):
+			text_cell_value = self.sheet.cell_value(rowx = cell_row, colx = group_col)
 			if text_cell_value:
-				lection_numb = self.xls_sheet.cell_value(rowx = row_idx, colx = 2)[0]
-				classroom = self.getClassroom(self.xls_sheet.cell_value(rowx = row_idx, colx = group_colx+1))
-				frequency = self.getFrequency(text_cell_value)
-				for i, lection in enumerate(frequency):
-					if self.isThatWeek(lection[1], week_numb) \
-					and int(lection_numb) >= int(lection_start)\
-					and int(lection_numb) <= int(lection_finish):
-						timetable.append((
-							lection_numb, 
-							classroom[i], 
-							ct.CONST.LECTION_TIME[int(lection_numb)],
-							lection[0].strip()
-						))
-	
+				lection_numb = cell_number % 6 + 1
+				day_numb = cell_number / 6
+				classroom = self.getClassroom(self.sheet.cell_value(rowx = cell_row, colx = group_col+1))
+				body_splt = self.splitBody(text_cell_value)
+				for idx in body_splt:
+					try:
+						room = classroom[idx]
+					except:
+						room = '-'
+					
+					# check parametr for lection number
+					appended = False
+					for i, param in enumerate(body_splt[idx]['params']):
+						if (u'п' in param) and (not u'подгр' in param):
+							for l in param:
+								try:	
+									lection = body_splt[idx].copy()
+									lection.update({
+										'day'	: day_numb,
+										'numb'	: int(l),
+										'room'	: room
+									})
+									timetable.append(lection)
+									appended = True
+								except:
+									pass
+					if appended:
+						continue
+						
+					lection = body_splt[idx].copy()
+					lection.update({
+						'day'	: day_numb,
+						'numb'	: lection_numb,
+						'room'	: room
+					})
+					timetable.append(lection)
+
+					for crange in self.merged_cells:			
+						rlo, rhi, clo, chi = crange
+   						if (cell_row == rlo) and (group_col == clo):
+							for rowx in xrange(rlo+1, rhi):
+								lection = body_splt[idx].copy()
+								numb = (rowx - group_row) % 6 + 1
+								lection.update({
+									'day'	: day_numb,
+									'numb'	: numb,
+									'room'	: room
+								})
+								timetable.append(lection)
+			cell_number += 1
+
 		return timetable
+
+	def getSchedule(self, document):
+		if not self.openDoc(document):
+			return {}
+
+		group_col 	= 0 
+		group_row 	= 0
+		group_name 	= ''
+		schedule 	= {}
+		while (group_col < (self.sheet.ncols - 1)) and (group_row < 5):
+			try:
+				group_name = self.sheet.cell_value(rowx = group_row, colx = group_col)
+				match = re.search(u'[А-Яа-я]{4}[А-Яа-я]?-[0-9]{2}-[0-9]{2}', group_name)
+			except:
+				match = None
+			if match:
+				group_name = match.group(0).lower()
+				schedule[group_name] = self.getGroupSchdl(group_row+2, group_col)
+
+			group_col += 1
+			if group_col == (self.sheet.ncols - 1):
+				group_row +=1	
+				group_col = 0 
+
+		return schedule
+
+
+'''
+text = u'2,6,10,14 н. Э/Т лаб доц. Миленина С.А. I н. Физика лаб (2п)'
+text2 = u'I н. Иностранный язык (4-5п) асс. Малина И.М. 4,8,12,16 н. Э/Т лаб доц. Матвеева Т.П.'
+text3 = u'7,15 н. МРМ лаб (2-3п) (2 подгр)\
+II н. Механика РМ лк (2п)\
+3,11 н.МРМ лаб асс. Малина И.М. (2-3п) (1подгр)\
+II н. Физика лк (3п) '
+text4 = u'Физика лк'
+parser = Parser()
+
+#res = parser.splitBody(text2)
+#for i in res:
+#	for el in res[i]:
+#		print res[i][el]
+#	print '--'
+
+for subj in parser.getLections(u'КРБО-02-15'):
+	print "Day: %d, Numb: %d, Room: %s, Week: %s, Name: %s, Teacher: %s, Params: %s" % (
+		subj['day'],		
+		subj['numb'],		
+		subj['room'],		
+		subj['week'],		
+		subj['name'],	
+		subj['teacher'],
+		str(subj['params']),					
+	)
+	print '----'
+'''
 
