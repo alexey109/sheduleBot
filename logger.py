@@ -14,7 +14,7 @@ class Logger:
 	def exception(self, e):
 		desc = str(e)
 		if isinstance(e.args[0], int):
-			desc = 'Code: %s Text: %s' % (e.args[0], ct.CONST.ERR_MESSAGES[e.args[0]])
+			desc = 'Code: %s Text: %s' % (str(e.args[0]), ct.CONST.ERR_MESSAGES[e.args[0]])
 
 		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_ERROR_FILE
 		self.fwrite(fname, decs)

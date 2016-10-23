@@ -44,9 +44,9 @@ class CONST:
 	CMD_LECTION_TIME	= 230 
 	CMD_HELLO			= 240 
 	CMD_YESTERDAY		= 250 
-	CMD_FOR_DAY			= 260 #TODO write implementation
+	CMD_DATE			= 260 #TODO write implementation
 	CMD_GROUP			= 270 #TODO write implementation ???
-	CMD_TEACHER			= 280 #TODO write implementation
+	CMD_TEACHER			= 280 
 
 	SAVED_GROUP	= 1000
 
