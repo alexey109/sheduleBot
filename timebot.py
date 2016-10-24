@@ -314,7 +314,7 @@ class Timebot:
 				break
 		if not answer:
 			self.logger.log(ct.CONST.LOG_MESGS, 'UNDEFINED: ' + text)
-			raise Exception(ct.CONST.ERR_NO_COMMAND)
+			raise Exception(ct.CONST.ERR_SKIP)
 		
 		return answer
 				
