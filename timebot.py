@@ -142,7 +142,15 @@ class Timebot:
 	# Return type: string
 	def getWeekNumb(self):
 		week = dt.datetime.now().isocalendar()[1] - dt.date(2016, 9, 1).isocalendar()[1] + 1
-		return str(week)
+		
+		now = dt.datetime.now().date()
+		start = dt.date(2016, 9, 1)
+		end = dt.date(2016, 12, 26)
+		delta = now - start
+		amount = end - start
+		percent = str(delta.days % amount.days) + '%'
+
+		return (str(week), str(percent))
 
 	# Return today 
 	# Return type: string
@@ -283,7 +291,7 @@ class Timebot:
 				elif command == ct.CONST.CMD_TOMMOROW:
 					answer += template % (self.getTommorow(group))
 				elif command == ct.CONST.CMD_WEEK:
-					answer += template % (self.getWeekNumb())
+					answer += template % self.getWeekNumb()
 				elif command == ct.CONST.CMD_NOW:
 					answer += template % (self.getNowLection(group))
 				elif command == ct.CONST.CMD_LECTION_TIME:
