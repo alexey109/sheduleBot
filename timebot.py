@@ -234,7 +234,7 @@ class Timebot:
 		text = self.retriveBody(message)
 		text = text.lower()
 
-		if is_chat and not any(text.startswith(word) for word in ct.CONST.CHAT_KEYWORDS):
+		if is_chat and not any(re.match('^'+word, text) for word in ct.CONST.CHAT_KEYWORDS):
 			raise Exception(ct.CONST.ERR_SKIP)
 
 		group_from_title = self.getGroupFromString(title)
@@ -374,7 +374,7 @@ class Timebot:
 		while 1:
 			time.sleep(1)
 			try:
-				new_messages = self.api.messages.get(out=0, count=5, time_offset=20)	
+				new_messages = self.api.messages.get(out=0, count=5, time_offset=30)	
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:
