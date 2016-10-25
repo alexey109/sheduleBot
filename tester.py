@@ -3,6 +3,7 @@
 
 import timebot
 import consts as ct
+import logger as lg
 
 # Test vk api responses
 '''
@@ -79,13 +80,16 @@ tests = [
 				u'fwd_messages': [{
 					u'user_id': 10151100,
 					u'date': 1477252684,
-					u'body': u'кто'
+					u'body': u'неделя ИКБО-04-15'
 					}]
 			}]
 		}
 	]
 ]
 
-bot = timebot.Timebot()
-print bot.getMyAnswer(tests[1][0], False)
+#bot = timebot.Timebot()
+#print bot.getMyAnswer(tests[1][0], False)
+
+logger = lg.Logger()
+logger.log(10, 'some error')
 
