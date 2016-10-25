@@ -129,7 +129,7 @@ class CONST:
 		CMD_POLITE			: [u'спасибо'],
 		CMD_HELLO			: [u'привет'],
 		CMD_TEACHER			: [u'кто+', u'лектор', u'преподаватель', u'учитель'],
-		CMD_LECTION_TIME	: [u'время', u'расписание', u'во сколько']
+		CMD_LECTION_TIME	: [u'время', u'во сколько']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
