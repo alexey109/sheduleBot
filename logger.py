@@ -2,13 +2,14 @@
 # -*- coding: UTF-8 -*-
 
 import datetime as dt
+import codecs
 
 import consts as ct
 
 class Logger:
 	def fwrite(self, fname, text):	
-		with open(fname, 'a') as f:		
-			f.write('%s: %s \n' % (dt.datetime.now(), text) )
+		with codecs.open(fname, 'a', 'utf-8') as f:	
+			f.write("%s: %s \n" % (dt.datetime.now(), text) )
 			f.close()
 
 	def exception(self, e):
@@ -25,7 +26,7 @@ class Logger:
 		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_WLOAD_FILE
 		self.fwrite(fname, text)
 
-	def feedback(self, text):	
+	def feedback(self, text):
 		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_FBACK_FILE
 		self.fwrite(fname, text)
 

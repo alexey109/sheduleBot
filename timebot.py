@@ -304,12 +304,12 @@ class Timebot:
 				elif command == ct.CONST.CMD_HELP:
 					answer += template
 				elif command == ct.CONST.CMD_TO_DEVELOPER:
-					user_id = ''
 					try:
 						user_id = str(message['uid'])
 					except:
-						pass
+						user_id = ''
 					self.logger.log(ct.CONST.LOG_FBACK, user_id + ' ' + text)
+					answer += template
 				else:
 					self.logger.log(ct.CONST.LOG_MESGS, 'UNDEFINED: ' + text)
 					raise Exception(ct.CONST.ERR_UNDEFINED)
@@ -394,5 +394,5 @@ class Timebot:
 				self.api = self.openVkAPI()
 
 
-bot = Timebot()
-bot.run()
+#bot = Timebot()
+#bot.run()
