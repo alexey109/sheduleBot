@@ -106,7 +106,7 @@ class CONST:
 		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 		CMD_TOMMOROW		: [u'завтра'],
 		CMD_YESTERDAY		: [u'вчера'],
-		CMD_WEEK			: [u'неделя+'],
+		CMD_WEEK			: [u'неделя+', u'пройден+' ],
 		CMD_NOW				: [u'сейчас', u'текущая'],
 		CMD_DAY_OF_WEEK 	: DAY_NAMES,
 		CMD_TO_DEVELOPER	: [
@@ -129,7 +129,7 @@ class CONST:
 		CMD_POLITE			: [u'спасибо'],
 		CMD_HELLO			: [u'привет'],
 		CMD_TEACHER			: [u'кто+', u'лектор', u'преподаватель', u'учитель'],
-		CMD_LECTION_TIME	: [u'время', u'расписание']
+		CMD_LECTION_TIME	: [u'время', u'расписание', u'во сколько']
 	}
 
 	# Template takes: lection number, classroom, time(start-end), lection name
