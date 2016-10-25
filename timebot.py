@@ -394,5 +394,5 @@ class Timebot:
 				self.api = self.openVkAPI()
 
 
-#bot = Timebot()
-#bot.run()
+bot = Timebot()
+bot.run()
