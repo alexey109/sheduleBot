@@ -7,7 +7,6 @@ import string
 import vk
 import sys
 import re
-import codecs
 from pymongo import MongoClient
 
 import parser 
@@ -305,9 +304,12 @@ class Timebot:
 				elif command == ct.CONST.CMD_HELP:
 					answer += template
 				elif command == ct.CONST.CMD_TO_DEVELOPER:
-					with codecs.open('msg_to_me.txt', mode='a', encoding='utf-8') as txt_file:
-						txt_file.write('\n' + text + '\n')
-					answer += template
+					user_id = ''
+					try:
+						user_id = str(message['uid'])
+					except:
+						pass
+					self.logger.log(ct.CONST.LOG_FBACK, user_id + ' ' + text)
 				else:
 					self.logger.log(ct.CONST.LOG_MESGS, 'UNDEFINED: ' + text)
 					raise Exception(ct.CONST.ERR_UNDEFINED)
