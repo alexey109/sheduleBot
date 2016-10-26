@@ -12,6 +12,7 @@ from pymongo import MongoClient
 import parser 
 import consts as ct
 import logger as lg
+import security
 
 
 # Class implement bot logic. The main idea of this bot to help everyone with schedule.
@@ -330,10 +331,10 @@ class Timebot:
 			try:
 				self.logger.log(ct.CONST.LOG_WLOAD, 'Try to open new session.')
 				session = vk.AuthSession(
-					app_id='5637421', 
-					user_login='+79296021208', 
-					user_password='timebot109', 
-					scope='4096')
+					app_id = security.app_id, 
+					user_login = security.user_login, 
+					user_password = security.user_password, 
+					scope = security.scope)
 				api = vk.API(session)
 				success = True
 				self.logger.log(ct.CONST.LOG_WLOAD, 'New session opened.')
