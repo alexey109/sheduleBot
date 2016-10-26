@@ -42,7 +42,6 @@ class CONST:
 	CMD_LECTION_NUMB	= 210 
 	CMD_POLITE			= 220
 	CMD_LECTION_TIME	= 230 
-	CMD_HELLO			= 240 
 	CMD_YESTERDAY		= 250 
 	CMD_DATE			= 260 #TODO write implementation
 	CMD_GROUP			= 270 #TODO write implementation ???
@@ -100,21 +99,21 @@ class CONST:
 		u'бот+'
 	)
 	# Keywords for every command.
-	CMD_KEYWORDS = {
-		CMD_NEXT 			: [u'дальше', u'следующ+',  u'оставшиеся',  u'остались'],
-		CMD_TODAY 			: [u'сегодня'],
-		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
-		CMD_TOMMOROW		: [u'завтра'],
-		CMD_YESTERDAY		: [u'вчера'],
-		CMD_WEEK			: [u'неделя+', u'пройден+' ],
-		CMD_NOW				: [u'сейчас', u'текущая'],
-		CMD_DAY_OF_WEEK 	: DAY_NAMES,
+	CMD_KEYWORDS = {		
 		CMD_TO_DEVELOPER	: [
 			u'разработчику', 
 			u'предложение', 
 			u'ошибка',
 			u'можешь сделать'
 		],
+		CMD_TOMMOROW		: [u'завтра'],
+		CMD_NEXT 			: [u'дальше', u'следующ+',  u'оставшиеся',  u'остались'],
+		CMD_TODAY 			: [u'сегодня'],
+		CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
+		CMD_YESTERDAY		: [u'вчера'],
+		CMD_WEEK			: [u'неделя+', u'пройден+' ],
+		CMD_NOW				: [u'сейчас', u'текущая'],
+		CMD_DAY_OF_WEEK 	: DAY_NAMES,
 		CMD_HELP			: [
 			u'инструкция', 
 			u'справка', 
@@ -128,7 +127,6 @@ class CONST:
 		],
 		CMD_LECTION_NUMB	: NUMB_NAMES,
 		CMD_POLITE			: [u'спасибо'],
-		CMD_HELLO			: [u'привет'],
 		CMD_TEACHER			: [u'кто+', u'лектор', u'преподаватель', u'учитель'],
 		CMD_LECTION_TIME	: [u'время', u'во сколько']
 	}
@@ -146,7 +144,7 @@ class CONST:
 		CMD_NOW				: u'Текущая пара:\n%s',
 		CMD_LECTION_TIME	: u'Время начала-конца пар\n\n%s',
 		CMD_DAY_OF_WEEK 	: u'Пары в %s:\n%s', # One new parametr: day of week
-		CMD_TO_DEVELOPER	: u'Сообщение принято и обязательно будет рассмотрено, спасибо :)',
+		CMD_TO_DEVELOPER	: u'Сообщение принято и обязательно будет рассмотрено. Спасибо :)',
 		CMD_HELP			: u'Инструкция:\nПросто спросите что вы хотите узнать по расписанию пар. '\
 			+ u'Если на ваш вопрос нет ответа, то попробуйте спросить по-другому, со временем бот '\
 			+ u'научится отвечать на любые формы вопросов.\nПримеры:\n'\
@@ -157,7 +155,6 @@ class CONST:
 		CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
 		SAVED_GROUP			: u'Я запомнил, что ты из %s.\n\n',
 		CMD_LECTION_NUMB	: u'%s\nP.S. пара сегодня',
-		CMD_HELLO			: u'Привет ;)',
 		CMD_TEACHER			: u'Сейчас ведет пару:\n%s'
 	}
 
