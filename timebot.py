@@ -253,6 +253,15 @@ class Timebot:
 		elif is_chat:
 			raise Exception(ct.CONST.ERR_NO_GROUP)
 
+		if self.wordsInTxt(ct.CONST.CMD_KEYWORDS[ct.CONST.CMD_TO_DEVELOPER], text):
+			try:
+				user_id = str(message['uid'])
+			except:
+				user_id = ''
+			self.logger.log(ct.CONST.LOG_FBACK, user_id + ' ' + text)
+			answer = ct.CONST.USER_PREMESSAGE[ct.CONST.CMD_TO_DEVELOPER]
+			return answer
+
 		if not is_chat:
 			try:
 				group = self.db.users.find({'vk_id':message['uid']})[0]['group_name']
@@ -275,9 +284,7 @@ class Timebot:
 			if found_word:	
 				template = ct.CONST.USER_PREMESSAGE[command]
 
-				if command == ct.CONST.CMD_HELLO:
-					answer += ct.CONST.USER_PREMESSAGE[command]
-				elif command == ct.CONST.CMD_POLITE:
+				if command == ct.CONST.CMD_POLITE:
 					answer += ct.CONST.USER_PREMESSAGE[command]
 				elif command == ct.CONST.CMD_NEXT:
 					answer += template % (self.getNext(group))
@@ -302,13 +309,6 @@ class Timebot:
 				elif command == ct.CONST.CMD_LECTION_NUMB:
 					answer += template % (self.getLectionByNumb(group, found_word['word']))
 				elif command == ct.CONST.CMD_HELP:
-					answer += template
-				elif command == ct.CONST.CMD_TO_DEVELOPER:
-					try:
-						user_id = str(message['uid'])
-					except:
-						user_id = ''
-					self.logger.log(ct.CONST.LOG_FBACK, user_id + ' ' + text)
 					answer += template
 				else:
 					self.logger.log(ct.CONST.LOG_MESGS, 'UNDEFINED: ' + text)
@@ -384,7 +384,7 @@ class Timebot:
 		while 1:
 			time.sleep(1)
 			try:
-				new_messages = self.api.messages.get(out=0, count=5, time_offset=20)	
+				new_messages = self.api.messages.get(out=0, count=5, time_offset=10)	
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:
