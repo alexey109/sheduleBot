@@ -145,7 +145,7 @@ class Timebot:
 		
 		now = dt.datetime.now().date()
 		start = dt.date(2016, 9, 1)
-		end = dt.date(2016, 12, 26)
+		end = dt.date(2016, 12, 19)
 		delta = now - start
 		amount = end - start
 		percent = str(delta.days % amount.days) + '%'
