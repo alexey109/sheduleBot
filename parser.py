@@ -180,7 +180,10 @@ class Parser:
 				match = None
 			if match:
 				group_name = match.group(0).lower()
-				schedule[group_name] = self.getGroupSchdl(group_row+2, group_col)
+				try:
+					schedule[group_name] = self.getGroupSchdl(group_row+2, group_col)
+				except:
+					pass
 
 			group_col += 1
 			if group_col == (self.sheet.ncols - 1):
