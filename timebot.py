@@ -210,34 +210,39 @@ class Timebot:
 			match = re.search(u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}', string)
 			return match.group(0) if match else ''
 
+		answer 		= ''
+		found_group = ''
+		try:
+			found_group = self.db.users.find({'vk_id':message['uid'], 'chat': is_chat})[0]['group_name']
+		except:	
+			pass
+
 		title = message['title'].lower()
 		group_from_title = findGroup(title)
 		group_from_msg = findGroup(text)
+		group = ''
 		if group_from_msg:		
 			group = group_from_msg
 		elif group_from_title:
 			group = group_from_title
 
-		answer = ''
-		try:
-			group = self.db.users.find({'vk_id':message['uid'], 'chat': is_chat})[0]['group_name']
-			if group_from_msg:
-				group = group_from_msg
-				self.db.users.update_one(
-					{'vk_id':message['uid'], 'chat': is_chat},
-					{'$set': {'group_name': group_from_msg}}
-				)
-				answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].fromat(group_from_msg)
-		except:
-			if group_from_msg:
-				self.db.users.insert_one({
-					'vk_id': message['uid'], 
-					'chat': is_chat, 
-					'group_name': group_from_msg
-				})
-				answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group_from_msg)
-			else:
-				raise Exception(CONST.ERR_NO_GROUP)	
+		if group and found_group:
+			self.db.users.update_one(
+				{'vk_id':message['uid'], 'chat': is_chat},
+				{'$set': {'group_name': group_from_msg}}
+			)
+			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group_from_msg)
+		elif group:
+			self.db.users.insert_one({
+				'vk_id': message['uid'], 
+				'chat': is_chat, 
+				'group_name': group_from_msg
+			})
+			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group_from_msg)
+		elif found_group:
+			group = found_group
+		else:
+			raise Exception(CONST.ERR_NO_GROUP)	
 
 		return group, answer	
 
