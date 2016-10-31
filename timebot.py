@@ -406,7 +406,7 @@ class Timebot:
 		while 1:
 			time.sleep(1)
 			try:
-				new_messages = self.api.messages.get(out=0, count=5, time_offset=10)	
+				new_messages = self.api.messages.get(out=0, count=5, time_offset=15)	
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:
