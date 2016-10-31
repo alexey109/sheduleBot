@@ -206,39 +206,30 @@ class Timebot:
 		return msg['body']
 
 	def getGroup(self, message, text, is_chat):
-		def findGroup(string):
-			match = re.search(u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}', string)
-			return match.group(0) if match else ''
-
 		answer 		= ''
 		found_group = ''
+		vk_id 		= message['chat_id' if is_chat else 'uid']
 		try:
-			found_group = self.db.users.find({'vk_id':message['uid'], 'chat': is_chat})[0]['group_name']
+			found_group = self.db.users.find({'vk_id':vk_id, 'chat': is_chat})[0]['group_name']
 		except:	
 			pass
 
-		title = message['title'].lower()
-		group_from_title = findGroup(title)
-		group_from_msg = findGroup(text)
-		group = ''
-		if group_from_msg:		
-			group = group_from_msg
-		elif group_from_title:
-			group = group_from_title
+		match = re.search(u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}', text)
+		group = match.group(0) if match else ''
 
 		if group and found_group:
 			self.db.users.update_one(
-				{'vk_id':message['uid'], 'chat': is_chat},
-				{'$set': {'group_name': group_from_msg}}
+				{'vk_id':vk_id, 'chat': is_chat},
+				{'$set': {'group_name': group}}
 			)
-			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group_from_msg)
+			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group)
 		elif group:
 			self.db.users.insert_one({
-				'vk_id': message['uid'], 
+				'vk_id': vk_id, 
 				'chat': is_chat, 
-				'group_name': group_from_msg
+				'group_name': group
 			})
-			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group_from_msg)
+			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group)
 		elif found_group:
 			group = found_group
 		else:
@@ -249,9 +240,10 @@ class Timebot:
 	# Takes message and prepare answer for it.
 	# Return type: string
 	def getMyAnswer(self, message, is_chat):
-		answer = ''
-		text = self.retriveBody(message)
-		text = text.lower()
+		answer 		= ''
+		answer_ok	= False
+		text 		= self.retriveBody(message)
+		text 		= text.lower()
 
 		if is_chat and not any(re.match('^'+word, text) for word in CONST.CHAT_KEYWORDS):
 			raise Exception(CONST.ERR_SKIP)
@@ -271,7 +263,8 @@ class Timebot:
 		base_cmd		= {'cmd': CONST.CMD_UNIVERSAL}
 		date 			= dt.datetime.today()
 		lesson 			= 0
-		message_ok		= False
+
+		answer_ok = bool(answer)
 
 		for cmd, keywords in CONST.CMD_KEYWORDS.items():
 			word = self.findKeywords(keywords, text) 
@@ -280,7 +273,7 @@ class Timebot:
 			elif word:	
 				base_cmd['cmd'] 	= cmd 
 				base_cmd['keyword'] = word
-				message_ok 			= True
+				answer_ok 			= True
 
 		for command, keyword in markers.items():
 			if command == CONST.CMD_TOMMOROW:
@@ -329,10 +322,12 @@ class Timebot:
 		header = ''
 		for cmd, kwd in markers.items():
 			header += CONST.USER_PREMESSAGE[cmd].format(kwd['word'])
-			message_ok = True
-		if not message_ok:
+			answer_ok = True
+		if not answer_ok:
 			raise Exception(CONST.ERR_SKIP)
 
+		if not header and base_cmd['cmd'] == CONST.CMD_UNIVERSAL:
+			base_cmd['cmd'] = CONST.CMD_TODAY
 		answer += CONST.USER_PREMESSAGE[base_cmd['cmd']].format(markers = header)
 		answer += self.functions[base_cmd['cmd']](self, params)
 
