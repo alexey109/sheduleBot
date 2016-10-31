@@ -4,7 +4,7 @@
 import datetime as dt
 import codecs
 
-import consts as ct
+import consts as CONST
 
 class Logger:
 	def fwrite(self, fname, text):	
@@ -16,43 +16,43 @@ class Logger:
 		desc = str(e)
 		try:
 			if isinstance(e.args[0], int):
-				desc = 'Code: %s Text: %s' % (str(e.args[0]), ct.CONST.ERR_MESSAGES[e.args[0]])
+				desc = 'Code: %s Text: %s' % (str(e.args[0]), CONST.ERR_MESSAGES[e.args[0]])
 		except:
 			pass
-		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_ERROR_FILE
+		fname = CONST.LOG_DIR + CONST.LOG_ERROR_FILE
 		self.fwrite(fname, desc)
 
 	def workload(self, text):	
-		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_WLOAD_FILE
+		fname = CONST.LOG_DIR + CONST.LOG_WLOAD_FILE
 		self.fwrite(fname, text)
 
 	def feedback(self, text):
-		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_FBACK_FILE
+		fname = CONST.LOG_DIR + CONST.LOG_FBACK_FILE
 		self.fwrite(fname, text)
 
 	def messages(self, text):	
-		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_MESGS_FILE
+		fname = CONST.LOG_DIR + CONST.LOG_MESGS_FILE
 		self.fwrite(fname, text)
 
 	def parser(self, text):	
-		fname = ct.CONST.LOG_DIR + ct.CONST.LOG_PARSE_FILE
+		fname = CONST.LOG_DIR + CONST.LOG_PARSE_FILE
 		self.fwrite(fname, text)
 
 
 	def log(self, code, arg):
-		if not ct.CONST.LOG:
+		if not CONST.LOG:
 			return None
 
 		try:
-			if code == ct.CONST.LOG_ERROR:
+			if code == CONST.LOG_ERROR:
 				self.exception(arg)
-			elif code == ct.CONST.LOG_WLOAD:
+			elif code == CONST.LOG_WLOAD:
 				self.workload(arg)
-			elif code == ct.CONST.LOG_FBACK:
+			elif code == CONST.LOG_FBACK:
 				self.feedback(arg)
-			elif code == ct.CONST.LOG_MESGS:
+			elif code == CONST.LOG_MESGS:
 				self.messages(arg)
-			elif code == ct.CONST.LOG_PARSE:
+			elif code == CONST.LOG_PARSE:
 				self.parser(arg)
 		except:
 			pass
