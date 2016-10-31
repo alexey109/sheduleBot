@@ -63,8 +63,8 @@ class Timebot:
 			and (self.isThatWeek(lesson['week'], week))\
 			and (lesson['numb'] >= lstart)\
 			and (lesson['numb'] <= lfinish):
-				lessons += CONST.UNI_TEMPLATE % (
-					str(lesson['numb']),
+				lessons += CONST.UNI_TEMPLATE.format(
+					lesson['numb'],
 					lesson['room'], 
 					CONST.LECTION_TIME[lesson['numb']],
 					lesson['name']				
@@ -77,8 +77,12 @@ class Timebot:
 
 
 	def cmdUniversal(self, params):	
-		lection = params['lesson']
-		return self.getLessons(params['group'], params['day'], params['week'])
+		if params['lesson']:
+			lesson = params['lesson']
+			les = self.getLessons(params['group'], params['day'], params['week'], lesson, lesson)
+		else:
+			les = self.getLessons(params['group'], params['day'], params['week'])
+		return les
 
 	def cmdNext(self, params):
 		lection_start = int(self.getLessonNumb(dt.datetime.now().time())) + 1
@@ -87,29 +91,17 @@ class Timebot:
 	def cmdWeek(self, params):
 		week = params['week'] - dt.date(2016, 9, 1).isocalendar()[1] + 1
 		
-		now = dt.datetime.now().date()
-		start = dt.date(2016, 9, 1)
-		end = dt.date(2016, 12, 19)
-		delta = now - start
-		amount = end - start
-		percent = str(delta.days % amount.days) + '%'
-
-		return CONST.USER_MESSAGE[CONST.CMD_WEEK] % (str(week), percent)
+		return CONST.USER_MESSAGE[CONST.CMD_WEEK].format(week)
 
 	def cmdNow(self, params):
 		lection = int(self.getLessonNumb(dt.datetime.now().time()))
 	
 		return  self.getLessons(params['group'], params['day'], params['week'], lection, lection)
 
-	def cmdLectionNumb(self, params):
-		lesson = params['lesson']
-	
-		return  self.getLessons(params['group'], params['day'], params['week'], lesson, lesson)
-
 	def cmdLectionsTime(self, params):
 		msg = ''
 		for i in CONST.LECTION_TIME:
-			msg += u'%s пара: %s\n' % (str(i), CONST.LECTION_TIME[i])
+			msg += CONST.USER_MESSAGE[CONST.CMD_LECTIONS_TIME].format(i, CONST.LECTION_TIME[i])
 
 		return msg
 
@@ -152,8 +144,20 @@ class Timebot:
 		return ''
 
 	def cmdWhenExams(self, params):
-		raise Exception(CONST.ERR_SKIP)
-		return ''
+		week = params['week'] - dt.date(2016, 9, 1).isocalendar()[1] + 1
+		
+		now = dt.datetime.now().date()
+		start = dt.date(2016, 9, 1)
+		end = dt.date(2016, 12, 19)
+		delta = end - now
+		weeks = delta.days / 7
+		days  = delta.days % 7
+
+		delta = now - start
+		amount = end - start
+		percent = str(delta.days % amount.days) + '%'
+
+		return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, days, percent)
 
 
 	functions = {
@@ -184,7 +188,7 @@ class Timebot:
 			try:
 				result = re.search(word, text).group()
 			except:
-				break
+				continue
 			if result:
 				keyword = {'idx': idx, 'word': result}
 				break
@@ -223,7 +227,7 @@ class Timebot:
 					{'vk_id':message['uid'], 'chat': is_chat},
 					{'$set': {'group_name': group_from_msg}}
 				)
-				answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP] % (group_from_msg)
+				answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].fromat(group_from_msg)
 		except:
 			if group_from_msg:
 				self.db.users.insert_one({
@@ -231,7 +235,7 @@ class Timebot:
 					'chat': is_chat, 
 					'group_name': group_from_msg
 				})
-				answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP] % (group_from_msg)
+				answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group_from_msg)
 			else:
 				raise Exception(CONST.ERR_NO_GROUP)	
 
@@ -246,6 +250,7 @@ class Timebot:
 
 		if is_chat and not any(re.match('^'+word, text) for word in CONST.CHAT_KEYWORDS):
 			raise Exception(CONST.ERR_SKIP)
+		text = ' ' + text # TODO Very bad, need to fix
 
 		if self.findKeywords(CONST.CMD_KEYWORDS[CONST.CMD_FEEDBACK], text):
 			try:
@@ -260,7 +265,8 @@ class Timebot:
 		markers 		= {}
 		base_cmd		= {'cmd': CONST.CMD_UNIVERSAL}
 		date 			= dt.datetime.today()
-		lesson 			= 1
+		lesson 			= 0
+		message_ok		= False
 
 		for cmd, keywords in CONST.CMD_KEYWORDS.items():
 			word = self.findKeywords(keywords, text) 
@@ -269,6 +275,7 @@ class Timebot:
 			elif word:	
 				base_cmd['cmd'] 	= cmd 
 				base_cmd['keyword'] = word
+				message_ok 			= True
 
 		for command, keyword in markers.items():
 			if command == CONST.CMD_TOMMOROW:
@@ -278,19 +285,34 @@ class Timebot:
 			elif command == CONST.CMD_YESTERDAY:
 				date = dt.datetime.today() - dt.timedelta(days=1)
 			elif command == CONST.CMD_DAY_OF_WEEK:
-				date = keyword['idx']
+				for i in range(0,7):
+					temp_date = dt.datetime.today() + dt.timedelta(days=i)
+					if temp_date.weekday() == keyword['idx']:
+						date = temp_date
+						break
 			elif command == CONST.CMD_LECTION_NUMB:
 				lesson = keyword['idx']
+				keyword['word'] = keyword['idx']
 			elif command == CONST.CMD_BY_TIME:
 				try:
-					lesson = getLessonNumb(dt.strptime(keyword['word'], '%H:%M').time())
+					lesson = self.getLessonNumb(dt.datetime.strptime(keyword['word'], '%H:%M').time())
 				except:
-					pass
+					del markers[command]
 			elif command == CONST.CMD_BY_DATE:
 				try:
-					date = dt.strptime(keyword['word'], '%d.%m').date()
+					# TODO Fix wrong code below
+					date = dt.datetime.strptime(keyword['word']+'.2016', '%d.%m.%Y').date()
 				except:
-					pass
+					try:
+						day, month = keyword['word'].split(' ')
+						mnumb = 0
+						for idx, name in enumerate(CONST.MONTH_NAMES):
+							if re.search(name, month):
+								mnumb = idx + 1
+								break
+						date = dt.date(2016, mnumb, int(day))
+					except:
+						del markers[command]
 
 		params = {
 			'group'	: group,
@@ -299,17 +321,21 @@ class Timebot:
 			'lesson': lesson
 		}
 
-		answer += CONST.USER_PREMESSAGE[base_cmd['cmd']]
+		header = ''
 		for cmd, kwd in markers.items():
-			answer += CONST.USER_PREMESSAGE[cmd] + kwd['word']
+			header += CONST.USER_PREMESSAGE[cmd].format(kwd['word'])
+			message_ok = True
+		if not message_ok:
+			raise Exception(CONST.ERR_SKIP)
+
+		answer += CONST.USER_PREMESSAGE[base_cmd['cmd']].format(markers = header)
 		answer += self.functions[base_cmd['cmd']](self, params)
 
 		if not answer:
 			self.logger.log(CONST.LOG_MESGS, text)
 			raise Exception(CONST.ERR_SKIP)
 		
-		return answer
-				
+		return answer		
 			
 
 	# Open vkAPI session
@@ -359,17 +385,16 @@ class Timebot:
 					return
 			if answer: 
 				fullmsg = str(message['chat_id' if is_chat else 'uid']) + answer 
-				if not msg in self.msg_stack:
+				if not fullmsg in self.msg_stack:
 					if is_chat:
 						self.api.messages.send(chat_id=message['chat_id'], message=answer)
 					else:
 						self.api.messages.send(user_id=message['uid'], message=answer)
-				
+					time.sleep(1)
+					
 					self.msg_stack.append(fullmsg)
 					if len(self.msg_stack) > CONST.STACK_LEN:
-						self.msg_stack.popleft()
-
-				time.sleep(1)
+						self.msg_stack.pop(0)
 		except Exception, e:
 			self.logger.log(CONST.LOG_WLOAD, 'Message not send!')
 			self.logger.log(CONST.LOG_ERROR, e)
@@ -391,5 +416,5 @@ class Timebot:
 				self.api = self.openVkAPI()
 
 
-#bot = Timebot()
-#bot.run()
+bot = Timebot()
+bot.run()
