@@ -31,8 +31,8 @@ CMD_AFTERTOMMOROW 	= 120
 CMD_TOMMOROW		= 130 
 CMD_YESTERDAY		= 140
 CMD_DAY_OF_WEEK 	= 150
-CMD_BY_DATE			= 180 #TODO write implementation
-CMD_BY_TIME			= 190 #TODO write
+CMD_BY_DATE			= 180 
+CMD_BY_TIME			= 190
 CMD_LECTION_NUMB	= 200 
 
 CMD_UNIVERSAL		= 280
@@ -208,7 +208,7 @@ ERR_MESSAGES = {
 	ERR_SKIP			: '',
 	ERR_GROUP_NOT_FOUND	: u'Группа не найдена.\nРасписание для данной группы недоступно,'\
 		+ u' либо название группы указано с ошибками,.',
-	ERR_NO_GROUP		: u'Напишите из какой вы группы. Образец: ИКБО-04-15',
+	ERR_NO_GROUP		: u'Напишите из какой вы группы. Образец: Расписание, ИКБО-04-15',
 	ERR_NO_COMMAND		: u'Неизвестная команда.',
 	ERR_NO_LECTIONS		: u'Пар нет.',
 	ERR_NO_TEACHER		: u'В расписании преподаватель не указан.'
