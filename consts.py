@@ -180,7 +180,7 @@ USER_PREMESSAGE = {
 USER_MESSAGE = {
 	CMD_WEEK			: u'Сейчас идет {} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
-	CMD_WHEN_EXAMS		: u'Осталось {} недель {} дней.\nПрошло {} семестра.'
+	CMD_WHEN_EXAMS		: u'Осталось {} недель {} дней.\nСеместр завершен на {}.'
 }
 
 # Dictionary of lections start-end time for using in messages
