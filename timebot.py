@@ -230,6 +230,7 @@ class Timebot:
 				'group_name': group
 			})
 			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group)
+			answer += CONST.USER_PREMESSAGE[CONST.CMD_HELP]
 		elif found_group:
 			group = found_group
 		else:
