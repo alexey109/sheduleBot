@@ -138,7 +138,7 @@ CMD_KEYWORDS = {
 	],
 	CMD_LECTION_NUMB	: NUMB_NAMES,
 	CMD_POLITE			: [u'спасибо', u'спс'],
-	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель'],
+	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько'],
 	CMD_WHEN_EXAMS		: [u'осталось', u'сесси[ия]', u'прошло', u'пройден'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
@@ -185,7 +185,7 @@ USER_PREMESSAGE = {
 USER_MESSAGE = {
 	CMD_WEEK			: u'Сейчас идет {} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
-	CMD_WHEN_EXAMS		: u'Осталось {} недель {} дней.\nСеместр завершен на {}.'
+	CMD_WHEN_EXAMS		: u'Осталось недель: {}, дней: {}.\nСеместр завершен на {}.'
 }
 
 # Dictionary of lections start-end time for using in messages
