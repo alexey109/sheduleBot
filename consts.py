@@ -47,6 +47,7 @@ CMD_TEACHER			= 240
 CMD_FIND_LECTION	= 250 #TODO write
 CMD_WHEN_EXAMS		= 260
 CMD_FEEDBACK		= 270  
+CMD_MYGROUP			= 280 #TODO write
 
 SAVED_GROUP	= 1000
 
@@ -97,11 +98,11 @@ MONTH_NAMES = [
 
 NUMB_NAMES = [
 	u'нулевая',
-	u'перв[аяойи]{2}',
-	u'втор[аяойи]{2}',
-	u'треть[яейи]{1,2}',
-	u'четверт[аяойи]{2}',
-	u'пят[аяойи]{2}'
+	u'перв[уао][юяйи]',
+	u'втор[уао][юяйи]',
+	u'треть[юяейи]{1,2}',
+	u'четверт[уао][юяйи]',
+	u'пят[уао][юяйи]'
 ]
 
 # Keywords using when send message from group's chat.
@@ -122,7 +123,7 @@ CMD_KEYWORDS = {
 	CMD_TODAY 			: [u'сегодня', u'^\s*расписание$', u'^\s*пар[аы]$'],
 	CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 	CMD_YESTERDAY		: [u'вчера'],
-	CMD_WEEK			: [u'неделя', u'семестр'],
+	CMD_WEEK			: [u'неделя'],
 	CMD_NOW				: [u'сейчас', u'текущая'],
 	CMD_DAY_OF_WEEK 	: DAY_NAMES,
 	CMD_HELP			: [
@@ -140,7 +141,7 @@ CMD_KEYWORDS = {
 	CMD_POLITE			: [u'спасибо', u'спс'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько'],
-	CMD_WHEN_EXAMS		: [u'осталось', u'сесси[ия]', u'прошло', u'пройден'],
+	CMD_WHEN_EXAMS		: [u'осталось', u'сесси[ия]', u'прошло', u'пройден', u'семестр'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
