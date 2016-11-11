@@ -148,7 +148,7 @@ class Timebot:
 		
 		now = dt.datetime.now().date()
 		start = dt.date(2016, 9, 1)
-		end = dt.date(2016, 12, 19)
+		end = dt.date(2016, 12, 22)
 		delta = end - now
 		weeks = delta.days / 7
 		days  = delta.days % 7
