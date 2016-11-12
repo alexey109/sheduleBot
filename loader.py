@@ -13,6 +13,7 @@ import logger as lg
 import parser as pr
 
 logger = lg.Logger()
+
 logger.log(CONST.LOG_PARSE, "Try to get html code from mirea schedule page.")
 try:
 	response = urllib2.urlopen('https://www.mirea.ru/education/schedule-main/schedule/')
@@ -49,7 +50,11 @@ parser = pr.Parser()
 for doc in documents:
 	schedule = parser.getSchedule(CONST.SCHEDULE_DIR + doc)	
 	for group in schedule:
-		db.schedule.insert_one({'group': group, 'schedule': schedule[group]})
+		try:
+			a = db.schedule.find({'group':group})[0]['schedule']
+			db.schedule.update_one({'group': group},{'$set':{'schedule': schedule[group]}})
+		except:
+			db.schedule.insert_one({'group': group, 'schedule': schedule[group]})
 
 
 

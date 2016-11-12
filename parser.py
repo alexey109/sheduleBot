@@ -31,7 +31,7 @@ class Parser:
 		ST_PARAMS	= 1
 		ST_WEEK 	= 2
 
-		teacher_kwd = [u'асс',u'доц',u'проф',u'ст.пр',u'преп',]
+		teacher_kwd = [u'асс',u'доц',u'проф',u'ст.пр',u'преп',u'ст. пр',u'ст пр']
 
 		rules = {
 			ST_BODY: [
@@ -96,11 +96,7 @@ class Parser:
 		if not cell_value:
 			return ['-']
 
-		rooms = []
-		for room in cell_value.split('\n'):	
-			if room:
-				rooms.append(room)
-		return rooms
+		return cell_value.split('\n')
 		#return re.findall(u'[А-Яа-я]*-[\d]*[А-Яа-я\-\d]*', cell_value)
 
 	# Primary function, that returns lection timetable from timetable document for special parametrs.
@@ -117,10 +113,15 @@ class Parser:
 				body_splt = self.splitBody(text_cell_value)
 				for idx in body_splt:
 					try:
-						room = classroom[idx]
+						if classroom[idx]:
+							room = classroom[idx]
+						elif body_splt.get(idx+1, 0):
+							room = '-'
+						else:
+							room = classroom[idx+1]
 					except:
 						room = '-'
-					
+	
 					# check parametr for lection number
 					appended = False
 					for i, param in enumerate(body_splt[idx]['params']):
@@ -146,7 +147,8 @@ class Parser:
 						'numb'	: lection_numb,
 						'room'	: room
 					})
-					timetable.append(lection)
+					if lection['name']:
+						timetable.append(lection)
 
 					for crange in self.merged_cells:			
 						rlo, rhi, clo, chi = crange
@@ -159,7 +161,8 @@ class Parser:
 									'numb'	: numb,
 									'room'	: room
 								})
-								timetable.append(lection)
+								if lection['name']:
+									timetable.append(lection)
 			cell_number += 1
 
 		return timetable
@@ -191,34 +194,4 @@ class Parser:
 				group_col = 0 
 
 		return schedule
-
-
-'''
-text = u'2,6,10,14 н. Э/Т лаб доц. Миленина С.А. I н. Физика лаб (2п)'
-text2 = u'I н. Иностранный язык (4-5п) асс. Малина И.М. 4,8,12,16 н. Э/Т лаб доц. Матвеева Т.П.'
-text3 = u'7,15 н. МРМ лаб (2-3п) (2 подгр)\
-II н. Механика РМ лк (2п)\
-3,11 н.МРМ лаб асс. Малина И.М. (2-3п) (1подгр)\
-II н. Физика лк (3п) '
-text4 = u'Физика лк'
-parser = Parser()
-
-#res = parser.splitBody(text2)
-#for i in res:
-#	for el in res[i]:
-#		print res[i][el]
-#	print '--'
-
-for subj in parser.getLections(u'КРБО-02-15'):
-	print "Day: %d, Numb: %d, Room: %s, Week: %s, Name: %s, Teacher: %s, Params: %s" % (
-		subj['day'],		
-		subj['numb'],		
-		subj['room'],		
-		subj['week'],		
-		subj['name'],	
-		subj['teacher'],
-		str(subj['params']),					
-	)
-	print '----'
-'''
 
