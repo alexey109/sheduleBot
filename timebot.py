@@ -325,6 +325,7 @@ class Timebot:
 			header += CONST.USER_PREMESSAGE[cmd].format(kwd['word'])
 			answer_ok = True
 		if not answer_ok:
+			self.logger.log(CONST.LOG_MESGS, text)
 			raise Exception(CONST.ERR_SKIP)
 
 		if not header and base_cmd['cmd'] == CONST.CMD_UNIVERSAL:
@@ -334,10 +335,6 @@ class Timebot:
 			answer += self.functions[base_cmd['cmd']](self, params)
 		except:
 			answer += CONST.ERR_MESSAGES[CONST.ERR_NO_LECTIONS]
-
-		if not answer:
-			self.logger.log(CONST.LOG_MESGS, text)
-			raise Exception(CONST.ERR_SKIP)
 		
 		return answer		
 			
@@ -420,5 +417,5 @@ class Timebot:
 				self.api = self.openVkAPI()
 
 
-#bot = Timebot()
-#bot.run()
+bot = Timebot()
+bot.run()
