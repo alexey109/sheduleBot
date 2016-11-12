@@ -330,7 +330,10 @@ class Timebot:
 		if not header and base_cmd['cmd'] == CONST.CMD_UNIVERSAL:
 			base_cmd['cmd'] = CONST.CMD_TODAY
 		answer += CONST.USER_PREMESSAGE[base_cmd['cmd']].format(markers = header)
-		answer += self.functions[base_cmd['cmd']](self, params)
+		try:
+			answer += self.functions[base_cmd['cmd']](self, params)
+		except:
+			answer += CONST.ERR_MESSAGES[CONST.ERR_NO_LECTIONS]
 
 		if not answer:
 			self.logger.log(CONST.LOG_MESGS, text)
@@ -417,5 +420,5 @@ class Timebot:
 				self.api = self.openVkAPI()
 
 
-bot = Timebot()
-bot.run()
+#bot = Timebot()
+#bot.run()
