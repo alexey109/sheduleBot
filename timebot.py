@@ -333,8 +333,11 @@ class Timebot:
 		answer += CONST.USER_PREMESSAGE[base_cmd['cmd']].format(markers = header)
 		try:
 			answer += self.functions[base_cmd['cmd']](self, params)
-		except:
-			answer += CONST.ERR_MESSAGES[CONST.ERR_NO_LECTIONS]
+		except Exception, e:
+			if isinstance(e.args[0], int):
+				answer += CONST.ERR_MESSAGES[e.args[0]]
+			else:
+				raise e
 		
 		return answer		
 			
