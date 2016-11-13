@@ -194,7 +194,7 @@ USER_PREMESSAGE = {
 
 USER_MESSAGE = {	
 	CMD_UNIVERSAL		: u'\n{} пара ({}, {}):\n{}\n',
-	CMD_WEEK			: u'Сейчас идет {} неделя.',	
+	CMD_WEEK			: u'Идет {} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
 	CMD_WHEN_EXAMS		: u'Осталось недель: {}, дней: {}.\nСеместр завершен на {}.'
 }
