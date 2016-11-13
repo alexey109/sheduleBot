@@ -27,14 +27,15 @@ class Timebot:
 
 	def getLessonNumb(self, dt_time):
 		return {
-								dt_time < dt.time(9,0,0): 0,
+								dt_time < dt.time(9,0,0)  :	0,
 			dt.time(9,0,0) 	 <= dt_time < dt.time(10,45,0): 1,
 			dt.time(10,45,0) <= dt_time < dt.time(12,50,0): 2,
 			dt.time(12,50,0) <= dt_time < dt.time(14,35,0): 3,
 			dt.time(14,35,0) <= dt_time < dt.time(16,20,0): 4,
-			dt.time(16,20,0) <= dt_time < dt.time(18,0,0):  5,
-			dt.time(18,0,0)  <= dt_time < dt.time(21,20,0): 6,
-			dt.time(21,20,0) <= dt_time: 7
+			dt.time(16,20,0) <= dt_time < dt.time(17,55,0): 5,
+			dt.time(17,55,0) <= dt_time < dt.time(19,35,0): 6,
+			dt.time(19,35,0) <= dt_time < dt.time(21,20,0): 7,
+			dt.time(21,20,0) <= dt_time					  :	8
 		}[True]
 
 	def isThatWeek(self, native_week, base_week):
@@ -63,7 +64,7 @@ class Timebot:
 			and (self.isThatWeek(lesson['week'], week))\
 			and (lesson['numb'] >= lstart)\
 			and (lesson['numb'] <= lfinish):
-				lessons += CONST.UNI_TEMPLATE.format(
+				lessons += CONST.USER_MESSAGE[CONST.CMD_UNIVERSAL].format(
 					lesson['numb'],
 					lesson['room'], 
 					CONST.LECTION_TIME[lesson['numb']],
@@ -222,14 +223,14 @@ class Timebot:
 				{'vk_id':vk_id, 'chat': is_chat},
 				{'$set': {'group_name': group}}
 			)
-			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group)
+			answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group)
 		elif group:
 			self.db.users.insert_one({
 				'vk_id': vk_id, 
 				'chat': is_chat, 
 				'group_name': group
 			})
-			answer += CONST.USER_PREMESSAGE[CONST.SAVED_GROUP].format(group)
+			answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group)
 			answer += CONST.USER_PREMESSAGE[CONST.CMD_HELP]
 		elif found_group:
 			group = found_group
@@ -246,10 +247,12 @@ class Timebot:
 		text 		= self.retriveBody(message)
 		text 		= text.lower()
 
+		# Check for chat
 		if is_chat and not any(re.match('^'+word, text) for word in CONST.CHAT_KEYWORDS):
 			raise Exception(CONST.ERR_SKIP)
 		text = ' ' + text # TODO Very bad, need to fix
 
+		# Check feedback
 		if self.findKeywords(CONST.CMD_KEYWORDS[CONST.CMD_FEEDBACK], text):
 			try:
 				user_id = str(message['uid'])
@@ -259,6 +262,7 @@ class Timebot:
 			answer = CONST.USER_PREMESSAGE[CONST.CMD_FEEDBACK]
 			return answer
 
+		# Set base settings
 		group, answer 	= self.getGroup(message, text, is_chat)
 		markers 		= {}
 		base_cmd		= {'cmd': CONST.CMD_UNIVERSAL}
@@ -267,6 +271,7 @@ class Timebot:
 
 		answer_ok = bool(answer)
 
+		# Find all commands in message and split them for time markers and other.
 		for cmd, keywords in CONST.CMD_KEYWORDS.items():
 			word = self.findKeywords(keywords, text) 
 			if word and cmd in CONST.MARKERS:
@@ -276,6 +281,7 @@ class Timebot:
 				base_cmd['keyword'] = word
 				answer_ok 			= True
 
+		# Apply markers for settings
 		for command, keyword in markers.items():
 			if command == CONST.CMD_TOMMOROW:
 				date = dt.datetime.today() + dt.timedelta(days=1)
@@ -299,8 +305,8 @@ class Timebot:
 					del markers[command]
 			elif command == CONST.CMD_BY_DATE:
 				try:
-					# TODO Fix wrong code below
-					date = dt.datetime.strptime(keyword['word']+'.2016', '%d.%m.%Y').date()
+					year = str(dt.date.today().year)
+					date = dt.datetime.strptime(keyword['word']+year, '%d.%m%Y').date()
 				except:
 					try:
 						day, month = keyword['word'].split(' ')
@@ -313,6 +319,7 @@ class Timebot:
 					except:
 						del markers[command]
 
+		# Prepare setting for functions 
 		params = {
 			'group'	: group,
 			'day' 	: date.weekday(),
@@ -320,6 +327,7 @@ class Timebot:
 			'lesson': lesson
 		}
 
+		# Check markers after apply
 		header = ''
 		for cmd, kwd in markers.items():
 			header += CONST.USER_PREMESSAGE[cmd].format(kwd['word'])
@@ -328,8 +336,7 @@ class Timebot:
 			self.logger.log(CONST.LOG_MESGS, text)
 			raise Exception(CONST.ERR_SKIP)
 
-		if not header and base_cmd['cmd'] == CONST.CMD_UNIVERSAL:
-			base_cmd['cmd'] = CONST.CMD_TODAY
+		# Perform command and check for result
 		answer += CONST.USER_PREMESSAGE[base_cmd['cmd']].format(markers = header)
 		try:
 			answer += self.functions[base_cmd['cmd']](self, params)

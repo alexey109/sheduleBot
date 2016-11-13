@@ -34,12 +34,12 @@ CMD_DAY_OF_WEEK 	= 150
 CMD_BY_DATE			= 180 
 CMD_BY_TIME			= 190
 CMD_LECTION_NUMB	= 200 
+CMD_TODAY 			= 110
 
 CMD_UNIVERSAL		= 280
 CMD_NOW				= 170
+CMD_NEXT 			= 100
 CMD_WEEK			= 160 
-CMD_TODAY 			= 110
-CMD_NEXT 			= 100 
 CMD_HELP			= 210
 CMD_POLITE			= 220
 CMD_LECTIONS_TIME	= 230 
@@ -47,11 +47,11 @@ CMD_TEACHER			= 240
 CMD_FIND_LECTION	= 250 #TODO write
 CMD_WHEN_EXAMS		= 260
 CMD_FEEDBACK		= 270  
-CMD_MYGROUP			= 280 #TODO write
-
-SAVED_GROUP	= 1000
+CMD_MYGROUP			= 290 #TODO write
+CMD_SAVE_GROUP		= 300
 
 MARKERS = [
+	CMD_TODAY,
 	CMD_TOMMOROW,
 	CMD_AFTERTOMMOROW,
 	CMD_YESTERDAY,
@@ -62,23 +62,13 @@ MARKERS = [
 ]
 
 DAY_NAMES = [
-	u'понедельник', 
-	u'вторник',
-	u'среду?',
-	u'четверг',
-	u'пятницу?',
-	u'субботу?',
-	u'воскресение'
-]
-
-DAY_NAMES_SHORT = [
-	u'пн', 
-	u'вт',
-	u'ср',
-	u'чт',
-	u'пт',
-	u'сб',
-	u'вс'
+	u'(пн$)|(понедельник)', 
+	u'(вт$)|(вторник)',
+	u'(ср$)|(среду?)',
+	u'(чт$)|(четверг)',
+	u'(пт$)|(пятницу?)',
+	u'(сб$)|(субботу?)',
+	u'(вс$)|(воскресение)'
 ]
 
 MONTH_NAMES = [
@@ -102,8 +92,20 @@ NUMB_NAMES = [
 	u'втор[уао][юяйи]',
 	u'треть[юяейи]{1,2}',
 	u'четверт[уао][юяйи]',
-	u'пят[уао][юяйи]'
+	u'пят[уао][юяйи]',
+	u'шест[уао][юяйи]',
+	u'седьм[уао][юяйи]'
 ]
+
+LECTION_TIME = {
+	1: '9:00-10:35',
+	2: '10:45-12:20',
+	3: '12:50-14:25',
+	4: '14:35-16:10',
+	5: '16:20-17:55',
+	6: '18:00-19:35',
+	7: '19:45-21:20'
+}
 
 # Keywords using when send message from group's chat.
 CHAT_KEYWORDS = (
@@ -113,7 +115,7 @@ CHAT_KEYWORDS = (
 
 # Keywords regexp for every command.
 CMD_KEYWORDS = {		
-	CMD_FEEDBACK	: [
+	CMD_FEEDBACK		: [
 		u'разработчику', 
 		u'предложение', 
 		u'ошибка',
@@ -143,22 +145,20 @@ CMD_KEYWORDS = {
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько'],
 	CMD_WHEN_EXAMS		: [
 		u'осталось', 
-		u'сесси[ия]', 
+		u'сесси[ийя]', 
 		u'прошло', 
 		u'пройден', 
 		u'семестр',
-		u'каникулы',
+		u'каникул',
 		u'экзамен'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
 }
 
-# Template takes: lection number, classroom, time(start-end), lection name
-UNI_TEMPLATE = u'\n{} пара ({}, {}):\n{}\n'
 USER_PREMESSAGE = {
-	# Parametrs: UNI_TEMPLATE (for all next messages)
 	CMD_UNIVERSAL		: u'Пары{markers}:\n',
+	CMD_TODAY			: u' сегодня',
 	CMD_TOMMOROW		: u' завтра',
 	CMD_YESTERDAY		: u' вчера',
 	CMD_AFTERTOMMOROW 	: u' послезавтра',
@@ -169,7 +169,7 @@ USER_PREMESSAGE = {
 
 	CMD_WEEK			: '',
 	CMD_NEXT 			: u'Следующие пары:\n',
-	CMD_TODAY 			: u'Пары сегодня{markers}:\n',
+	#CMD_TODAY 			: u'Пары сегодня{markers}:\n',
 	CMD_NOW				: u'Текущая пара:\n',
 	CMD_LECTIONS_TIME	: u'Время начала-конца пар\n\n',
 	CMD_FEEDBACK		: u'Сообщение принято и обязательно будет рассмотрено. Спасибо :)',
@@ -184,28 +184,18 @@ USER_PREMESSAGE = {
 		+ u'"Какие пары завтра?"\n"Следующие лекции."\n"Пары во вторник."\n"Какая идет неделя?"\n\n'\
 		+ u'Полная инструкция есть на странице бота.\n\n',
 	CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
-	SAVED_GROUP			: u'Я запомнил группу {}.\n\n',
+	CMD_SAVE_GROUP		: u'Я запомнил группу {}.\n\n',
 	CMD_TEACHER			: u'Преподаватель на паре{markers}:\n',
 	CMD_WHEN_EXAMS		: u'Зачетная неделя с 22 декабря.\nЭкзамены с 9 по 30 января.\n'\
 		+ u'Каникулы с 31 января по 7 февраля.\n\n',
 	CMD_FIND_LECTION	: u''
 }
 
-USER_MESSAGE = {
+USER_MESSAGE = {	
+	CMD_UNIVERSAL		: u'\n{} пара ({}, {}):\n{}\n',
 	CMD_WEEK			: u'Сейчас идет {} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
 	CMD_WHEN_EXAMS		: u'Осталось недель: {}, дней: {}.\nСеместр завершен на {}.'
-}
-
-# Dictionary of lections start-end time for using in messages
-LECTION_TIME = {
-	1: '9:00-10:35',
-	2: '10:45-12:20',
-	3: '12:50-14:25',
-	4: '14:35-16:10',
-	5: '16:20-17:55',
-	6: '18:00-19:35',
-	7: '19:45-21:20'
 }
 
 # Error codes, will raise as exceptions.
