@@ -94,11 +94,6 @@ class Timebot:
 		
 		return CONST.USER_MESSAGE[CONST.CMD_WEEK].format(week)
 
-	def cmdNow(self, params):
-		lection = int(self.getLessonNumb(dt.datetime.now().time()))
-	
-		return  self.getLessons(params['group'], params['day'], params['week'], lection, lection)
-
 	def cmdLectionsTime(self, params):
 		msg = ''
 		for i in CONST.LECTION_TIME:
@@ -170,7 +165,7 @@ class Timebot:
 		CONST.CMD_YESTERDAY			: cmdUniversal,
 		CONST.CMD_DAY_OF_WEEK 		: cmdUniversal,
 		CONST.CMD_WEEK				: cmdWeek,
-		CONST.CMD_NOW				: cmdNow,
+		CONST.CMD_NOW				: cmdUniversal,
 		CONST.CMD_BY_DATE			: cmdUniversal,
 		CONST.CMD_BY_TIME			: cmdUniversal,
 		CONST.CMD_LECTION_NUMB		: cmdUniversal,
@@ -265,7 +260,7 @@ class Timebot:
 		# Set base settings
 		group, answer 	= self.getGroup(message, text, is_chat)
 		markers 		= {}
-		base_cmd		= {'cmd': CONST.CMD_UNIVERSAL}
+		msg_cmd			= {'cmd': CONST.CMD_UNIVERSAL}
 		date 			= dt.datetime.today()
 		lesson 			= 0
 
@@ -277,14 +272,16 @@ class Timebot:
 			if word and cmd in CONST.MARKERS:
 				markers[cmd] = word
 			elif word:	
-				base_cmd['cmd'] 	= cmd 
-				base_cmd['keyword'] = word
+				msg_cmd['cmd'] 		= cmd 
+				msg_cmd['keyword'] 	= word
 				answer_ok 			= True
 
 		# Apply markers for settings
 		for command, keyword in markers.items():
 			if command == CONST.CMD_TOMMOROW:
 				date = dt.datetime.today() + dt.timedelta(days=1)
+			elif command == CONST.CMD_NOW:
+				lesson = int(self.getLessonNumb(dt.datetime.now().time()))
 			elif command == CONST.CMD_AFTERTOMMOROW:
 				date = dt.datetime.today() + dt.timedelta(days=2)
 			elif command == CONST.CMD_YESTERDAY:
@@ -337,9 +334,9 @@ class Timebot:
 			raise Exception(CONST.ERR_SKIP)
 
 		# Perform command and check for result
-		answer += CONST.USER_PREMESSAGE[base_cmd['cmd']].format(markers = header)
+		answer += CONST.USER_PREMESSAGE[msg_cmd['cmd']].format(markers = header)
 		try:
-			answer += self.functions[base_cmd['cmd']](self, params)
+			answer += self.functions[msg_cmd['cmd']](self, params)
 		except Exception, e:
 			if isinstance(e.args[0], int):
 				answer += CONST.ERR_MESSAGES[e.args[0]]

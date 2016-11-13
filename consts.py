@@ -35,9 +35,9 @@ CMD_BY_DATE			= 180
 CMD_BY_TIME			= 190
 CMD_LECTION_NUMB	= 200 
 CMD_TODAY 			= 110
+CMD_NOW				= 170
 
 CMD_UNIVERSAL		= 280
-CMD_NOW				= 170
 CMD_NEXT 			= 100
 CMD_WEEK			= 160 
 CMD_HELP			= 210
@@ -51,6 +51,7 @@ CMD_MYGROUP			= 290 #TODO write
 CMD_SAVE_GROUP		= 300
 
 MARKERS = [
+	CMD_NOW,
 	CMD_TODAY,
 	CMD_TOMMOROW,
 	CMD_AFTERTOMMOROW,
@@ -158,6 +159,8 @@ CMD_KEYWORDS = {
 
 USER_PREMESSAGE = {
 	CMD_UNIVERSAL		: u'Пары{markers}:\n',
+
+	CMD_NOW				: u' сейчас',
 	CMD_TODAY			: u' сегодня',
 	CMD_TOMMOROW		: u' завтра',
 	CMD_YESTERDAY		: u' вчера',
@@ -169,8 +172,6 @@ USER_PREMESSAGE = {
 
 	CMD_WEEK			: '',
 	CMD_NEXT 			: u'Следующие пары:\n',
-	#CMD_TODAY 			: u'Пары сегодня{markers}:\n',
-	CMD_NOW				: u'Текущая пара:\n',
 	CMD_LECTIONS_TIME	: u'Время начала-конца пар\n\n',
 	CMD_FEEDBACK		: u'Сообщение принято и обязательно будет рассмотрено. Спасибо :)',
 	CMD_HELP			: u'Инструкция:\nПросто спросите что-нибудь по расписанию пар. '\
