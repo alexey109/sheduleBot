@@ -31,7 +31,7 @@ class Parser:
 		ST_PARAMS	= 1
 		ST_WEEK 	= 2
 
-		teacher_kwd = [u'асс',u'доц',u'проф',u'ст.пр',u'преп',u'ст. пр',u'ст пр']
+		teacher_kwd = [u'асс',u'доц',u'проф',u'ст.', u'ст ',u'преп']
 
 		rules = {
 			ST_BODY: [
