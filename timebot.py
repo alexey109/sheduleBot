@@ -247,6 +247,16 @@ class Timebot:
 			raise Exception(CONST.ERR_SKIP)
 		text = ' ' + text # TODO Very bad, need to fix
 
+		# Mark msg as read
+		try:
+			if is_chat:
+				peer_id = 2000000000 + message['chat_id']
+			else:
+				peer_id = message['uid']
+			self.api.messages.markAsRead(message['mid'],peer_id)
+		except:
+			pass
+
 		# Check feedback
 		if self.findKeywords(CONST.CMD_KEYWORDS[CONST.CMD_FEEDBACK], text):
 			try:
@@ -383,16 +393,6 @@ class Timebot:
 		try:
 			answer = ''
 			is_chat = self.is_exist(message, 'chat_id')
-
-			try:
-				if is_chat:
-					peer_id = 2000000000 + message['chat_id']
-				else:
-					peer_id = message['uid']
-				self.api.messages.markAsRead(message['mid'],peer_id)
-			except:
-				pass
-
 			try:
 				answer  = self.getMyAnswer(message, is_chat)
 			except Exception, e:
