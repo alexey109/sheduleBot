@@ -250,10 +250,10 @@ class Timebot:
 		# Mark msg as read
 		try:
 			if is_chat:
-				peer_id = 2000000000 + message['chat_id']
+				peerid = 2000000000 + message['chat_id']
 			else:
-				peer_id = message['uid']
-			self.api.messages.markAsRead(message['mid'])
+				peerid = message['uid']
+			self.api.messages.markAsRead(message_ids = message['mid'], peer_id = peerid)
 		except:
 			pass
 
