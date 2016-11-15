@@ -383,6 +383,16 @@ class Timebot:
 		try:
 			answer = ''
 			is_chat = self.is_exist(message, 'chat_id')
+
+			try:
+				if is_chat:
+					peer_id = 2000000000 + message['chat_id']
+				else:
+					peer_id = message['uid']
+				self.api.messages.markAsRead(message['mid'],peer_id)
+			except:
+				pass
+
 			try:
 				answer  = self.getMyAnswer(message, is_chat)
 			except Exception, e:
@@ -414,7 +424,7 @@ class Timebot:
 		while 1:
 			time.sleep(1)
 			try:
-				new_messages = self.api.messages.get(out=0, count=5, time_offset=15)	
+				new_messages = self.api.messages.get(out=0, count=8, time_offset=15)	
 				del new_messages[0]
 				for message in new_messages:
 					if message['read_state'] == 0:
