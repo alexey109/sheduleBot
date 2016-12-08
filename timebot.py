@@ -23,6 +23,7 @@ class Timebot:
 		self.db = MongoClient().timebot
 		self.logger = lg.Logger()
 		self.msg_stack = []
+		self.attachment = None
 
 
 	def getLessonNumb(self, dt_time):
@@ -155,6 +156,32 @@ class Timebot:
 
 		return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, days, percent)
 
+	def cmdMap(self, params):
+		keyword = params['keyword'].lower().replace('-', '')
+		campus 	= keyword[:1]
+		room 	= keyword[1:]
+
+		photo_vk_id = ''
+		if campus == u'а':
+			for floor in CONST.MAP_DATA:
+				if floor['nam_ru'][:1] == campus:
+					for map_room in floor['rooms'].split(','):
+						if room == map_room.replace(' ', ''):
+							photo_vk_id = floor['vk_id']
+							break
+		else:
+			for floor in CONST.MAP_DATA:
+				if floor['nam_ru'] == (campus + room[:1]):
+					photo_vk_id = floor['vk_id']
+					break
+
+		if photo_vk_id:
+			self.attachment = 'photo385457066_' + photo_vk_id
+		else:
+			return u'Аудитория не найдена.'
+
+		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(keyword)
+
 
 	functions = {
 		CONST.CMD_UNIVERSAL			: cmdUniversal,
@@ -174,7 +201,8 @@ class Timebot:
 		CONST.CMD_LECTIONS_TIME		: cmdLectionsTime,
 		CONST.CMD_TEACHER			: cmdTeacher,
 		CONST.CMD_FIND_LECTION		: cmdFindLection,
-		CONST.CMD_WHEN_EXAMS		: cmdWhenExams
+		CONST.CMD_WHEN_EXAMS		: cmdWhenExams,
+		CONST.CMD_MAP				: cmdMap,
 	}
 
 	
@@ -267,7 +295,7 @@ class Timebot:
 		# Set base settings
 		group, answer 	= self.getGroup(message, text, is_chat)
 		markers 		= {}
-		msg_cmd			= {'cmd': CONST.CMD_UNIVERSAL}
+		msg_cmd			= {'cmd': CONST.CMD_UNIVERSAL, 'keyword': None}
 		date 			= dt.datetime.today()
 		lesson 			= 0
 
@@ -325,10 +353,11 @@ class Timebot:
 
 		# Prepare setting for functions 
 		params = {
-			'group'	: group,
-			'day' 	: date.weekday(),
-			'week'	: date.isocalendar()[1],
-			'lesson': lesson
+			'group'		: group,
+			'day' 		: date.weekday(),
+			'week'		: date.isocalendar()[1],
+			'lesson'	: lesson,
+			'keyword'	: msg_cmd['keyword']
 		}
 
 		# Check markers after apply
@@ -402,9 +431,11 @@ class Timebot:
 				fullmsg = str(message['chat_id' if is_chat else 'uid']) + answer 
 				if not fullmsg in self.msg_stack:
 					if is_chat:
-						self.api.messages.send(chat_id=message['chat_id'], message=answer)
+						self.api.messages.send(chat_id=message['chat_id'], message=answer, attachment = self.attachment)
 					else:
-						self.api.messages.send(user_id=message['uid'], message=answer)
+						self.api.messages.send(user_id=message['uid'], message=answer, attachment =self.attachment)
+
+					self.attachment = None
 					time.sleep(1)
 					
 					self.msg_stack.append(fullmsg)
