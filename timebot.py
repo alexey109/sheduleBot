@@ -157,7 +157,7 @@ class Timebot:
 		return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, days, percent)
 
 	def cmdMap(self, params):
-		keyword = params['keyword'].lower().replace('-', '')
+		keyword = params['keyword']['word'].lower().replace('-', '')
 		campus 	= keyword[:1]
 		room 	= keyword[1:]
 
@@ -280,7 +280,7 @@ class Timebot:
 			peerid = 2000000000 + message['chat_id']
 		else:
 			peerid = message['uid']
-		self.api.messages.markAsRead(message_ids = message['mid'], peer_id = peerid)
+		#self.api.messages.markAsRead(message_ids = message['mid'], peer_id = peerid)
 
 		# Check feedback
 		if self.findKeywords(CONST.CMD_KEYWORDS[CONST.CMD_FEEDBACK], text):

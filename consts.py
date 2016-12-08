@@ -191,7 +191,8 @@ USER_PREMESSAGE = {
 	CMD_TEACHER			: u'Преподаватель на паре{markers}:\n',
 	CMD_WHEN_EXAMS		: u'Зачетная неделя с 22 декабря.\nЭкзамены с 9 по 30 января.\n'\
 		+ u'Каникулы с 31 января по 5 февраля.\n\n',
-	CMD_FIND_LECTION	: u''
+	CMD_FIND_LECTION	: u'',
+	CMD_MAP				: u'',
 }
 
 USER_MESSAGE = {	
