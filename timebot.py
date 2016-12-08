@@ -151,7 +151,7 @@ class Timebot:
 
 		delta = now - start
 		amount = end - start
-		percent = str(delta.days % amount.days) + '%'
+		percent = str(int(round((float(delta.days) / amount.days) * 100))) + '%'
 
 		return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, days, percent)
 
@@ -248,14 +248,11 @@ class Timebot:
 		text = ' ' + text # TODO Very bad, need to fix
 
 		# Mark msg as read
-		try:
-			if is_chat:
-				peerid = 2000000000 + message['chat_id']
-			else:
-				peerid = message['uid']
-			self.api.messages.markAsRead(message_ids = message['mid'], peer_id = peerid)
-		except:
-			pass
+		if is_chat:
+			peerid = 2000000000 + message['chat_id']
+		else:
+			peerid = message['uid']
+		self.api.messages.markAsRead(message_ids = message['mid'], peer_id = peerid)
 
 		# Check feedback
 		if self.findKeywords(CONST.CMD_KEYWORDS[CONST.CMD_FEEDBACK], text):
