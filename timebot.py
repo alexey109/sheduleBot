@@ -180,7 +180,7 @@ class Timebot:
 		else:
 			return u'Аудитория не найдена.'
 
-		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(keyword)
+		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(params['keyword']['word'])
 
 
 	functions = {
