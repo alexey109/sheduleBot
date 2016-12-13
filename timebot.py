@@ -234,6 +234,7 @@ class Timebot:
 				type_name,
 				event['name']
 			)
+		self.attachment = 'photo385457066_456239023'
 
 		return events
 
