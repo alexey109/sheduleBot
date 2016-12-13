@@ -220,7 +220,7 @@ USER_MESSAGE = {
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 	CMD_ZACHET			: u'Расписания зачетной недели у бота нет, '\
-		+ 'но есть расписание экзаменов и консультации.\nmirea.ru/students/schedule/'
+		+ u'но есть расписание экзаменов и консультации.\nmirea.ru/students/schedule/'
 }
 
 # Error codes, will raise as exceptions.
