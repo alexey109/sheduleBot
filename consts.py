@@ -50,6 +50,11 @@ CMD_FEEDBACK		= 270
 CMD_MYGROUP			= 290 #TODO write
 CMD_SAVE_GROUP		= 300
 CMD_MAP				= 310
+CMD_EXAMS			= 320
+CMD_CONSULT			= 330
+CMD_SESSION			= 340
+CMD_CALENDAR		= 350
+
 
 MARKERS = [
 	CMD_NOW,
@@ -146,16 +151,19 @@ CMD_KEYWORDS = {
 	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', 'звонк'],
 	CMD_WHEN_EXAMS		: [
-		u'осталось', 
-		u'сесси[ийя]', 
+		u'осталось',
 		u'прошло[^й]', 
 		u'пройден', 
+		u'сессия'
 		u'семестр',
-		u'каникул',
-		u'экзамен'],
+		u'каникул'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
 	CMD_MAP				: [u'[абвгдАБВГД]\-?[1-9][0-9абвгдм\-]{0,4}'],
+	CMD_EXAMS			: [u'экзамен'],
+	CMD_CONSULT			: [u'консул'],
+	CMD_SESSION			: [u'сессии'],
+	CMD_CALENDAR		: [u'календар'],
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
 }
 
@@ -192,7 +200,11 @@ USER_PREMESSAGE = {
 	CMD_WHEN_EXAMS		: u'Зачетная неделя с 22 декабря.\nЭкзамены с 9 по 30 января.\n'\
 		+ u'Каникулы с 31 января по 5 февраля.\n\n',
 	CMD_FIND_LECTION	: u'',
-	CMD_MAP				: u'',
+	CMD_MAP				: u'',	
+	CMD_EXAMS			: u'Экзамены.\n',
+	CMD_CONSULT			: u'Консультации.\n',
+	CMD_SESSION			: u'Расписание сессии.\n',
+	CMD_CALENDAR		: u'Календарь',
 }
 
 USER_MESSAGE = {	
@@ -200,7 +212,10 @@ USER_MESSAGE = {
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
 	CMD_WHEN_EXAMS		: u'Осталось недель: {}, дней: {}.\nСеместр завершен на {}.',
-	CMD_MAP				: u'Аудитория {}'
+	CMD_MAP				: u'Аудитория {}',
+	CMD_EXAMS			: u'\n{} января в {}, аудитория {}:\n{}\n',
+	CMD_CONSULT			: u'\n{} января в {}, аудитория {}:\n{}\n',
+	CMD_SESSION			: u'\n{} января в {}, аудитория {}:\n{} "{}"\n',
 }
 
 # Error codes, will raise as exceptions.
@@ -277,7 +292,7 @@ MAP_DATA = [
 		'vk_id'	: '456239045',
 		'name'	: 'A-2-right-middle',
 		'nam_ru': u'а',
-		'rooms'	: u'2132,2131,212,4,211,3,210,2,209,1',
+		'rooms'	: u'213,2132,2131,212,4,211,3,210,2,209,1',
 		'desc'	: ''
 	},
 	{

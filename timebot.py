@@ -77,7 +77,6 @@ class Timebot:
 
 		return lessons
 
-
 	def cmdUniversal(self, params):	
 		if params['lesson']:
 			lesson = params['lesson']
@@ -182,6 +181,66 @@ class Timebot:
 
 		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(params['keyword']['word'].upper())
 
+	def cmdExams(self, params):
+		try:
+			schedule = self.db.exams.find({'group':params['group']})[0]['schedule']
+		except:
+			raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+		
+		events = ''
+		for event in schedule:
+			if event['type'] == True:
+				events += CONST.USER_MESSAGE[CONST.CMD_EXAMS].format(
+					event['day'],
+					event['time'],
+					event['room'],
+					event['name']
+				)
+
+		return events
+
+	def cmdConsult(self, params):
+		try:
+			schedule = self.db.exams.find({'group':params['group']})[0]['schedule']
+		except:
+			raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+		
+		events = ''
+		for event in schedule:
+			if event['type'] == False:
+				events += CONST.USER_MESSAGE[CONST.CMD_CONSULT].format(
+					event['day'],
+					event['time'],
+					event['room'],
+					event['name']
+				)
+
+		return events
+
+
+	def cmdSession(self, params):
+		try:
+			schedule = self.db.exams.find({'group':params['group']})[0]['schedule']
+		except:
+			raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+		
+		events = ''
+		for event in schedule:
+			type_name = u'Экзамен' if event['type'] else u'Консультация'		
+			events += CONST.USER_MESSAGE[CONST.CMD_SESSION].format(
+				event['day'],
+				event['time'],
+				event['room'],
+				type_name,
+				event['name']
+			)
+
+		return events
+
+	def cmdCalendar(self, params):
+		self.attachment = 'photo385457066_456239023'
+
+		return ''
 
 	functions = {
 		CONST.CMD_UNIVERSAL			: cmdUniversal,
@@ -203,6 +262,10 @@ class Timebot:
 		CONST.CMD_FIND_LECTION		: cmdFindLection,
 		CONST.CMD_WHEN_EXAMS		: cmdWhenExams,
 		CONST.CMD_MAP				: cmdMap,
+		CONST.CMD_EXAMS				: cmdExams,
+		CONST.CMD_CONSULT			: cmdConsult,
+		CONST.CMD_SESSION			: cmdSession,
+		CONST.CMD_CALENDAR			: cmdCalendar,
 	}
 
 	
@@ -281,7 +344,7 @@ class Timebot:
 		else:
 			peerid = message['uid']
 		self.api.messages.markAsRead(message_ids = message['mid'], peer_id = peerid)
-
+		
 		# Check feedback
 		if self.findKeywords(CONST.CMD_KEYWORDS[CONST.CMD_FEEDBACK], text):
 			try:

@@ -4,6 +4,7 @@
 
 import xlrd
 import re
+import datetime as dt
 
 # This class present schedule, wich store like regural excel-file. 
 # Now it can only show lection for special parameters, but in future
@@ -167,24 +168,67 @@ class Parser:
 
 		return timetable
 
+	# type: true - exam, false - consult
+	def getGroupExam(self, first_row, group_col):
+		timetable  = []
+		cell_row = first_row - 1
+		while cell_row < 72:
+			cell_row += 1
+			ev_type = True	
+			try:
+				cell_type = self.sheet.cell_value(rowx = cell_row, colx = group_col).lower()
+				if cell_type and ((u'консульт' in cell_type) or (u'экзамен' in cell_type)):
+					if u'консульт' in cell_type:
+						ev_type = False	
+				else:
+					continue
+
+				cell_name = self.sheet.cell_value(rowx = cell_row+1, colx = group_col)
+				cell_room = self.sheet.cell_value(rowx = cell_row, colx = group_col+2)	
+				cell_time = self.sheet.cell_value(rowx = cell_row, colx = group_col+1) + 42139
+				time = str(dt.datetime(*xlrd.xldate_as_tuple(cell_time, 0)).time())[:5]
+				cell_day = self.sheet.cell_value(rowx = cell_row, colx = 2)[:2]
+			except:
+				continue
+
+			
+			event = {	
+				'type'	: ev_type,
+				'name'	: cell_name,
+				'room'	: cell_room,
+				'time'	: time,
+				'day'	: str(int(cell_day))
+			}	
+			timetable.append(event)	
+
+		return timetable
+
+	# type: 'lections/exams'
 	def getSchedule(self, document):
 		if not self.openDoc(document):
 			return {}
 
+		schdl_type	= 'lections'
 		group_col 	= 0 
 		group_row 	= 0
 		group_name 	= ''
 		schedule 	= {}
 		while (group_col < (self.sheet.ncols - 1)) and (group_row < 5):
-			try:
+			try: 
 				group_name = self.sheet.cell_value(rowx = group_row, colx = group_col)
+				if u'экзамен' in group_name.lower():
+					exam = True
 				match = re.search(u'[А-Яа-я]{4}[А-Яа-я]?-[0-9]{2}-[0-9]{2}', group_name)
 			except:
 				match = None
 			if match:
 				group_name = match.group(0).lower()
 				try:
-					schedule[group_name] = self.getGroupSchdl(group_row+2, group_col)
+					if exam:
+						schdl_type	= 'exams'
+						schedule[group_name] = self.getGroupExam(group_row+1, group_col)
+					else:
+						schedule[group_name] = self.getGroupSchdl(group_row+2, group_col)
 				except:
 					pass
 
@@ -193,5 +237,6 @@ class Parser:
 				group_row +=1	
 				group_col = 0 
 
-		return schedule
+		
+		return schdl_type, schedule
 
