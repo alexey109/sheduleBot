@@ -212,8 +212,8 @@ USER_MESSAGE = {
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
 	CMD_WHEN_EXAMS		: u'Осталось недель: {}, дней: {}.\nСеместр завершен на {}.',
 	CMD_MAP				: u'Аудитория {}',
-	CMD_EXAMS			: u'\n{} января в {}, аудитория {}:\n{}\n',
-	CMD_CONSULT			: u'\n{} января в {}, аудитория {}:\n{}\n',
+	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
+	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, аудитория {}:\n{} "{}"\n',
 }
 
