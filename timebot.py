@@ -234,12 +234,12 @@ class Timebot:
 				type_name,
 				event['name']
 			)
-		self.attachment = 'photo385457066_456239052'
+		self.attachment = 'photo385457066_456239054'
 
 		return events
 
 	def cmdCalendar(self, params):
-		self.attachment = 'photo385457066_456239052'
+		self.attachment = 'photo385457066_456239054'
 
 		return ''
 
