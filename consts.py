@@ -214,7 +214,7 @@ USER_MESSAGE = {
 	CMD_MAP				: u'Аудитория {}',
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
-	CMD_SESSION			: u'\n{} января в {}, ауд. {}:\n{} "{}"\n',
+	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 }
 
 # Error codes, will raise as exceptions.
