@@ -244,7 +244,7 @@ class Timebot:
 		return ''
 
 	def cmdZachet(self, params):
-		return CONST.USER_MESSAGE[CONST.СMD_ZACHET]
+		return CONST.USER_MESSAGE[CONST.CMD_ZACHET]
 
 	functions = {
 		CONST.CMD_UNIVERSAL			: cmdUniversal,
@@ -270,7 +270,7 @@ class Timebot:
 		CONST.CMD_CONSULT			: cmdConsult,
 		CONST.CMD_SESSION			: cmdSession,
 		CONST.CMD_CALENDAR			: cmdCalendar,
-		CONST.СMD_ZACHET			: cmdZachet,
+		CONST.CMD_ZACHET			: cmdZachet,
 	}
 
 	
