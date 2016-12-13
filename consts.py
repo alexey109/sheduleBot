@@ -54,6 +54,7 @@ CMD_EXAMS			= 320
 CMD_CONSULT			= 330
 CMD_SESSION			= 340
 CMD_CALENDAR		= 350
+СMD_ZACHET			= 360
 
 
 MARKERS = [
@@ -155,6 +156,7 @@ CMD_KEYWORDS = {
 		u'прошло[^й]', 
 		u'пройден',
 		u'семестр',
+		u'когда',
 		u'каникул'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
@@ -163,6 +165,7 @@ CMD_KEYWORDS = {
 	CMD_CONSULT			: [u'консул'],
 	CMD_SESSION			: [u'сессии'],
 	CMD_CALENDAR		: [u'календар'],
+	СMD_ZACHET			: [u'зачет']
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
 }
 
@@ -204,9 +207,10 @@ USER_PREMESSAGE = {
 	CMD_CONSULT			: u'Консультации.\n',
 	CMD_SESSION			: u'Расписание сессии.\n',
 	CMD_CALENDAR		: u'Календарь',
+	СMD_ZACHET			: u'',
 }
 
-USER_MESSAGE = {	
+USER_MESSAGE = {
 	CMD_UNIVERSAL		: u'\n{} пара ({}, {}):\n{}\n',
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
@@ -215,6 +219,8 @@ USER_MESSAGE = {
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
+	СMD_ZACHET			: u'Расписания зачетной недели у бота нет, '\
+		+ 'но есть расписание экзаменов и консультации.\nmirea.ru/students/schedule/'
 }
 
 # Error codes, will raise as exceptions.
