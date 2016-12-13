@@ -54,7 +54,7 @@ CMD_EXAMS			= 320
 CMD_CONSULT			= 330
 CMD_SESSION			= 340
 CMD_CALENDAR		= 350
-СMD_ZACHET			= 360
+CMD_ZACHET			= 360
 
 
 MARKERS = [
@@ -165,7 +165,7 @@ CMD_KEYWORDS = {
 	CMD_CONSULT			: [u'консул'],
 	CMD_SESSION			: [u'сессии'],
 	CMD_CALENDAR		: [u'календар'],
-	СMD_ZACHET			: [u'зачет']
+	CMD_ZACHET			: [u'зачет']
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
 }
 
@@ -207,7 +207,7 @@ USER_PREMESSAGE = {
 	CMD_CONSULT			: u'Консультации.\n',
 	CMD_SESSION			: u'Расписание сессии.\n',
 	CMD_CALENDAR		: u'Календарь',
-	СMD_ZACHET			: u'',
+	CMD_ZACHET			: u'',
 }
 
 USER_MESSAGE = {
@@ -219,7 +219,7 @@ USER_MESSAGE = {
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
-	СMD_ZACHET			: u'Расписания зачетной недели у бота нет, '\
+	CMD_ZACHET			: u'Расписания зачетной недели у бота нет, '\
 		+ 'но есть расписание экзаменов и консультации.\nmirea.ru/students/schedule/'
 }
 
