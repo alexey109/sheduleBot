@@ -222,6 +222,10 @@ class Parser:
 				match = re.search(u'[А-Яа-я]{4}[А-Яа-я]?-[0-9]{2}-[0-9]{2}', group_name)
 			except:
 				match = None
+
+			if u'зачет' in group_name.lower():
+				raise Exception
+
 			if match:
 				group_name = match.group(0).lower()
 				try:
