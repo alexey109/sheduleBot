@@ -209,6 +209,7 @@ class Parser:
 			return {}
 
 		schdl_type	= 'lections'
+		exam		= False
 		group_col 	= 0 
 		group_row 	= 0
 		group_name 	= ''
