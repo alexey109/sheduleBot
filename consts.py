@@ -163,9 +163,9 @@ CMD_KEYWORDS = {
 	CMD_MAP				: [u'[абвгдАБВГД]\-?[1-9][0-9абвгдм\-]{0,4}'],
 	CMD_EXAMS			: [u'экзамен'],
 	CMD_CONSULT			: [u'консул'],
-	CMD_SESSION			: [u'сессии'],
+	CMD_SESSION			: [u'сесси[яи]'],
 	CMD_CALENDAR		: [u'календар'],
-	CMD_ZACHET			: [u'зачет']
+	CMD_ZACHET			: [u'зач[её]т']
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
 }
 
