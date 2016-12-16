@@ -210,7 +210,7 @@ USER_PREMESSAGE = {
 	CMD_SESSION			: u'Расписание сессии.\n',
 	CMD_CALENDAR_JN		: u'Календарь на январь',
 	CMD_CALENDAR_DC		: u'Календарь на декабрь',
-	CMD_ZACHET			: u'Зачеты.\n',
+	CMD_ZACHET			: u'Зачеты.',
 }
 
 USER_MESSAGE = {
@@ -222,7 +222,7 @@ USER_MESSAGE = {
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
-	CMD_ZACHET			: u'\n{} дек. на {} паре{}:\n{}\n',
+	CMD_ZACHET			: u'\n{} пара{}\n{}\n',
 }
 
 # Error codes, will raise as exceptions.

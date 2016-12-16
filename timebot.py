@@ -255,14 +255,17 @@ class Timebot:
 			raise Exception(CONST.ERR_GROUP_NOT_FOUND)
 		
 		events = ''
+		prev_day = 0
 		for event in schedule:
+			if prev_day <> event['day']:
+				events += '\n\n\n' + str(event['day']) + u' декабря:\n' 
 			room =  '' if event['room'] == '-' else u', в ' + event['room']  	
 			events += CONST.USER_MESSAGE[CONST.CMD_ZACHET].format(
-				event['day'],
 				event['numb'],
 				room,
 				event['name']
 			)
+			prev_day = event['day']
 		self.attachment = 'photo385457066_456239062'
 
 		return events
