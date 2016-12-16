@@ -258,7 +258,7 @@ class Timebot:
 		prev_day = 0
 		for event in schedule:
 			if prev_day <> event['day']:
-				events += '\n-----------\n' + str(event['day']) + u' декабря:\n' 
+				events += '\n___________\n' + str(event['day']) + u' декабря:\n' 
 			room =  '' if event['room'] == '-' else u', в ' + event['room']  	
 			events += CONST.USER_MESSAGE[CONST.CMD_ZACHET].format(
 				event['numb'],
