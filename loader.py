@@ -16,7 +16,7 @@ import parser as pr
 optparser = OptionParser()
 optparser.add_option("-t", "--type", 
 	dest="type", 
-	help="set schedule type (lections/exams)", 
+	help="set schedule type (lections/exams/zachet)", 
 	default='lections')
 optparser.add_option("-d", "--download", 
 	dest="download", 
@@ -66,6 +66,13 @@ for doc in documents:
 	except:
 		continue
 
+	if schdl_type == user_options.type == 'zachet':
+		for group in schedule:
+			try:
+				a = db.zachet.find({'group':group})[0]['schedule']
+				db.zachet.update_one({'group': group},{'$set':{'schedule': schedule[group]}})
+			except:
+				db.zachet.insert_one({'group': group, 'schedule': schedule[group]})
 	if schdl_type == user_options.type == 'exams':
 		for group in schedule:
 			try:
@@ -80,6 +87,4 @@ for doc in documents:
 				db.schedule.update_one({'group': group},{'$set':{'schedule': schedule[group]}})
 			except:
 				db.schedule.insert_one({'group': group, 'schedule': schedule[group]})
-
-
 

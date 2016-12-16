@@ -234,17 +234,38 @@ class Timebot:
 				type_name,
 				event['name']
 			)
-		self.attachment = 'photo385457066_456239054'
+		self.attachment = 'photo385457066_456239061'
 
 		return events
 
-	def cmdCalendar(self, params):
-		self.attachment = 'photo385457066_456239054'
+	def cmdCalendarJn(self, params):
+		self.attachment = 'photo385457066_456239061'
+
+		return ''
+
+	def cmdCalendarDc(self, params):
+		self.attachment = 'photo385457066_456239062'
 
 		return ''
 
 	def cmdZachet(self, params):
-		return CONST.USER_MESSAGE[CONST.CMD_ZACHET]
+		try:
+			schedule = self.db.zachet.find({'group':params['group']})[0]['schedule']
+		except:
+			raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+		
+		events = ''
+		for event in schedule:
+			room =  '' if event['room'] == '-' else u', в ' + event['room']  	
+			events += CONST.USER_MESSAGE[CONST.CMD_ZACHET].format(
+				event['day'],
+				event['numb'],
+				room,
+				event['name']
+			)
+		self.attachment = 'photo385457066_456239062'
+
+		return events
 
 	functions = {
 		CONST.CMD_UNIVERSAL			: cmdUniversal,
@@ -269,7 +290,8 @@ class Timebot:
 		CONST.CMD_EXAMS				: cmdExams,
 		CONST.CMD_CONSULT			: cmdConsult,
 		CONST.CMD_SESSION			: cmdSession,
-		CONST.CMD_CALENDAR			: cmdCalendar,
+		CONST.CMD_CALENDAR_JN		: cmdCalendarJn,
+		CONST.CMD_CALENDAR_DC		: cmdCalendarDc,
 		CONST.CMD_ZACHET			: cmdZachet,
 	}
 

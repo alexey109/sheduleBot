@@ -53,8 +53,9 @@ CMD_MAP				= 310
 CMD_EXAMS			= 320
 CMD_CONSULT			= 330
 CMD_SESSION			= 340
-CMD_CALENDAR		= 350
-CMD_ZACHET			= 360
+CMD_CALENDAR_JN		= 350
+CMD_CALENDAR_DC		= 360
+CMD_ZACHET			= 370
 
 
 MARKERS = [
@@ -164,7 +165,8 @@ CMD_KEYWORDS = {
 	CMD_EXAMS			: [u'экзамен'],
 	CMD_CONSULT			: [u'консул'],
 	CMD_SESSION			: [u'сесси[яи]'],
-	CMD_CALENDAR		: [u'календар'],
+	CMD_CALENDAR_JN		: [u'январ'],
+	CMD_CALENDAR_DC		: [u'декабр'],
 	CMD_ZACHET			: [u'зач[её]т']
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
 }
@@ -206,8 +208,9 @@ USER_PREMESSAGE = {
 	CMD_EXAMS			: u'Экзамены.\n',
 	CMD_CONSULT			: u'Консультации.\n',
 	CMD_SESSION			: u'Расписание сессии.\n',
-	CMD_CALENDAR		: u'Календарь',
-	CMD_ZACHET			: u'',
+	CMD_CALENDAR_JN		: u'Календарь на январь',
+	CMD_CALENDAR_DC		: u'Календарь на декабрь',
+	CMD_ZACHET			: u'Зачеты.\n',
 }
 
 USER_MESSAGE = {
@@ -219,8 +222,7 @@ USER_MESSAGE = {
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
-	CMD_ZACHET			: u'Расписания зачетной недели у бота нет, '\
-		+ u'но есть расписание экзаменов и консультации.\nmirea.ru/students/schedule/'
+	CMD_ZACHET			: u'\n{} дек. на {} паре{}:\n{}\n',
 }
 
 # Error codes, will raise as exceptions.
@@ -280,7 +282,7 @@ MAP_DATA = [
 		'desc'	: ''
 	},
 	{
-		'vk_id'	: '456239043',
+		'vk_id'	: '456239055',
 		'name'	: 'A-2-left-middle',
 		'nam_ru': u'а',
 		'rooms'	: u'218, 8, 217, 7, 217, 7, 216, 6, 215, 5, 214, 2142,2141',
@@ -294,7 +296,7 @@ MAP_DATA = [
 		'desc'	: ''
 	},
 	{
-		'vk_id'	: '456239045',
+		'vk_id'	: '456239056',
 		'name'	: 'A-2-right-middle',
 		'nam_ru': u'а',
 		'rooms'	: u'213,2132,2131,212,4,211,3,210,2,209,1',
@@ -308,17 +310,17 @@ MAP_DATA = [
 		'desc'	: ''
 	},
 	{
-		'vk_id'	: '456239047',
+		'vk_id'	: '456239057',
 		'name'	: 'A-3-left-middle',
 		'nam_ru': u'а',
 		'rooms'	: u'324,18,17,323,322,16,15,321,320,14,319',
 		'desc'	: ''
 	},
 	{
-		'vk_id'	: '456239048',
+		'vk_id'	: '456239058',
 		'name'	: 'A-3-right-middle',
 		'nam_ru': u'а',
-		'rooms'	: u'318, 13,317,316,12,11,315,314,10,9,313',
+		'rooms'	: u'318,13,317,316,12,11,315,314,10,9,313',
 		'desc'	: ''
 	},
 	{
@@ -329,17 +331,17 @@ MAP_DATA = [
 		'desc'	: ''
 	},
 	{
-		'vk_id'	: '456239049',
+		'vk_id'	: '456239059',
 		'name'	: 'A-4-left-end',
 		'nam_ru': u'а',
-		'rooms'	: u'418а,425,427,429,438,436,434,433,430,428,426',
+		'rooms'	: u'18а,425,427,429,438,436,434,433,430,428,426',
 		'desc'	: ''
 	},
 	{
-		'vk_id'	: '456239050',
+		'vk_id'	: '456239060',
 		'name'	: 'A-4-middle',
 		'nam_ru': u'а',
-		'rooms'	: u'423,426,422,420,420а,419,439,118,417,416',
+		'rooms'	: u'423,426,422,420,420а,419,439,418,417,416',
 		'desc'	: ''
 	},
 	{

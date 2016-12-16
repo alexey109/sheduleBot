@@ -203,13 +203,55 @@ class Parser:
 
 		return timetable
 
-	# type: 'lections/exams'
+	def getGroupZachet(self, group_row, group_col):
+		timetable  = []
+		cell_number = 0
+		for cell_row in range(group_row, group_row + 6*6):
+			cell_txt = self.sheet.cell_value(rowx = cell_row, colx = group_col)
+			if cell_txt:
+				lection_numb = cell_number % 6 + 1
+				classroom = self.getClassroom(self.sheet.cell_value(rowx = cell_row, colx = group_col+1))
+				room = '-'
+				for r in classroom:
+					if r:
+						room = r
+						break
+
+				dates = re.findall('\d\d.\d\d.\d\d', cell_txt)
+
+				for d in dates:
+					cell_txt = cell_txt.replace(d, '')
+
+				name = ''
+				for l in cell_txt:
+					if re.search(u'[А-Яа-я.\s]', l):
+						name += l
+
+				name = name.replace('\n','').strip()			
+
+				for d in dates:
+					event = {
+						'day'	: int(d[:2]),
+						'name'	: name,
+						'room'	: room,
+						'numb'	: lection_numb				
+					}
+					timetable.append(event)
+
+			cell_number += 1
+
+		timetable.sort(key=lambda t:t['day'])
+		return timetable
+
+
+	# type: 'lections/exams/zachet'
 	def getSchedule(self, document):
 		if not self.openDoc(document):
 			return {}
 
 		schdl_type	= 'lections'
 		exam		= False
+		zachet		= False
 		group_col 	= 0 
 		group_row 	= 0
 		group_name 	= ''
@@ -219,12 +261,11 @@ class Parser:
 				group_name = self.sheet.cell_value(rowx = group_row, colx = group_col)
 				if u'экзамен' in group_name.lower():
 					exam = True
+				elif u'зачет' in group_name.lower():
+					zachet = True
 				match = re.search(u'[А-Яа-я]{4}[А-Яа-я]?-[0-9]{2}-[0-9]{2}', group_name)
 			except:
 				match = None
-
-			if u'зачет' in group_name.lower():
-				raise Exception
 
 			if match:
 				group_name = match.group(0).lower()
@@ -232,6 +273,9 @@ class Parser:
 					if exam:
 						schdl_type	= 'exams'
 						schedule[group_name] = self.getGroupExam(group_row+1, group_col)
+					elif zachet:
+						schdl_type	= 'zachet'
+						schedule[group_name] = self.getGroupZachet(group_row+2, group_col)
 					else:
 						schedule[group_name] = self.getGroupSchdl(group_row+2, group_col)
 				except:
