@@ -344,7 +344,7 @@ class Timebot:
 				{'vk_id':vk_id, 'chat': is_chat},
 				{'$set': {'group_name': group}}
 			)
-			answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group)
+			answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group.upper())
 		elif group:
 			self.db.users.insert_one({
 				'vk_id': vk_id, 
