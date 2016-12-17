@@ -290,12 +290,14 @@ class Timebot:
 			raise Exception(CONST.ERR_GROUP_NOT_FOUND)
 		
 		room = ''
+		name = ''
 		is_lection = False
 		for event in schedule:
 			if (event['day'] == params['day']) \
 			and (self.isThatWeek(event['week'], params['week']))\
 			and (event['numb'] == lesson):
 				room = event['room']
+				name = event['name']
 				is_lection = True
 				break
 		if not is_lection and not room:
@@ -309,7 +311,7 @@ class Timebot:
 		else:
 			raise Exception(CONST.ERR_NO_ROOM)
 
-		return CONST.USER_MESSAGE[CONST.CMD_WHERE].format(room.upper(), floor['desc'])	
+		return CONST.USER_MESSAGE[CONST.CMD_WHERE].format(room.upper(), name, floor['desc'])	
 		
 
 	functions = {
