@@ -345,7 +345,7 @@ class Timebot:
 	}
 
 	
-	def findKeywords(self, words, text):
+	def findKeywords(self, words, text):	
 		keyword = {}
 		for idx, word in enumerate(words):
 			try:
@@ -354,6 +354,7 @@ class Timebot:
 				continue
 			if result:
 				keyword = {'idx': idx, 'word': result}
+				text = text.replace('result', '')
 				break
 		return keyword
 

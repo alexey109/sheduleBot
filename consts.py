@@ -123,7 +123,7 @@ CHAT_KEYWORDS = (
 	u'бот'
 )
 
-# Keywords regexp for every command.
+# Keywords regexp for every command. Order is important!
 CMD_KEYWORDS = {		
 	CMD_FEEDBACK		: [
 		u'разработчику', 
@@ -149,7 +149,6 @@ CMD_KEYWORDS = {
 		u'делаешь',
 		u'команды'
 	],
-	CMD_LECTION_NUMB	: NUMB_NAMES,
 	CMD_POLITE			: [u'спасибо', u'спс'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', 'звонк'],
@@ -170,7 +169,8 @@ CMD_KEYWORDS = {
 	CMD_CALENDAR_JN		: [u'календар.*январ'],
 	CMD_CALENDAR_DC		: [u'календар.*декабр'],
 	CMD_MYGROUP			: [u'запомн',u'сохран'],
-	CMD_WHERE			: [u'где', u'покажи']
+	CMD_WHERE			: [u'где', u'покажи'],
+	CMD_LECTION_NUMB	: NUMB_NAMES,
 }
 
 USER_PREMESSAGE = {
