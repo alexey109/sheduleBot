@@ -162,12 +162,12 @@ CMD_KEYWORDS = {
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
 	CMD_MAP				: [u'[абвгдАБВГД]\-?[1-9][0-9абвгдм\-]{0,4}'],
+	CMD_ZACHET			: [u'зач[её]т'],
 	CMD_EXAMS			: [u'экзамен'],
 	CMD_CONSULT			: [u'консул'],
 	CMD_SESSION			: [u'сесси[яи]'],
 	CMD_CALENDAR_JN		: [u'январ'],
 	CMD_CALENDAR_DC		: [u'декабр'],
-	CMD_ZACHET			: [u'зач[её]т'],
 	CMD_MYGROUP			: [u'как.*м.*групп'],
 	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
 }
@@ -206,13 +206,13 @@ USER_PREMESSAGE = {
 		+ u'Каникулы с 31 января по 5 февраля.\n\n',
 	CMD_FIND_LECTION	: u'',
 	CMD_MAP				: u'',	
+	CMD_ZACHET			: u'Зачеты.',
 	CMD_EXAMS			: u'Экзамены.\n',
 	CMD_CONSULT			: u'Консультации.\n',
-	CMD_SESSION			: u'Расписание сессии.\n',
+	CMD_SESSION			: u'Расписание экзаменационной сессии.\n',
 	CMD_CALENDAR_JN		: u'Календарь на январь',
 	CMD_CALENDAR_DC		: u'Календарь на декабрь',
-	CMD_ZACHET			: u'Зачеты.',
-	CMD_MYGROUP			: u''
+	CMD_MYGROUP			: u'',
 }
 
 USER_MESSAGE = {
