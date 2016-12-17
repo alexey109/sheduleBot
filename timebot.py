@@ -166,11 +166,13 @@ class Timebot:
 				if floor['nam_ru'][:1] == campus:
 					for map_room in floor['rooms'].split(','):
 						if room == map_room.replace(' ', ''):
+							description = floor['desc']
 							photo_vk_id = floor['vk_id']
 							break
 		else:
 			for floor in CONST.MAP_DATA:
 				if floor['nam_ru'] == (campus + room[:1]):
+					description = floor['desc']
 					photo_vk_id = floor['vk_id']
 					break
 
@@ -179,7 +181,7 @@ class Timebot:
 		else:
 			return u'Аудитория не найдена.'
 
-		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(params['keyword']['word'].upper())
+		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(description)
 
 	def cmdExams(self, params):
 		try:
