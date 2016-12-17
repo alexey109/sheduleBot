@@ -224,7 +224,7 @@ class Parser:
 
 				name = ''
 				for l in cell_txt:
-					if re.search(u'[А-Яа-я.\d\(\)\s]', l):
+					if re.search(u'[А-Яа-я\.\d\(\)\s]', l):
 						name += l
 
 				name = name.replace('\n','').strip()			

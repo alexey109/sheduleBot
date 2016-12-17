@@ -270,6 +270,10 @@ class Timebot:
 
 		return events
 
+	def cmdMyGroup(self, params):
+
+		return params['group'].upper()
+
 	functions = {
 		CONST.CMD_UNIVERSAL			: cmdUniversal,
 		CONST.CMD_NEXT 				: cmdNext,
@@ -296,6 +300,7 @@ class Timebot:
 		CONST.CMD_CALENDAR_JN		: cmdCalendarJn,
 		CONST.CMD_CALENDAR_DC		: cmdCalendarDc,
 		CONST.CMD_ZACHET			: cmdZachet,
+		CONST.CMD_MYGROUP			: cmdMyGroup,
 	}
 
 	
@@ -346,7 +351,7 @@ class Timebot:
 				'chat': is_chat, 
 				'group_name': group
 			})
-			answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group)
+			answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group.upper())
 			answer += CONST.USER_PREMESSAGE[CONST.CMD_HELP]
 		elif found_group:
 			group = found_group
