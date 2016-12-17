@@ -53,6 +53,26 @@ class Timebot:
 			result = str(base_week) in re.split(r'[\s,]', native_week)
 		return result
 
+	def findFloor(self, room_native):
+		room_native = room_native.lower().replace('-', '')
+		campus 	= room_native[:1]
+		room 	= room_native[1:]
+
+		floor_found = {}
+		if campus == u'а':
+			for floor in CONST.MAP_DATA:
+				if floor['nam_ru'][:1] == campus:
+					for map_room in floor['rooms'].split(','):
+						if room == map_room.replace(' ', ''):
+							floor_found = floor
+		else:
+			for floor in CONST.MAP_DATA:
+				if floor['nam_ru'] == (campus + room[:1]):
+					floor_found = floor
+		
+		return floor_found
+
+	#TODO Rewrite: this function must return lesson object, NOT string!
 	def getLessons(self, group, day, week, lstart = 1, lfinish = 6):
 		try:
 			schedule = self.db.schedule.find({'group':group})[0]['schedule']
@@ -156,32 +176,14 @@ class Timebot:
 		return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, days, percent)
 
 	def cmdMap(self, params):
-		keyword = params['keyword']['word'].lower().replace('-', '')
-		campus 	= keyword[:1]
-		room 	= keyword[1:]
+		floor = self.findFloor(params['keyword']['word'])
 
-		photo_vk_id = ''
-		if campus == u'а':
-			for floor in CONST.MAP_DATA:
-				if floor['nam_ru'][:1] == campus:
-					for map_room in floor['rooms'].split(','):
-						if room == map_room.replace(' ', ''):
-							description = floor['desc']
-							photo_vk_id = floor['vk_id']
-							break
+		if floor:
+			self.attachment = 'photo385457066_' + floor['vk_id']
 		else:
-			for floor in CONST.MAP_DATA:
-				if floor['nam_ru'] == (campus + room[:1]):
-					description = floor['desc']
-					photo_vk_id = floor['vk_id']
-					break
+			raise Exception(CONST.ERR_NO_ROOM)
 
-		if photo_vk_id:
-			self.attachment = 'photo385457066_' + photo_vk_id
-		else:
-			return u'Аудитория не найдена.'
-
-		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(description)
+		return CONST.USER_MESSAGE[CONST.CMD_MAP].format(floor['desc'])
 
 	def cmdExams(self, params):
 		try:
@@ -276,6 +278,40 @@ class Timebot:
 
 		return params['group'].upper()
 
+	def cmdWhere(self, params):
+		if params['lesson']:
+			lesson = params['lesson']
+		else:
+			lesson = int(self.getLessonNumb(dt.datetime.now().time())) 
+			
+		try:
+			schedule = self.db.schedule.find({'group':params['group']})[0]['schedule']
+		except:
+			raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+		
+		room = ''
+		is_lection = False
+		for event in schedule:
+			if (event['day'] == params['day']) \
+			and (self.isThatWeek(event['week'], params['week']))\
+			and (event['numb'] == lesson):
+				room = event['room']
+				is_lection = True
+				break
+		if not is_lection and not room:
+			raise Exception(CONST.ERR_NO_LECTIONS)
+		elif not room:
+			raise Exception(CONST.ERR_NO_ROOM)
+
+		floor = self.findFloor(room)
+		if floor:
+			self.attachment = 'photo385457066_' + floor['vk_id']
+		else:
+			raise Exception(CONST.ERR_NO_ROOM)
+
+		return CONST.USER_MESSAGE[CONST.CMD_WHERE].format(room.upper(), floor['desc'])	
+		
+
 	functions = {
 		CONST.CMD_UNIVERSAL			: cmdUniversal,
 		CONST.CMD_NEXT 				: cmdNext,
@@ -303,6 +339,7 @@ class Timebot:
 		CONST.CMD_CALENDAR_DC		: cmdCalendarDc,
 		CONST.CMD_ZACHET			: cmdZachet,
 		CONST.CMD_MYGROUP			: cmdMyGroup,
+		CONST.CMD_WHERE				: cmdWhere,
 	}
 
 	
@@ -531,9 +568,17 @@ class Timebot:
 				fullmsg = str(message['chat_id' if is_chat else 'uid']) + answer 
 				if not fullmsg in self.msg_stack:
 					if is_chat:
-						self.api.messages.send(chat_id=message['chat_id'], message=answer, attachment = self.attachment)
+						self.api.messages.send(
+							chat_id=message['chat_id'], 
+							message=answer, 
+							attachment = self.attachment
+						)
 					else:
-						self.api.messages.send(user_id=message['uid'], message=answer, attachment =self.attachment)
+						self.api.messages.send(
+							user_id=message['uid'], 
+							message=answer, 
+							attachment =self.attachment
+						)
 
 					self.attachment = None
 					time.sleep(1)

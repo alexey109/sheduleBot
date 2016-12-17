@@ -56,6 +56,7 @@ CMD_SESSION			= 340
 CMD_CALENDAR_JN		= 350
 CMD_CALENDAR_DC		= 360
 CMD_ZACHET			= 370
+CMD_WHERE			= 380
 
 
 MARKERS = [
@@ -168,8 +169,8 @@ CMD_KEYWORDS = {
 	CMD_SESSION			: [u'сесси[яи]'],
 	CMD_CALENDAR_JN		: [u'январ'],
 	CMD_CALENDAR_DC		: [u'декабр'],
-	CMD_MYGROUP			: [u'(запомн)|(сохран)'],
-	#CMD_FIND_LECTION	: [u'когда[\s\w\\/]*']
+	CMD_MYGROUP			: [u'запомн',u'сохран'],
+	CMD_WHERE			: [u'где', u'покажи']
 }
 
 USER_PREMESSAGE = {
@@ -194,7 +195,7 @@ USER_PREMESSAGE = {
 		+ u'научится отвечать на любые формы вопросов. '\
 		+ u'В групповых беседах надо обращаться "раписание, ..."\n'\
 		+ u'Полная инструкция есть на странице бота.\n\n'
-		+ u'Во избежании капчи и блокировки есть ограничения:\n'\
+		+ u'Во избежании блокировки есть ограничения:\n'\
 		+ u'- бот отвечает только на понятные ему сообщения.\n'\
 		+ u'- бот НЕ ПИШЕТ один и тот же ответ больше ОДНОГО раза.\n'\
 		+ u'\nПримеры:\n'\
@@ -213,6 +214,7 @@ USER_PREMESSAGE = {
 	CMD_CALENDAR_JN		: u'Календарь на январь',
 	CMD_CALENDAR_DC		: u'Календарь на декабрь',
 	CMD_MYGROUP			: u'',
+	CMD_WHERE			: u'',
 }
 
 USER_MESSAGE = {
@@ -225,6 +227,7 @@ USER_MESSAGE = {
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 	CMD_ZACHET			: u'\n{} пара{}\n{}\n',
+	CMD_WHERE			: u'Аудитория {}. {}',
 }
 
 # Error codes, will raise as exceptions.
@@ -235,6 +238,7 @@ ERR_NO_GROUP		= 3
 ERR_NO_COMMAND		= 4
 ERR_NO_LECTIONS		= 5
 ERR_NO_TEACHER		= 6
+ERR_NO_ROOM			= 7
 	
 ERR_MESSAGES = {
 	ERR_UNDEFINED		: u'Что-то пошло не так, повторите запрос еще раз.',
@@ -244,7 +248,8 @@ ERR_MESSAGES = {
 	ERR_NO_GROUP		: u'Напишите из какой вы группы.\nОбразец: расписание, ИКБО-04-15',
 	ERR_NO_COMMAND		: u'Неизвестная команда.',
 	ERR_NO_LECTIONS		: u'Пар нет',
-	ERR_NO_TEACHER		: u'В расписании преподаватель не указан.'
+	ERR_NO_TEACHER		: u'В расписании преподаватель не указан.',
+	ERR_NO_ROOM			: u'Аудитория не найдена',
 }
 
 MAP_DATA = [
