@@ -149,7 +149,7 @@ CMD_KEYWORDS = {
 		u'делаешь',
 		u'команды'
 	],
-	CMD_POLITE			: [u'спасибо', u'спс'],
+	CMD_POLITE			: [u'спас', u'спс'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', 'звонк'],
 	CMD_WHEN_EXAMS		: [
@@ -157,6 +157,7 @@ CMD_KEYWORDS = {
 		u'прошло[^й]', 
 		u'пройден',
 		u'семестр',
+		u'сколько',
 		u'когда',
 		u'каникул'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
@@ -239,6 +240,7 @@ ERR_NO_COMMAND		= 4
 ERR_NO_LECTIONS		= 5
 ERR_NO_TEACHER		= 6
 ERR_NO_ROOM			= 7
+ERR_PERIOD_ENDS		= 8
 	
 ERR_MESSAGES = {
 	ERR_UNDEFINED		: u'Что-то пошло не так, повторите запрос еще раз.',
@@ -250,6 +252,7 @@ ERR_MESSAGES = {
 	ERR_NO_LECTIONS		: u'занятий нет',
 	ERR_NO_TEACHER		: u'В расписании преподаватель не указан.',
 	ERR_NO_ROOM			: u'Аудитория не найдена',
+	ERR_PERIOD_ENDS		: u'занятий нет, смотрите расписание сессии.'
 }
 
 MAP_DATA = [
