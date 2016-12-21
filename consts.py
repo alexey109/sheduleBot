@@ -170,7 +170,7 @@ CMD_KEYWORDS = {
 	CMD_CALENDAR_JN		: [u'календар.*январ'],
 	CMD_CALENDAR_DC		: [u'календар.*декабр'],
 	CMD_MYGROUP			: [u'запомн',u'сохран'],
-	CMD_WHERE			: [u'где', u'покажи'],
+	#CMD_WHERE			: [u'где', u'покажи'],
 	CMD_LECTION_NUMB	: NUMB_NAMES,
 }
 
@@ -252,7 +252,7 @@ ERR_MESSAGES = {
 	ERR_NO_LECTIONS		: u'занятий нет',
 	ERR_NO_TEACHER		: u'В расписании преподаватель не указан.',
 	ERR_NO_ROOM			: u'Аудитория не найдена',
-	ERR_PERIOD_ENDS		: u'занятий нет, смотрите расписание зачетов/экзамнов.'
+	ERR_PERIOD_ENDS		: u'занятий нет, смотрите расписание зачетов/экзаменов.'
 }
 
 MAP_DATA = [
