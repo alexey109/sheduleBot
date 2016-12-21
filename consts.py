@@ -175,7 +175,7 @@ CMD_KEYWORDS = {
 }
 
 USER_PREMESSAGE = {
-	CMD_UNIVERSAL		: u'Пары{markers}:\n',
+	CMD_UNIVERSAL		: u'(для расписания сессии спросите про зачеты/экзамены)\nПары{markers}:\n',
 
 	CMD_NOW				: u' сейчас',
 	CMD_TODAY			: u' сегодня',
