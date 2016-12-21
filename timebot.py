@@ -500,9 +500,6 @@ class Timebot:
 			'keyword'	: msg_cmd['keyword']
 		}
 
-		if date.weekday() >= 3:
-			raise Exception(CONST.ERR_PERIOD_ENDS)
-
 		# Check markers after apply
 		header = ''
 		for cmd, kwd in markers.items():
