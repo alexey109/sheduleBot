@@ -261,6 +261,8 @@ class Timebot:
 		events = ''
 		prev_day = 0
 		for event in schedule:
+			if event['day'] < dt.datetime.today().day:
+				continue
 			if prev_day <> event['day']:
 				events += '\n____________\n' + str(event['day']) + u' декабря:\n' 
 			room =  '' if event['room'] == '-' else u', в ' + event['room']  	
