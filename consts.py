@@ -135,7 +135,7 @@ CMD_KEYWORDS = {
 	CMD_TODAY 			: [u'сегодня', u'^\s*расписание$', u'^\s*пар[аы]$'],
 	CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 	CMD_YESTERDAY		: [u'вчера'],
-	CMD_WEEK			: [u'неделя'],
+	#CMD_WEEK			: [u'неделя'],
 	CMD_NOW				: [u'сейчас', u'текущая'],
 	CMD_DAY_OF_WEEK 	: DAY_NAMES,
 	CMD_HELP			: [
