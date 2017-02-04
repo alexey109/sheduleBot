@@ -82,7 +82,7 @@ def getLessons(params, lstart = 1, lfinish = 8):
 		and lesson['numb'] <= lfinish:
 			name = lesson['name'] + ' '
 			for p in lesson['params']:
-				name += p
+				name += '(' + p + ')'
 			lesson_list.append({
 				'numb'	: lesson['numb'],
 				'room'	: lesson['room'], 
