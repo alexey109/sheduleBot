@@ -314,31 +314,33 @@ def cmdFor7days(params):
 		day_amount = int(re.search('[1-7]', params['keyword']['word']).group())
 	except:
 		day_amount = 7
-		
-	params['day'] = 'all'
-	if params['lnumb']:
-		lesson_list = getLessons(params, params['lnumb'], params['lnumb'])
-	else:
-		lesson_list = getLessons(params)
 	
 	text = ''
-	for i in range(1, day_amount+1):
+	for i in range(1, day_amount+1):	
 		date = params['date'] + dt.timedelta(days = i)
 		weekday = date.weekday()
+		
+		params['day'] 	= weekday
+		params['week']	= date.isocalendar()[1]
+		try:
+			if params['lnumb']:
+				lesson_list = getLessons(params, params['lnumb'], params['lnumb'])
+			else:
+				lesson_list = getLessons(params)
+		except:
+			continue
+
 		if weekday == 6:
 			continue
-		day_lessons = []
-		for lesson in lesson_list:
-			if lesson['weekday'] == weekday:
-				day_lessons.append(lesson)
-				
-		if len(day_lessons) == 0:
+			
+		if len(lesson_list) == 0:
 			continue
+			
 		dname = CONST.DAY_NAMES[weekday].title()
 		text += '_'*(len(dname) + len(dname)/2 + 6) + '\n' + dname + ' '+ date.strftime('%d.%m') + '\n'
-		text += formatLessons(day_lessons)
+		text += formatLessons(lesson_list)
 		text += '\n'
-	
+		
 	if len(text) == 0:
 		raise Exception(CONST.ERR_NO_LECTIONS)
 	
