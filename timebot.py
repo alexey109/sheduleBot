@@ -556,10 +556,7 @@ def genAnswer(params):
 	and not any(re.match('^' + word, params['text']) for word in CONST.CHAT_KEYWORDS):
 		raise Exception(CONST.ERR_SKIP)
 
-	try:
-		answer['text'] = analize(params)
-	except Exception as e:
-		print str(e)
+	answer['text'] = analize(params)
 	answer['attachment'] = attachment
 	
 	return answer
