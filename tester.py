@@ -2,94 +2,102 @@
 # -*- coding: UTF-8 -*-
 
 import timebot
-import consts as ct
+import consts as CONST
 import logger as lg
+import parser as pr
+#import clients
 
-# Test vk api responses
-'''
-tests = [
-	[
-		{
-			u'body': u'пары в пятницу у КТСО-04-15', 
-			u'uid': 10151100, 
-			u'title': u'ИКБО-04-15', 
-			u'chat_active': 
-			u'10151100,294731596', 
-			u'mid': 764, 
-			u'users_count': 3, 
-			u'chat_id': 3, 
-			u'date': 1475341811, 
-			u'admin_id': 10151100, 
-			u'read_state': 0, 
-			u'out': 0
-		},
-		'5'
-	],
-	[
-		{
-			u'body': u'пары дальше ИКБО-04-15', 
-			u'uid': 10151100, 
-			u'title': u'ИКБО-04-15', 
-			u'chat_active': 
-			u'10151100,294731596', 
-			u'mid': 764, 
-			u'users_count': 3, 
-			u'chat_id': 3, 
-			u'date': 1475341811, 
-			u'admin_id': 10151100, 
-			u'read_state': 0, 
-			u'out': 0
-		},
-		'Пар нет :)'
-	],
-]
-'''
 
-tests = [
-	[
+# VK API responses
+msg = {
+	u'count': 50803, 
+	u'items': [
 		{
-			u'body': u'икбо-06-15 понедельник', 
-			u'uid': 10151100, 
-			u'title': u'ИКБО-04-15', 
-			u'chat_active': 
-			u'10151100,294731596', 
-			u'mid': 764, 
-			u'users_count': 3, 
-			u'user_id': 534256,		
-			#u'chat_id': 3, 
-			u'date': 1475341811, 
-			u'admin_id': 10151100, 
-			u'read_state': 0, 
+			u'body': u'основное', 
+			u'user_id': 10151100, 
+			u'title': u' ... ', 
+			u'date': 1483795240, 
+			u'read_state': 1, 
+			u'id': 62097, 	
+			u'fwd_messages': [		
+				{
+					u'date': 1483795212, 
+					u'body': u'вложенное', 
+					u'user_id': 10151100
+				}
+			], 
 			u'out': 0
-		},
-		'Пар нет :)'
-	],
-	[	{
-			u'uid': 55377,
-			u'date': 1477254644,
-			u'out': 1,
-			u'user_id': 385457066,
-			u'read_state': 1,
-			u'title': ' ... ',
-			u'body': 'завтра',
-			u'random_id': -1852873250,
-			u'fwd_messages': [{
-				u'user_id': 10151100,
-				u'date': 1477254617,
-				u'body': '',
-				u'fwd_messages': [{
-					u'user_id': 10151100,
-					u'date': 1477252684,
-					u'body': u'неделя ИКБО-04-15'
-					}]
-			}]
 		}
 	]
-]
+}
 
-#bot = timebot.Timebot()
-#print bot.getMyAnswer(tests[1][0], False)
+msg_chat = {
+	u'count': 50804, 
+	u'items': [
+		{
+			u'body': u'сообщение', 	
+			u'user_id': 385457066, 
+			u'title': u'Расписание, Алексей_ИКБО-04-15', 
+			u'chat_active': [385457066, 294731596], 
+			u'users_count': 3, 
+			u'chat_id': 27, 
+			u'date': 1483795485, 
+			u'admin_id': 10151100, 
+			u'read_state': 1, 
+			u'id': 62099, 
+			u'out': 0
+		}
+	]
+}
+'''
+params = {
+	'msg_id'	: 123,
+	'user_id'	: 10151100,
+	'chat_id'	: 0,
+	'text'		: u'завтра 3 пара '
+}
+answ = timebot.genAnswer(params)
+print answ['text'], answ['attachment']
+'''
 
-logger = lg.Logger()
-logger.log(10, 'some error')
+
+parser = pr.Parser()
+schdl_type, res = parser.getSchedule('schedules/IT_2k_16-17_vesna_NOVOE.xlsx')
+for g, l in res.items():
+	if not g == u'икбо-04-15':
+		continue
+	for subj in l:	
+		'''
+		print u"Group: %s, Date: %s, Name: %s, Room: %s, Numb: %s" % (
+			g,
+			subj['day'],
+			subj['name'],	
+			subj['room'],
+			subj['numb'],
+		)
+
+		
+		print u"Group: %s, Type: %s, Name: %s, Room: %s, Day: %s, Time: %s" % (
+			g,
+			subj['type'],
+			subj['name'],	
+			subj['room'],
+			subj['day'],
+			subj['time']
+		)
+		'''
+	
+		print "Day: %d, Numb: %d, Room: %s, Week: %s, Name: %s, Teacher: %s, Params: s" % (
+			subj['day'],		
+			subj['numb'],		
+			subj['room'],		
+			subj['week'],		
+			subj['name'],	
+			subj['teacher'],
+			#str(subj['params']),					
+		)
+		
+		print '----'
+	break
+
 

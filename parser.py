@@ -2,22 +2,26 @@
 # -*- coding: UTF-8 -*-
 
 
-import xlrd
+from openpyxl import load_workbook
 import re
 import datetime as dt
+
+def saveGet(lst, idx, default):
+	try:
+		return lst[idx]
+	except:
+		return default
 
 # This class present schedule, wich store like regural excel-file. 
 # Now it can only show lection for special parameters, but in future
 # it'll could load ecxel document into database and work with it,
 # also new functions will be add like "when next lesson start" and etc.
 class Parser:
-
 	# Open excel-document with scpecified group
 	def openDoc(self, doc_name):
 		result = True
 		try:
-			self.sheet = xlrd.open_workbook(doc_name, formatting_info=True).sheet_by_index(0)
-			self.merged_cells = self.sheet.merged_cells
+			self.wb = load_workbook(filename = doc_name)
 		except:
 			result = False
 		return result
@@ -91,82 +95,106 @@ class Parser:
 		
 		return body
 
-	# Get classrooms values from cell with classroom
-	# Return type: list of strings
-	def getClassroom(self, cell_value):
-		if not cell_value:
-			return ['-']
-
-		return cell_value.split('\n')
-		#return re.findall(u'[А-Яа-я]*-[\d]*[А-Яа-я\-\d]*', cell_value)
-
 	# Primary function, that returns lection timetable from timetable document for special parametrs.
 	# Return type: string
-	def getGroupSchdl(self, group_row, group_col):
-		timetable  = []
-		cell_number = 0
-		for cell_row in range(group_row, group_row + 6*6):
-			text_cell_value = self.sheet.cell_value(rowx = cell_row, colx = group_col)
-			if text_cell_value:
-				lection_numb = cell_number % 6 + 1
-				day_numb = cell_number / 6
-				classroom = self.getClassroom(self.sheet.cell_value(rowx = cell_row, colx = group_col+1))
-				body_splt = self.splitBody(text_cell_value)
-				for idx in body_splt:
-					try:
-						if classroom[idx]:
-							room = classroom[idx]
-						elif body_splt.get(idx+1, 0):
-							room = '-'
-						else:
-							room = classroom[idx+1]
-					except:
-						room = '-'
+	def getGroupSchdl(self, schedule, sheet):
 	
-					# check parametr for lection number
-					appended = False
-					for i, param in enumerate(body_splt[idx]['params']):
-						if (u'п' in param) and (not u'подгр' in param):
-							for l in param:
-								try:	
-									lection = body_splt[idx].copy()
-									lection.update({
-										'day'	: day_numb,
-										'numb'	: int(l),
-										'room'	: room
-									})
-									timetable.append(lection)
-									appended = True
-								except:
-									pass
-					if appended:
-						continue
+		def isEventEqual(event1, event2):
+			equal = False
+			if event1['day'] == event2['day']	\
+			and event1['numb'] == event2['numb']	\
+			and event1['room'] == event2['room']	\
+			and event1['name'] == event2['name']	\
+			and event1['teacher'] == event2['teacher']:
+				try:
+					params = True
+					for i in range(0, len(event1['params'])):
+						if params and (event1['params'][i] != event2['params'][i]):
+							params = False
+				except:
+					params = False
 						
-					lection = body_splt[idx].copy()
-					lection.update({
-						'day'	: day_numb,
-						'numb'	: lection_numb,
-						'room'	: room
-					})
-					if lection['name']:
-						timetable.append(lection)
-
-					for crange in self.merged_cells:			
-						rlo, rhi, clo, chi = crange
-   						if (cell_row == rlo) and (group_col == clo):
-							for rowx in xrange(rlo+1, rhi):
-								lection = body_splt[idx].copy()
-								numb = (rowx - group_row) % 6 + 1
-								lection.update({
-									'day'	: day_numb,
-									'numb'	: numb,
-									'room'	: room
-								})
-								if lection['name']:
-									timetable.append(lection)
-			cell_number += 1
-
-		return timetable
+				if params and 'I' in event1['week'] and 'I' in event2['week']:
+					equal = True
+			return equal
+			
+		def checkFullDay(name):
+			keywords = [u'воен', u'производств.*практ', u'день.*самост']
+			find = False
+			for keyword in keywords:
+				if re.search(keyword, name.lower()):
+					find = True
+					break
+			return find
+	
+		for row in sheet.iter_rows(min_row=2, max_col=sheet.max_column, max_row=2):
+			for cell in row:
+				lector_flag = False
+				if not cell.internal_value:
+					continue
+				try:
+					match = re.search(u'[А-Яа-я]{4}[А-Яа-я]?-[0-9]{2}-[0-9]{2}', cell.internal_value)
+					if not match:
+						continue
+				except:
+					continue
+				j = cell.col_idx
+				group = cell.internal_value.lower()
+				lections = []
+				maybe_room	= sheet.cell(row = 3, column = j + 3).internal_value
+				if maybe_room and u'ауд' in maybe_room:
+					lector_flag = True
+				
+				for i in range(4, 76):
+					content = sheet.cell(row = i, column = j).internal_value
+					if not content:
+						continue
+					etype = sheet.cell(row = i, column = j+1).internal_value
+					etype = etype.split('\n') if etype else ''
+					if lector_flag:
+						lector	= sheet.cell(row = i, column = j+2).internal_value
+						rooms 	= sheet.cell(row = i, column = j+3).internal_value
+					else:
+						lector	= ''
+						rooms 	= sheet.cell(row = i, column = j+2).internal_value
+					rooms = rooms.split('\n') if rooms else []
+					
+					cell_day  = (i-4)/12
+					cell_numb = (i - cell_day*12)/2 - 1
+					cell_week = 'I' if (i - cell_day*12)%2 == 0 else 'II' 
+					info = self.splitBody(content)						
+					for i in range(0, len(info)):
+						event_type = saveGet(etype, i, '')
+						room = saveGet(rooms, i, '-')
+						
+						if len(info[i]['name']) < 2:
+							continue
+						event = {
+							'day'	: cell_day,
+							'numb'	: cell_numb,
+							'room'	: room,
+							'week'	: info[i]['week'] if info[i]['week'] else cell_week,
+							'name'	: info[i]['name'] + ' ' + event_type,
+							'teacher':info[i]['teacher'],
+							'params': info[i]['params']
+						}
+						
+						append_flag = True
+						for l in lections:
+							if isEventEqual(l, event):
+								l['week'] = ''
+								append_flag = False
+						
+						if append_flag:
+							if checkFullDay(event['name']):
+								event['week'] = ''
+								event['numb'] = 1
+							lections.append(event)
+						
+				
+				schedule[group] = lections
+		
+		return schedule
 
 	# type: true - exam, false - consult
 	def getGroupExam(self, first_row, group_col):
@@ -249,43 +277,32 @@ class Parser:
 		if not self.openDoc(document):
 			return {}
 
-		schdl_type	= 'lections'
-		exam		= False
-		zachet		= False
-		group_col 	= 0 
-		group_row 	= 0
-		group_name 	= ''
 		schedule 	= {}
-		while (group_col < (self.sheet.ncols - 1)) and (group_row < 5):
-			try: 
-				group_name = self.sheet.cell_value(rowx = group_row, colx = group_col)
-				if u'экзамен' in group_name.lower():
-					exam = True
-				elif u'зачет' in group_name.lower():
-					zachet = True
-				match = re.search(u'[А-Яа-я]{4}[А-Яа-я]?-[0-9]{2}-[0-9]{2}', group_name)
-			except:
-				match = None
-
-			if match:
-				group_name = match.group(0).lower()
-				try:
-					if exam:
-						schdl_type	= 'exams'
-						schedule[group_name] = self.getGroupExam(group_row+1, group_col)
-					elif zachet:
-						schdl_type	= 'zachet'
-						schedule[group_name] = self.getGroupZachet(group_row+2, group_col)
-					else:
-						schedule[group_name] = self.getGroupSchdl(group_row+2, group_col)
-				except:
-					pass
-
-			group_col += 1
-			if group_col == (self.sheet.ncols - 1):
-				group_row +=1	
-				group_col = 0 
-
+		for sheet in self.wb:
+			schdl_type	= 'lections'
+			exam		= False
+			zachet		= False
+			group_name 	= ''
+		
+			for row in sheet.iter_rows(min_row=1, max_col=sheet.max_column, max_row=3):
+				for cell in row:
+					try: 
+						group_name = cell.internal_value
+						if u'экзамен' in group_name.lower():
+							exam = True
+						elif u'зачет' in group_name.lower():
+							zachet = True
+					except:
+						match = None
+						
+			if exam:
+				schdl_type	= 'exams'
+				schedule[group_name] = self.getGroupExam(group_row+2, group_col)
+			elif zachet:
+				schdl_type	= 'zachet'
+				schedule[group_name] = self.getGroupZachet(group_row+2, group_col)
+			else:
+				schedule = self.getGroupSchdl(schedule, sheet)
 		
 		return schdl_type, schedule
 

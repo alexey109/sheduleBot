@@ -5,11 +5,16 @@ import datetime as dt
 import codecs
 
 import consts as CONST
+import re
 
 class Logger:
 	def fwrite(self, fname, text):	
 		with codecs.open(fname, 'a', 'utf-8') as f:	
-			f.write("%s: %s \n" % (dt.datetime.now(), text) )
+			f.write("{};{};{} \n".format(
+				dt.datetime.now().strftime('%Y.%m.%d'), 
+				dt.datetime.now().strftime('%H:%M:%S'), 
+				text) 
+			)
 			f.close()
 
 	def exception(self, e):
@@ -37,11 +42,26 @@ class Logger:
 	def parser(self, text):	
 		fname = CONST.LOG_DIR + CONST.LOG_PARSE_FILE
 		self.fwrite(fname, text)
+		
+	def parser(self, args):	
+		fname = CONST.LOG_DIR + CONST.LOG_STATC_FILE
+		with codecs.open(fname, 'a', 'utf-8') as f:	
+			f.write("%s;%s;%s;%s;%s \n" % (
+				dt.datetime.now().strftime('%Y.%m.%d'), 
+				dt.datetime.now().strftime('%H:%M:%S'), 
+				args[0], 
+				re.sub(u'\n', '', args[1]), 
+				re.sub(u'\n', '', args[2]))
+			)
+			f.close()
 
 
 	def log(self, code, arg):
 		if not CONST.LOG:
 			return None
+
+		if CONST.TEST:
+			print code, arg
 
 		try:
 			if code == CONST.LOG_ERROR:
@@ -53,6 +73,8 @@ class Logger:
 			elif code == CONST.LOG_MESGS:
 				self.messages(arg)
 			elif code == CONST.LOG_PARSE:
+				self.parser(arg)
+			elif code == CONST.LOG_STATC:
 				self.parser(arg)
 		except:
 			pass

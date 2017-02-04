@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-STACK_LEN = 30
+STACK_LEN 		= 50 	# messages
+USERS_QUEUE_LEN = 120 	# seconds
+USER_MSG_AMOUNT	= 5		# message amount for a user in USERS_QUEUE_LEN
 
 # Enable/disable logging everything.
-LOG	 = True
+LOG	 	= True
 LOG_DIR = 'log/'
 
 # Log type codes
@@ -13,6 +15,7 @@ LOG_WLOAD	= 20
 LOG_FBACK	= 30
 LOG_MESGS	= 40
 LOG_PARSE	= 50
+LOG_STATC	= 50
 
 # Log file names
 LOG_ERROR_FILE 	= 'exceptions.txt'
@@ -20,6 +23,7 @@ LOG_WLOAD_FILE  = 'workload.txt'
 LOG_FBACK_FILE	= 'feedback.txt'
 LOG_MESGS_FILE	= 'messages.txt'
 LOG_PARSE_FILE	= 'parser.txt'
+LOG_STATC_FILE	= 'statistic.txt'
 
 # Enable/disable test mode
 TEST = False
@@ -27,17 +31,19 @@ TEST = False
 SCHEDULE_DIR = 'schedules/'
 
 # Commands (CMD)
-CMD_AFTERTOMMOROW 	= 120  
-CMD_TOMMOROW		= 130 
-CMD_YESTERDAY		= 140
-CMD_DAY_OF_WEEK 	= 150
-CMD_BY_DATE			= 180 
-CMD_BY_TIME			= 190
-CMD_LECTION_NUMB	= 200 
-CMD_TODAY 			= 110
-CMD_NOW				= 170
+CMD_AFTERTOMMOROW 	= 10  
+CMD_TOMMOROW		= 20 
+CMD_YESTERDAY		= 30
+CMD_DAY_OF_WEEK 	= 40
+CMD_BY_DATE			= 50 
+CMD_BY_TIME			= 60
+CMD_LECTION_NUMB	= 70 
+CMD_TODAY 			= 80
+CMD_NOW				= 90
 
-CMD_UNIVERSAL		= 280
+# Command code uses as command priority number.
+# Command with lower code has higher priority.
+CMD_UNIVERSAL		= 990
 CMD_NEXT 			= 100
 CMD_WEEK			= 160 
 CMD_HELP			= 210
@@ -57,6 +63,7 @@ CMD_CALENDAR_JN		= 350
 CMD_CALENDAR_DC		= 360
 CMD_ZACHET			= 370
 CMD_WHERE			= 380
+CMD_FOR7DAYS		= 390
 
 
 MARKERS = [
@@ -72,13 +79,23 @@ MARKERS = [
 ]
 
 DAY_NAMES = [
-	u'((\s|\A)пн(\s|\Z))|(понедельник)', 
-	u'((\s|\A)вт(\s|\Z))|(вторник)',
-	u'((\s|\A)ср(\s|\Z))|(сред[ау])',
-	u'((\s|\A)чт(\s|\Z))|(четверг)',
-	u'((\s|\A)пт(\s|\Z))|(пятниц[ау])',
-	u'((\s|\A)сб(\s|\Z))|(суббот[ау])',
-	u'((\s|\A)вс(\s|\Z))|(воскресение)'
+	u'понедельник',
+	u'вторник',
+	u'среда',
+	u'четверг',
+	u'пятница',
+	u'суббота',
+	u'воскресение',
+]
+
+DAY_NAMES_VINIT = [
+	u'понедельник',
+	u'вторник',
+	u'среду',
+	u'четверг',
+	u'пятницу',
+	u'субботу',
+	u'воскресение',
 ]
 
 MONTH_NAMES = [
@@ -98,23 +115,24 @@ MONTH_NAMES = [
 
 NUMB_NAMES = [
 	u'((\s|\A)0(\s|\Z))|(нулевая)',
-	u'((\s|\A)1(\s|\Z))|(перв[уао][юяйи])',
-	u'((\s|\A)2(\s|\Z))|(втор[уао][юяйи])',
+	u'((\s|\A)1(\s|\Z))|(перв[уаоы][еюяйи])',
+	u'((\s|\A)2(\s|\Z))|(втор[уаоы][еюяйи])',
 	u'((\s|\A)3(\s|\Z))|(треть[юяейи]{1,2})',
-	u'((\s|\A)4(\s|\Z))|(четверт[уао][юяйи])',
-	u'((\s|\A)5(\s|\Z))|(пят[уао][юяйи])',
-	u'((\s|\A)6(\s|\Z))|(шест[уао][юяйи])',
-	u'((\s|\A)7(\s|\Z))|(седьм[уао][юяйи])'
+	u'((\s|\A)4(\s|\Z))|(четверт[уаоы][еюяйи])',
+	u'((\s|\A)5(\s|\Z))|(пят[уаоы][еюяйи])',
+	u'((\s|\A)6(\s|\Z))|(шест[уаоы][еюяйи])',
+	u'((\s|\A)7(\s|\Z))|(седьм[уаоы][еюяйи])'
 ]
 
 LECTION_TIME = {
-	1: '9:00-10:35',
-	2: '10:45-12:20',
-	3: '12:50-14:25',
-	4: '14:35-16:10',
-	5: '16:20-17:55',
-	6: '18:00-19:35',
-	7: '19:45-21:20'
+	1: '9:00-10:30',
+	2: '10:40-12:10',
+	3: '13:00-14:30',
+	4: '14:40-16:10',
+	5: '16:20-17:50',
+	6: '18:00-19:30',
+	7: '18:30-20:00',
+	8: '20:10-21:40',
 }
 
 # Keywords using when send message from group's chat.
@@ -123,21 +141,29 @@ CHAT_KEYWORDS = (
 	u'бот'
 )
 
-# Keywords regexp for every command. Order is important!
+# Keywords regexp for every command.
 CMD_KEYWORDS = {		
 	CMD_FEEDBACK		: [
 		u'разработчику', 
 		u'предложение', 
 		u'ошибка',
 	],
-	CMD_TOMMOROW		: [u'\sзавтра'],
+	CMD_TOMMOROW		: [u'(\s|\A)завтра'],
 	CMD_NEXT 			: [u'дальше', u'следующ[аи][яе]',  u'оставш[аи][яи]ся',  u'остал[аи]сь'],
-	CMD_TODAY 			: [u'сегодня', u'^\s*расписание$', u'^\s*пар[аы]$'],
+	CMD_TODAY 			: [u'сегодня', u'(\s|\A)расписание\Z', u'(\s|\A)пары\Z'],
 	CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 	CMD_YESTERDAY		: [u'вчера'],
-	#CMD_WEEK			: [u'неделя'],
+	CMD_WEEK			: [u'неделя'],
 	CMD_NOW				: [u'сейчас', u'текущая'],
-	CMD_DAY_OF_WEEK 	: DAY_NAMES,
+	CMD_DAY_OF_WEEK 	: [
+		u'((\s|\A)пн(\s|\Z))|(понедельник)', 
+		u'((\s|\A)вт(\s|\Z))|(вторник)',
+		u'((\s|\A)ср(\s|\Z))|(сред[ау])',
+		u'((\s|\A)чт(\s|\Z))|(четверг)',
+		u'((\s|\A)пт(\s|\Z))|(пятниц[ау])',
+		u'((\s|\A)сб(\s|\Z))|(суббот[ау])',
+		u'((\s|\A)вс(\s|\Z))|(воскресение)'
+	],
 	CMD_HELP			: [
 		u'инструкци', 
 		u'справка', 
@@ -154,7 +180,7 @@ CMD_KEYWORDS = {
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', 'звонк'],
 	CMD_WHEN_EXAMS		: [
 		u'осталось',
-		u'прошло[^й]', 
+		u'прошло[^й]?', 
 		u'пройден',
 		u'семестр',
 		u'сколько',
@@ -162,27 +188,28 @@ CMD_KEYWORDS = {
 		u'каникул'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
-	CMD_MAP				: [u'[абвгдАБВГД]\-?[1-9][0-9абвгдм\-]{0,4}'],
-	CMD_ZACHET			: [u'зач[её]т'],
-	CMD_EXAMS			: [u'экзамен'],
-	CMD_CONSULT			: [u'консул'],
-	CMD_SESSION			: [u'сесси[яи]'],
+	CMD_MAP				: [u'[aабвгдАБВГД]\-?[1-9][0-9aабвгдм\-]{0,4}'],
+	#CMD_ZACHET			: [u'зач[её]т'],
+	#CMD_EXAMS			: [u'экзамен'],
+	#CMD_CONSULT			: [u'консул'],
+	#CMD_SESSION			: [u'сесси[яи]'],
 	CMD_CALENDAR_JN		: [u'календар.*январ'],
 	CMD_CALENDAR_DC		: [u'календар.*декабр'],
-	CMD_MYGROUP			: [u'запомн',u'сохран'],
-	#CMD_WHERE			: [u'где', u'покажи'],
+	CMD_MYGROUP			: [u'запомн',u'сохран', u'групп'],
+	CMD_WHERE			: [u'где', u'покажи'],
 	CMD_LECTION_NUMB	: NUMB_NAMES,
+	CMD_FOR7DAYS		: [u'недел[юе]', u'[1-7]\s*дн[ея]'],
 }
 
 USER_PREMESSAGE = {
-	CMD_UNIVERSAL		: u'(для расписания сессии спросите про зачеты/экзамены)\nПары{markers}:\n',
+	CMD_UNIVERSAL		: u'Пары{markers}:\n',
 
 	CMD_NOW				: u' сейчас',
 	CMD_TODAY			: u' сегодня',
 	CMD_TOMMOROW		: u' завтра',
 	CMD_YESTERDAY		: u' вчера',
 	CMD_AFTERTOMMOROW 	: u' послезавтра',
-	CMD_DAY_OF_WEEK 	: u' в {}',
+	CMD_DAY_OF_WEEK 	: u' на {}',
 	CMD_BY_DATE			: u' {}',
 	CMD_BY_TIME			: u' в {}',
 	CMD_LECTION_NUMB	: u' номер {}',
@@ -191,21 +218,19 @@ USER_PREMESSAGE = {
 	CMD_NEXT 			: u'Следующие пары:\n',
 	CMD_LECTIONS_TIME	: u'Время начала-конца пар\n\n',
 	CMD_FEEDBACK		: u'Сообщение принято и обязательно будет рассмотрено. Спасибо :)',
-	CMD_HELP			: u'Краткая инструкция:\nПросто спросите что-нибудь по расписанию. '\
-		+ u'Если на ваш вопрос нет ответа, то попробуйте написать по-другому, со временем бот '\
-		+ u'научится отвечать на любые формы вопросов. '\
-		+ u'В групповых беседах надо обращаться "раписание, ..."\n'\
-		+ u'Полная инструкция есть на странице бота.\n\n'
+	CMD_HELP			: u'Краткая инструкция:\nПросто спросите расписание, как спрашиваете обычно '\
+		+ u'у одногруппников. В групповой беседе надо обращаться к боту "расписание" или "бот".'\
+		+ u' Полная инструкция на странице бота.\n\n' \
 		+ u'Во избежании блокировки есть ограничения:\n'\
-		+ u'- бот отвечает только на понятные ему сообщения.\n'\
-		+ u'- бот НЕ ПИШЕТ один и тот же ответ больше ОДНОГО раза.\n'\
+		+ u'- бот реагирует только на понятные ему сообщения.\n' \
+		+ u'- бот не ответит больше 5 раз за 2 минуты.\n' \
+		+ u'- время ответа не более 10 секунд.\n' \
 		+ u'\nПримеры:\n'\
-		+ u'"Какие пары завтра?"\n"Где аудитория Г-301д?"\n"Пары во вторник"\n"Расписание экзаменов"\n\n',
+		+ u'"Какие пары завтра?"\n"Где аудитория Г-301д?"\n"Пары во вторник"\n\n',
 	CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
 	CMD_SAVE_GROUP		: u'Я запомнил группу {}.\n\n',
 	CMD_TEACHER			: u'Преподаватель на паре{markers}:\n',
-	CMD_WHEN_EXAMS		: u'Зачетная неделя с 22 декабря.\nЭкзамены с 9 по 30 января.\n'\
-		+ u'Каникулы с 31 января по 5 февраля.\n\n',
+	CMD_WHEN_EXAMS		: u'',
 	CMD_FIND_LECTION	: u'',
 	CMD_MAP				: u'',	
 	CMD_ZACHET			: u'Зачеты.',
@@ -216,20 +241,20 @@ USER_PREMESSAGE = {
 	CMD_CALENDAR_DC		: u'Календарь на декабрь',
 	CMD_MYGROUP			: u'',
 	CMD_WHERE			: u'',
+	CMD_FOR7DAYS		: u'',
 }
 
 USER_MESSAGE = {
 	CMD_UNIVERSAL		: u'\n{} пара ({}, {}):\n{}\n',
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
-	CMD_WHEN_EXAMS		: u'Осталось недель: 0, дней: 0.\nСеместр завершен на 100%.',
-	#CMD_WHEN_EXAMS		: u'Осталось недель: {}, дней: {}.\nСеместр завершен на {}.',
+	CMD_WHEN_EXAMS		: u'До летней сессии осталось {} недель.\nПрошло {} семестра.',
 	CMD_MAP				: u'{}',
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 	CMD_ZACHET			: u'\n{} пара{}\n{}\n',
-	CMD_WHERE			: u'Аудитория {} ({})\n {}',
+	CMD_WHERE			: u'Аудитория {} ({})\n',
 }
 
 # Error codes, will raise as exceptions.
@@ -242,18 +267,21 @@ ERR_NO_LECTIONS		= 5
 ERR_NO_TEACHER		= 6
 ERR_NO_ROOM			= 7
 ERR_PERIOD_ENDS		= 8
+ERR_MSG_LIMIT		= 9
 	
 ERR_MESSAGES = {
 	ERR_UNDEFINED		: u'Что-то пошло не так, повторите запрос еще раз.',
 	ERR_SKIP			: '',
-	ERR_GROUP_NOT_FOUND	: u'Группа не найдена.\nРасписание для данной группы недоступно,'\
-		+ u' либо название группы указано с ошибками,.',
-	ERR_NO_GROUP		: u'Напишите из какой вы группы.\nОбразец: расписание, ИКБО-04-15',
+	ERR_GROUP_NOT_FOUND	: u'Название группы указано с ошибками,'\
+		+ u' либо расписание для данной группы недоступно.',
+	ERR_NO_GROUP		: u'Напишите из какой вы группы.\nОбразец: расписание, ИКБО-04-15\n\n'\
+		+ u'Бот должен ответить, что он вас запомнил.\nНезабудьте символ "-" и нули, если есть.',
 	ERR_NO_COMMAND		: u'Неизвестная команда.',
 	ERR_NO_LECTIONS		: u'занятий нет',
 	ERR_NO_TEACHER		: u'В расписании преподаватель не указан.',
-	ERR_NO_ROOM			: u'Аудитория не найдена',
-	ERR_PERIOD_ENDS		: u'занятий нет, смотрите расписание зачетов/экзаменов.'
+	ERR_NO_ROOM			: u'Аудитория на схемах не найдена',
+	ERR_PERIOD_ENDS		: u'занятий нет, смотрите расписание зачетов/экзаменов.',
+	ERR_MSG_LIMIT		: u'\n*пауза на {} сек.*'
 }
 
 MAP_DATA = [
