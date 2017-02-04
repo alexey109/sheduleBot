@@ -80,11 +80,14 @@ def getLessons(params, lstart = 1, lfinish = 8):
 		and isThatWeek(lesson['week'], params['week'])	\
 		and lesson['numb'] >= lstart	\
 		and lesson['numb'] <= lfinish:
+			name = lesson['name'] + ' '
+			for p in lesson['params']:
+				name += p
 			lesson_list.append({
 				'numb'	: lesson['numb'],
 				'room'	: lesson['room'], 
 				'time'	: CONST.LECTION_TIME[lesson['numb']],
-				'name'	: lesson['name'],	
+				'name'	: name,	
 				'teacher': lesson['teacher'],
 				'weekday': weekday			
 			})
