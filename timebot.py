@@ -125,7 +125,7 @@ def cmdNext(params):
 	return formatLessons(lesson_list)
 
 def cmdWeek(params):
-	weeks = (params['date'].date() - dt.date(2017, 2, 5)).days / 7
+	weeks = (params['date'].date() - dt.date(2017, 2, 5)).days / 7 + 1
 	
 	return CONST.USER_MESSAGE[CONST.CMD_WEEK].format(weeks)
 
@@ -165,7 +165,7 @@ def cmdWhenExams(params):
 	start = dt.date(2017, 2, 6)
 	end = dt.date(2017, 5, 29)
 	delta = end - now
-	weeks = delta.days / 7
+	weeks = delta.days / 7 + 1
 	days  = delta.days % 7
 
 	delta = now - start
