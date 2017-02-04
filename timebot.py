@@ -483,7 +483,7 @@ def analize(params):
 			date = dt.datetime.today() - dt.timedelta(days=1)
 		elif cmd_code == CONST.CMD_DAY_OF_WEEK:
 			keyword['word'] = CONST.DAY_NAMES_VINIT[keyword['idx']]
-			for i in range(0,6):
+			for i in range(0,7):
 				temp_date = dt.datetime.today() + dt.timedelta(days=i)
 				if temp_date.weekday() == keyword['idx']:
 					date = temp_date
