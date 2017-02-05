@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 STACK_LEN 		= 50 	# messages
-USERS_QUEUE_LEN = 10 	# seconds
+USERS_QUEUE_LEN = 120 	# seconds
 USER_MSG_AMOUNT	= 5		# message amount for a user in USERS_QUEUE_LEN
 
 # Enable/disable logging everything.
@@ -178,7 +178,7 @@ CMD_KEYWORDS = {
 	],
 	CMD_POLITE			: [u'спас', u'спс'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель', u'ведет'],
-	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', 'звонк'],
+	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', u'звонк'],
 	CMD_WHEN_EXAMS		: [
 		u'осталось',
 		u'прошло[^й]?', 
