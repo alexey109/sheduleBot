@@ -447,7 +447,7 @@ def analize(params):
 	answer_ok = bool(answer)
 	markers = {}
 	default_kwd = {'word': u'сегодня', 'idx': 0}
-	default_command	= {
+	command	= {
 		'code'	 : CONST.CMD_UNIVERSAL, 
 		'keyword': default_kwd
 	}
@@ -474,7 +474,7 @@ def analize(params):
 		if word:
 			params['text'] = params['text'].replace(word['word'], '')
 			markers[cmd] = word
-			
+	
 	if answer_ok and not markers:
 		markers = {CONST.CMD_TODAY: default_kwd}	
 		
