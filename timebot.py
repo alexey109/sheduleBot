@@ -454,7 +454,6 @@ def analize(params):
 	date 	= dt.datetime.today()
 	lesson 	= 0
 	
-	command = default_command
 	# Define command
 	for cmd, keywords in CONST.CMD_KEYWORDS.items():
 		if cmd in CONST.MARKERS:
