@@ -406,7 +406,8 @@ def getGroup(params):
 
 	match = re.search(u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}', params['text'])
 	group = match.group(0) if match else ''
-
+	params['text'] = params['text'].replace(group, '')
+	
 	if group and found_group:
 		db.users.update_one(
 			{'vk_id':vk_id, 'chat': bool(params['chat_id'])},
@@ -445,12 +446,10 @@ def analize(params):
 	group, answer = getGroup(params)
 	answer_ok = bool(answer)
 	markers = {}
+	default_kwd = {'word': u'сегодня', 'idx': 0}
 	command	= {
 		'code'	 : CONST.CMD_UNIVERSAL, 
-		'keyword': {
-			'word' 	: u'сегодня',
-			'idx'	: 0,
-		}
+		'keyword': default_kwd
 	}
 	date 	= dt.datetime.today()
 	lesson 	= 0
@@ -474,6 +473,9 @@ def analize(params):
 		if word:
 			params['text'] = params['text'].replace(word['word'], '')
 			markers[cmd] = word
+	
+	if answer_ok and not markers:
+		markers = {CONST.CMD_TODAY: default_kwd}	
 		
 	# Apply markers for settings
 	for cmd_code, keyword in markers.items():
