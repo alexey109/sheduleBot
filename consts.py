@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 STACK_LEN 		= 50 	# messages
-USERS_QUEUE_LEN = 120 	# seconds
+USERS_QUEUE_LEN = 10 	# seconds
 USER_MSG_AMOUNT	= 5		# message amount for a user in USERS_QUEUE_LEN
 
 # Enable/disable logging everything.
@@ -189,7 +189,7 @@ CMD_KEYWORDS = {
 		u'каникул'],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
-	CMD_MAP				: [u'[aабвгдАБВГД]\-?[1-9][0-9aабвгдм\-]{0,4}'],
+	CMD_MAP				: [u'[а-яА-Я]\-?[1-9][0-9а-я\-]{0,4}'],
 	#CMD_ZACHET			: [u'зач[её]т'],
 	#CMD_EXAMS			: [u'экзамен'],
 	#CMD_CONSULT			: [u'консул'],
