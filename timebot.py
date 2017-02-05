@@ -542,7 +542,7 @@ def analize(params):
 	except Exception, e:
 		if isinstance(e.args[0], int):
 			if e.args[0] == CONST.ERR_GROUP_NOT_FOUND:
-				answer += CONST.ERR_MESSAGES[e.args[0]].format(cmd_params['group'].upper())
+				answer = CONST.ERR_MESSAGES[e.args[0]].format(cmd_params['group'].upper())
 			else:
 				answer += CONST.ERR_MESSAGES[e.args[0]]
 		else:
