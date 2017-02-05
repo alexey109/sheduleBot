@@ -18,7 +18,7 @@ class UsersStack:
 		self.stack = []
 	
 	def getRest(self, user_id):
-		now = time.time()
+		now = int(time.time())
 		try:
 			while (now - self.stack[-1][1]) > CONST.USERS_QUEUE_LEN:
 				del self.stack[-1]
@@ -30,7 +30,7 @@ class UsersStack:
 		max_time = 0
 		for rec in self.stack:
 			if rec[0] == user_time[0]:
-				tdiff = int(now - rec[1])
+				tdiff = now - rec[1]
 				if tdiff > max_time:
 					max_time = tdiff
 				amount += 1
