@@ -20,7 +20,6 @@ class UsersStack:
 	def getRest(self, user_id):
 		now = int(time.time())
 		try:
-			print now, self.stack[0][1]
 			while (now - self.stack[0][1]) >= CONST.USERS_QUEUE_LEN:
 				del self.stack[0]
 		except:
@@ -86,11 +85,12 @@ class ClientVK:
 			'attachment': ''
 		}
 
+		msg_text = self.retriveBody(vk_msg)
 		params = {
 			'msg_id'	: vk_msg['id'],
 			'user_id'	: vk_msg.get('user_id', 0),
 			'chat_id'	: vk_msg.get('chat_id', 0),
-			'text'		: self.retriveBody(vk_msg)
+			'text'		: msg_text
 		}
 
 		if not params['chat_id']:
@@ -113,7 +113,7 @@ class ClientVK:
 				return
 			if msg_rest == 1:
 				answer['text'] += CONST.ERR_MESSAGES[CONST.ERR_MSG_LIMIT].format(time_rest)
-			self.logger.log(CONST.LOG_STATC, [params['user_id'], params['text'], answer['text'][:100]])
+			self.logger.log(CONST.LOG_STATC, [params['user_id'], msg_text, answer['text'][:100]])
 			
 			waitNextCall(self.last_call, 1)
 			if params['chat_id']:
