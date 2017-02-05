@@ -244,7 +244,7 @@ USER_PREMESSAGE = {
 	CMD_MYGROUP			: u'',
 	CMD_WHERE			: u'',
 	CMD_FOR7DAYS		: u'',
-	CMD_LECTIONS		: u'',
+	CMD_LECTIONS		: u'Пары сегодня:\n',
 }
 
 USER_MESSAGE = {
