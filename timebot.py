@@ -379,6 +379,7 @@ functions = {
 	CONST.CMD_MYGROUP			: cmdMyGroup,
 	CONST.CMD_WHERE				: cmdWhere,
 	CONST.CMD_FOR7DAYS			: cmdFor7days,
+	CONST.CMD_LECTIONS			: cmdUniversal,
 }
 
 

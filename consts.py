@@ -64,6 +64,7 @@ CMD_CALENDAR_DC		= 360
 CMD_ZACHET			= 370
 CMD_WHERE			= 380
 CMD_FOR7DAYS		= 390
+CMD_LECTIONS		= 400
 
 
 MARKERS = [
@@ -150,7 +151,7 @@ CMD_KEYWORDS = {
 	],
 	CMD_TOMMOROW		: [u'(\s|\A)завтра'],
 	CMD_NEXT 			: [u'дальше', u'следующ[аи][яе]',  u'оставш[аи][яи]ся',  u'остал[аи]сь'],
-	CMD_TODAY 			: [u'сегодня', u'(\s|\A)расписание\Z', u'(\s|\A)пары\Z'],
+	CMD_TODAY 			: [u'сегодня'],
 	CMD_AFTERTOMMOROW 	: [u'послезавтра'], 
 	CMD_YESTERDAY		: [u'вчера'],
 	CMD_WEEK			: [u'неделя'],
@@ -199,6 +200,7 @@ CMD_KEYWORDS = {
 	CMD_WHERE			: [u'где', u'покажи'],
 	CMD_LECTION_NUMB	: NUMB_NAMES,
 	CMD_FOR7DAYS		: [u'недел[юе]', u'[1-7]\s*дн[ея]'],
+	CMD_LECTIONS		: [u'(\s|\A)расписание\Z', u'(\s|\A)пары\Z'],
 }
 
 USER_PREMESSAGE = {
@@ -242,6 +244,7 @@ USER_PREMESSAGE = {
 	CMD_MYGROUP			: u'',
 	CMD_WHERE			: u'',
 	CMD_FOR7DAYS		: u'',
+	CMD_LECTIONS		: u'',
 }
 
 USER_MESSAGE = {
