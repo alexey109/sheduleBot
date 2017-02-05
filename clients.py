@@ -20,8 +20,9 @@ class UsersStack:
 	def getRest(self, user_id):
 		now = int(time.time())
 		try:
-			while (now - self.stack[-1][1]) > CONST.USERS_QUEUE_LEN:
-				del self.stack[-1]
+			print now, self.stack[0][1]
+			while (now - self.stack[0][1]) >= CONST.USERS_QUEUE_LEN:
+				del self.stack[0]
 		except:
 			pass
 		
@@ -38,7 +39,7 @@ class UsersStack:
 		rest = CONST.USER_MSG_AMOUNT - amount
 		if rest > 0 :
 			self.stack.append(user_time)
-			
+
 		return rest, CONST.USERS_QUEUE_LEN - max_time
 		
 
