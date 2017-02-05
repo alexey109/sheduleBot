@@ -175,7 +175,7 @@ class Parser:
 							'room'	: room,
 							'week'	: info[i]['week'] if info[i]['week'] else cell_week,
 							'name'	: info[i]['name'] + ' ' + event_type,
-							'teacher':info[i]['teacher'],
+							'teacher':lector,
 							'params': info[i]['params']
 						}
 						
