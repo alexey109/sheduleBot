@@ -379,7 +379,7 @@ functions = {
 	CONST.CMD_MYGROUP			: cmdMyGroup,
 	CONST.CMD_WHERE				: cmdWhere,
 	CONST.CMD_FOR7DAYS			: cmdFor7days,
-	CONST.CMD_LECTIONS			: cmdFor7days,
+	CONST.CMD_LECTIONS			: cmdUniversal,
 }
 
 
@@ -447,13 +447,14 @@ def analize(params):
 	answer_ok = bool(answer)
 	markers = {}
 	default_kwd = {'word': u'сегодня', 'idx': 0}
-	command	= {
+	default_command	= {
 		'code'	 : CONST.CMD_UNIVERSAL, 
 		'keyword': default_kwd
 	}
 	date 	= dt.datetime.today()
 	lesson 	= 0
 	
+	command = default_command
 	# Define command
 	for cmd, keywords in CONST.CMD_KEYWORDS.items():
 		if cmd in CONST.MARKERS:
@@ -473,7 +474,7 @@ def analize(params):
 		if word:
 			params['text'] = params['text'].replace(word['word'], '')
 			markers[cmd] = word
-	
+			
 	if answer_ok and not markers:
 		markers = {CONST.CMD_TODAY: default_kwd}	
 		
