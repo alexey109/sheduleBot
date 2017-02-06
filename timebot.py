@@ -463,7 +463,8 @@ def analize(params):
 			command['code'] 	= cmd 
 			command['keyword'] 	= word
 			answer_ok 			= True
-	params['text'] = params['text'].replace(command['keyword']['word'], '')
+	if answer_ok:
+		params['text'] = params['text'].replace(command['keyword']['word'], '')
 	
 	# Find all markers
 	for cmd, keywords in CONST.CMD_KEYWORDS.items():
@@ -476,7 +477,7 @@ def analize(params):
 	
 	if answer_ok and not markers:
 		markers = {CONST.CMD_TODAY: default_kwd}	
-		
+	
 	# Apply markers for settings
 	for cmd_code, keyword in markers.items():
 		if cmd_code == CONST.CMD_TOMMOROW:
@@ -527,7 +528,7 @@ def analize(params):
 		'lnumb'		: lesson,
 		'keyword'	: command['keyword']
 	}
-
+	
 	# Check markers after apply
 	header = ''
 	for cmd, kwd in markers.items():
