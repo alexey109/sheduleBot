@@ -319,7 +319,7 @@ def cmdFor7days(params):
 		day_amount = 7
 	
 	text = ''
-	for i in range(1, day_amount+1):	
+	for i in range(0, day_amount):	
 		date = params['date'] + dt.timedelta(days = i)
 		weekday = date.weekday()
 		
