@@ -434,13 +434,6 @@ def getGroup(params):
 def analize(params):
 	answer = ''
 	answer_ok = False
-	
-	# Check feedback
-	if findKeywords(CONST.CMD_KEYWORDS[CONST.CMD_FEEDBACK], params['text']):
-		logger.log(CONST.LOG_FBACK, params['user_id'] + ' ' + params['text'])
-		answer = CONST.USER_PREMESSAGE[CONST.CMD_FEEDBACK]
-
-		return answer
 
 	# Set default settings
 	group, answer = getGroup(params)
@@ -455,7 +448,7 @@ def analize(params):
 	lesson 	= 0
 	
 	# Define command
-	for cmd, keywords in CONST.CMD_KEYWORDS.items():
+	for cmd, keywords in CONST.KEYWORDS.items():
 		if cmd in CONST.MARKERS:
 			continue
 		word = findKeywords(keywords, params['text']) 
@@ -467,7 +460,7 @@ def analize(params):
 		params['text'] = params['text'].replace(command['keyword']['word'], '')
 	
 	# Find all markers
-	for cmd, keywords in CONST.CMD_KEYWORDS.items():
+	for cmd, keywords in CONST.KEYWORDS.items():
 		if not cmd in CONST.MARKERS:
 			continue
 		word = findKeywords(keywords, params['text']) 
@@ -564,10 +557,15 @@ def genAnswer(params):
 	params['text']	= params['text'].lower()
 
 	# Check for chat
-	if params['chat_id'] \
-	and not any(re.match('^' + word, params['text']) for word in CONST.CHAT_KEYWORDS):
+	if params['chat_id'] and not any(re.match('^' + word, params['text']) for word in CONST.CHAT_KEYWORDS):
 		raise Exception(CONST.ERR_SKIP)
 
+	# Check feedback
+	if any(re.search(word, params['text']) for word in CONST.FEEDBACK_KEYWORDS):
+		logger.log(CONST.LOG_FBACK, params['user_id'] + ' ' + params['text'])
+		answer['text'] = CONST.USER_PREMESSAGE[CONST.CMD_FEEDBACK]
+		return answer
+		
 	answer['text'] = analize(params)
 	answer['attachment'] = attachment
 	
