@@ -10,7 +10,7 @@ import re
 class Logger:
 	def fwrite(self, fname, text):	
 		with codecs.open(fname, 'a', 'utf-8') as f:	
-			f.write("{};{};{} \n".format(
+			f.write(u"{};{};{} \n".format(
 				dt.datetime.now().strftime('%Y.%m.%d'), 
 				dt.datetime.now().strftime('%H:%M:%S'), 
 				text) 
@@ -59,9 +59,6 @@ class Logger:
 	def log(self, code, arg):
 		if not CONST.LOG:
 			return None
-
-		if CONST.TEST:
-			print code, arg
 
 		try:
 			if code == CONST.LOG_ERROR:
