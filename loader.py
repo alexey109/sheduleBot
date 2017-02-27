@@ -4,14 +4,15 @@
 import urllib2
 import re
 import codecs
-from pymongo import MongoClient
 from os import listdir
 from os.path import isfile, join
 from optparse import OptionParser
+import MySQLdb
 
 import consts as CONST
 import logger as lg
 import parser as pr
+import security as sec
 
 optparser = OptionParser()
 optparser.add_option("-t", "--type", 
@@ -55,8 +56,18 @@ if user_options.download:
 		logger.log(CONST.LOG_ERROR, e)
 
 
-db = MongoClient().timebot
 documents = [f for f in listdir(CONST.SCHEDULE_DIR) if isfile(join(CONST.SCHEDULE_DIR, f))]
+
+dbMySQL = MySQLdb.connect(
+	host =	sec.mysql['host'],
+	user =	sec.mysql['user'],
+	passwd =sec.mysql['passwd'],
+	db =	sec.mysql['db'],
+	charset=sec.mysql['charset'],
+	use_unicode=True
+)
+					
+curMySQL = dbMySQL.cursor()
 
 logger.log(CONST.LOG_PARSE, 'Load schedule to database')
 parser = pr.Parser()
@@ -66,25 +77,41 @@ for doc in documents:
 	except:
 		continue
 
-	if schdl_type == user_options.type == 'zachet':
+	if schdl_type == user_options.type == 'lections':
 		for group in schedule:
+			upd = 0
+		
+			curMySQL.execute("SELECT * FROM groups WHERE gcode = '{}';".format(group.encode('utf-8')))
 			try:
-				a = db.zachet.find({'group':group})[0]['schedule']
-				db.zachet.update_one({'group': group},{'$set':{'schedule': schedule[group]}})
+				gid, gcode = curMySQL.fetchone();
+				curMySQL.execute("DELETE FROM schedule WHERE group_id={};".format(gid))
+				dbMySQL.commit()
+				curMySQL.execute("DELETE FROM groups WHERE gcode='{}';".format(group.encode('utf-8')))
+				dbMySQL.commit()
 			except:
-				db.zachet.insert_one({'group': group, 'schedule': schedule[group]})
-	if schdl_type == user_options.type == 'exams':
-		for group in schedule:
-			try:
-				a = db.exams.find({'group':group})[0]['schedule']
-				db.exams.update_one({'group': group},{'$set':{'schedule': schedule[group]}})
-			except:
-				db.exams.insert_one({'group': group, 'schedule': schedule[group]})
-	elif schdl_type == user_options.type == 'lections':
-		for group in schedule:
-			try:
-				a = db.schedule.find({'group':group})[0]['schedule']
-				db.schedule.update_one({'group': group},{'$set':{'schedule': schedule[group]}})
-			except:
-				db.schedule.insert_one({'group': group, 'schedule': schedule[group]})
+				pass
+			curMySQL.execute("INSERT INTO groups (gcode) VALUES ('{}');".format(group.encode('utf-8')))
+			dbMySQL.commit()
+			curMySQL.execute("SELECT * FROM groups WHERE gcode = '{}';".format(group.encode('utf-8')))
+			gid, gcode = curMySQL.fetchone();
+			for event in schedule[group]:		
+				name = event['name']
+				teacher = event['teacher'].encode('utf-8') if event['teacher'] else ''
+				room = event['room'].encode('utf-8') if event['room'] else ''
+				for par in event['params']:
+					name += " (" + par + ")"
+				query = "INSERT INTO schedule (group_id, week, day, numb, name, room, teacher) VALUES ({},'{}',{},{},'{}','{}','{}');".format(
+					gid, 
+					event['week'].encode('utf-8'), 
+					event['day'], 
+					event['numb'], 
+					name.encode('utf-8'), 
+					room, 
+					teacher
+				)				
+				curMySQL.execute(query)
+			dbMySQL.commit()
+			
+			
+dbMySQL.close()
 

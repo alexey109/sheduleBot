@@ -6,17 +6,17 @@ import time
 import string
 import sys
 import re
-from pymongo import MongoClient
+import MySQLdb
+from operator import itemgetter
 
 import consts as CONST
 import logger as lg
+import dbmodels as db
 
 
 # The main idea of this bot to help everyone with schedule.
 # Bot intergated to socialnet and like a friend can tell you what lection you will have.
 # Normal documentation will be in future.
-
-db 			= MongoClient().timebot
 attachment	= ''
 logger 		= lg.Logger()
 
@@ -34,7 +34,7 @@ def getLessonNumb(dt_time):
 		dt.time(21,40,0) <= dt_time					  :	9
 	}[True]
 
-def isThatWeek(native_week, base_week):
+def isWeeksEqual(native_week, base_week):
 	base_week = base_week - dt.date(2017, 2, 6).isocalendar()[1] + 1
 
 	if native_week == '':
@@ -67,35 +67,65 @@ def findFloor(room_native):
 	
 	return floor_found
 
-def getLessons(params, lstart = 1, lfinish = 8):
+def getSchedule(params):
+	schedule_base = db.Schedule.filter(group = params['group']['id'])
 	try:
-		schedule = db.schedule.find({'group':params['group']})[0]['schedule']
+		db_user = db.Users.get(
+			db.Users.vk_id == params['vk_id'], 
+			db.Users.vk_chat == bool(params['is_chat'])
+		)
+		schedule_user = db.UsersSchedule.filter(user = db_user.id)
 	except:
-		raise Exception(CONST.ERR_GROUP_NOT_FOUND)
-	
-	lesson_list = []
-	for lesson in schedule:
-		weekday = lesson['day'] if params['day'] == 'all' else params['day']
-		if lesson['day'] == weekday	\
-		and isThatWeek(lesson['week'], params['week'])	\
-		and lesson['numb'] >= lstart	\
-		and lesson['numb'] <= lfinish:
-			name = lesson['name'] + ' '
-			for p in lesson['params']:
-				name += '(' + p + ')'
-			lesson_list.append({
-				'numb'	: lesson['numb'],
-				'room'	: lesson['room'], 
-				'time'	: CONST.LECTION_TIME[lesson['numb']],
-				'name'	: name,	
-				'teacher': lesson['teacher'],
-				'weekday': weekday			
-			})
+		schedule_user = []
+	schedule = []
+	for event_base in schedule_base:
+		no_major = True
+		for event_user in schedule_user:
+			if event_user.week == event_base.week \
+			 and event_user.day == event_base.day \
+			 and event_user.numb == event_base.numb:
+			 	no_major = False
+			 	break
+		if not no_major:
+			continue
+		event = {
+			'name'		: event_base.name,
+			'week'		: event_base.week,
+			'day'		: event_base.day,
+			'numb'		: event_base.numb,
+			'teacher'	: event_base.teacher,
+			'room'		: event_base.room,
+		}
+		schedule.append(event)
+	for event_user in schedule_user:
+		if event_user.hide:
+			continue
+		event = {
+			'name'		: event_user.name,
+			'week'		: event_base.week,
+			'day'		: event_user.day,
+			'numb'		: event_user.numb,
+			'teacher'	: event_user.teacher,
+			'room'		: event_user.room,
+		}
+		schedule.append(event)
+	schedule = sorted(schedule, key=itemgetter('day', 'numb'))
+	return schedule
 
-	if not lesson_list:
+def getLessons(params, lstart = 1, lfinish = 8):
+	schedule = getSchedule(params)
+	
+	lessons = []
+	for event in schedule:
+		if event['day'] == params['day'] and isWeeksEqual(event['week'], params['week'])	\
+		and event['numb'] >= lstart	and event['numb'] <= lfinish:
+			event['time'] = CONST.LECTION_TIME[event['numb']]
+			lessons.append(event)
+
+	if not lessons:
 		raise Exception(CONST.ERR_NO_LECTIONS)
 
-	return lesson_list
+	return lessons
 
 def formatLessons(lesson_list):
 	string = ''
@@ -187,63 +217,65 @@ def cmdMap(params):
 	return CONST.USER_MESSAGE[CONST.CMD_MAP].format(floor['desc'])
 
 def cmdExams(params):
-	try:
-		schedule = db.exams.find({'group':params['group']})[0]['schedule']
-	except:
-		raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+	#try:
+	#	schedule = db.exams.find({'group':params['group']})[0]['schedule']
+	#except:
+	#	raise Exception(CONST.ERR_GROUP_NOT_FOUND)
 	
-	events = ''
-	for event in schedule:
-		if event['type'] == True:
-			events += CONST.USER_MESSAGE[CONST.CMD_EXAMS].format(
-				event['day'],
-				event['time'],
-				event['room'],
-				event['name']
-			)
+	#events = ''
+	#for event in schedule:
+	#	if event['type'] == True:
+	#		events += CONST.USER_MESSAGE[CONST.CMD_EXAMS].format(
+	#			event['day'],
+	#			event['time'],
+	#			event['room'],
+	#			event['name']
+	#		)
 
-	return events
+	#return events
+	return None
 
 def cmdConsult(params):
-	try:
-		schedule = db.exams.find({'group':params['group']})[0]['schedule']
-	except:
-		raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+	#try:
+	#	schedule = db.exams.find({'group':params['group']})[0]['schedule']
+	#except:
+	#	raise Exception(CONST.ERR_GROUP_NOT_FOUND)
 	
-	events = ''
-	for event in schedule:
-		if event['type'] == False:
-			events += CONST.USER_MESSAGE[CONST.CMD_CONSULT].format(
-				event['day'],
-				event['time'],
-				event['room'],
-				event['name']
-			)
+	#events = ''
+	#for event in schedule:
+	#	if event['type'] == False:
+	#		events += CONST.USER_MESSAGE[CONST.CMD_CONSULT].format(
+	#			event['day'],
+	#			event['time'],
+	#			event['room'],
+	#			event['name']
+	#		)
 
-	return events
-
+	#return events
+	return None
 
 def cmdSession(params):
-	global attachment
+	#global attachment
 	
-	try:
-		schedule = db.exams.find({'group':params['group']})[0]['schedule']
-	except:
-		raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+	#try:
+	#	schedule = db.exams.find({'group':params['group']})[0]['schedule']
+	#except:
+	#	raise Exception(CONST.ERR_GROUP_NOT_FOUND)
 	
-	events = ''
-	for event in schedule:
-		type_name = u'Экзамен' if event['type'] else u'Консультация'		
-		events += CONST.USER_MESSAGE[CONST.CMD_SESSION].format(
-			event['day'],
-			event['time'],
-			event['room'],
-			type_name,
-			event['name']
-		)
-	attachment = 'photo385457066_456239061'
+	#events = ''
+	#for event in schedule:
+	#	type_name = u'Экзамен' if event['type'] else u'Консультация'		
+	#	events += CONST.USER_MESSAGE[CONST.CMD_SESSION].format(
+	#		event['day'],
+	#		event['time'],
+	#		event['room'],
+	#		type_name,
+	#		event['name']
+	#	)
+	#attachment = 'photo385457066_456239061'
 
-	return events
+	#return events
+	return None
 
 def cmdCalendarJn(params):
 	global attachment	
@@ -258,34 +290,35 @@ def cmdCalendarDc(params):
 	return ''
 
 def cmdZachet(params):
-	global attachment
+	#global attachment
 
-	try:
-		schedule = db.zachet.find({'group':params['group']})[0]['schedule']
-	except:
-		raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+	#try:
+	#	schedule = db.zachet.find({'group':params['group']})[0]['schedule']
+	#except:
+	#	raise Exception(CONST.ERR_GROUP_NOT_FOUND)
 	
-	events = ''
-	prev_day = 0
-	for event in schedule:
-		if event['day'] < dt.datetime.today().day:
-			continue
-		if prev_day <> event['day']:
-			events += '\n____________\n' + str(event['day']) + u' декабря:\n' 
-		room =  '' if event['room'] == '-' else u', в ' + event['room']  	
-		events += CONST.USER_MESSAGE[CONST.CMD_ZACHET].format(
-			event['numb'],
-			room,
-			event['name']
-		)
-		prev_day = event['day']
-	attachment = 'photo385457066_456239062'
+	#events = ''
+	#prev_day = 0
+	#for event in schedule:
+	#	if event['day'] < dt.datetime.today().day:
+	#		continue
+	#	if prev_day <> event['day']:
+	#		events += '\n____________\n' + str(event['day']) + u' декабря:\n' 
+	#	room =  '' if event['room'] == '-' else u', в ' + event['room']  	
+	#	events += CONST.USER_MESSAGE[CONST.CMD_ZACHET].format(
+	#		event['numb'],
+	#		room,
+	#		event['name']
+	#	)
+	#	prev_day = event['day']
+	#attachment = 'photo385457066_456239062'
 
-	return events
+	#return events
+	return None
 
 def cmdMyGroup(params):
 
-	return params['group'].upper()
+	return params['group']['code'].upper()
 
 def cmdWhere(params):
 	global attachment
@@ -397,36 +430,58 @@ def findKeywords(words, text):
 
 def getGroup(params):
 	answer 		= ''
-	found_group = ''
+	group_id 	= 0
+	group_code 	= ''
 	vk_id 		= params['chat_id'] if params['chat_id'] else params['user_id']
 	try:
-		found_group = db.users.find({'vk_id':vk_id, 'chat': bool(params['chat_id'])})[0]['group_name']
-	except:	
-		pass
+		db_user = db.Users.get(
+			db.Users.vk_id == vk_id, 
+			db.Users.vk_chat == bool(params['chat_id'])
+		)
+	except:
+		db_user = None
 
 	match = re.search(u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}', params['text'])
-	group = match.group(0) if match else ''
-	params['text'] = params['text'].replace(group, '')
+	msg_group = match.group(0) if match else ''
+	params['text'] = params['text'].replace(msg_group, '')
 	
-	if group and found_group:
-		db.users.update_one(
-			{'vk_id':vk_id, 'chat': bool(params['chat_id'])},
-			{'$set': {'group_name': group}}
+	if msg_group and db_user:
+		try:
+			db_group = db.Groups.get(db.Groups.gcode == msg_group)
+		except:
+			raise Exception(CONST.ERR_NO_GROUP)		
+		db_user.group = db_group.id
+		db_user.save()
+		answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(msg_group.upper())
+	elif msg_group:
+		try:
+			db_group = db.Groups.get(db.Groups.gcode == msg_group)
+		except:
+			raise Exception(CONST.ERR_NO_GROUP)	
+		db_user = db.Users(
+			vk_id			= vk_id,
+			vk_chat			= bool(params['chat_id']),
+			my_id			= hash(vk_id + 'h3d8er3f3'),
+			group			= db_group.id,
+			notice_today	= False,
+			notice_tommorow	= False,
+			notice_week		= False,
+			notice_map		= False
 		)
-		answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group.upper())
-	elif group:
-		db.users.insert_one({
-			'vk_id': vk_id, 
-			'chat': bool(params['chat_id']), 
-			'group_name': group
-		})
-		answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(group.upper())
+		db_user.save()
+		
+		answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(msg_group.upper())
 		answer += CONST.USER_PREMESSAGE[CONST.CMD_HELP]
-	elif found_group:
-		group = found_group
+	elif db_user:
+		group_id = db_user.group.id
+		group_code = db_user.group.gcode
 	else:
 		raise Exception(CONST.ERR_NO_GROUP)	
 
+	group = {
+		'id' 	: group_id,
+		'code'	: group_code
+	}
 	return group, answer	
 
 # Takes message and prepare answer for it.
@@ -514,6 +569,8 @@ def analize(params):
 
 	# Prepare parametrs for functions 
 	cmd_params = {
+		'vk_id'		: params['chat_id'] if params['chat_id'] else params['user_id'],
+		'is_chat'	: bool(params['chat_id']),
 		'group'		: group,
 		'date'		: date,
 		'day' 		: date.weekday(),
@@ -535,7 +592,7 @@ def analize(params):
 	answer += CONST.USER_PREMESSAGE[command['code']].format(markers = header)
 	try:
 		answer += functions[command['code']](cmd_params)
-	except Exception, e:
+	except Exception as e:
 		if isinstance(e.args[0], int):
 			if e.args[0] == CONST.ERR_GROUP_NOT_FOUND:
 				answer = CONST.ERR_MESSAGES[e.args[0]].format(cmd_params['group'].upper())

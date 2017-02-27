@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-import timebot
+import timebot as bot
 import consts as CONST
 import logger as lg
 import parser as pr
@@ -49,6 +49,9 @@ msg_chat = {
 		}
 	]
 }
+
+answ =  bot.genAnswer({'chat_id': u'','text': u'14.03', 'user_id': u'10151100'})
+print answ['text']
 '''
 params = {
 	'msg_id'	: 123,
@@ -60,14 +63,13 @@ answ = timebot.genAnswer(params)
 print answ['text'], answ['attachment']
 '''
 
-
+'''
 parser = pr.Parser()
 schdl_type, res = parser.getSchedule('schedules/IT_2k_16-17_vesna_NOVOE.xlsx')
 for g, l in res.items():
 	if not g == u'икбо-04-15':
 		continue
 	for subj in l:	
-		'''
 		print u"Group: %s, Date: %s, Name: %s, Room: %s, Numb: %s" % (
 			g,
 			subj['day'],
@@ -85,8 +87,7 @@ for g, l in res.items():
 			subj['day'],
 			subj['time']
 		)
-		'''
-	
+		
 		print "Day: %d, Numb: %d, Room: %s, Week: %s, Name: %s, Teacher: %s, Params: s" % (
 			subj['day'],		
 			subj['numb'],		
@@ -99,5 +100,5 @@ for g, l in res.items():
 		
 		print '----'
 	break
-
+'''
 

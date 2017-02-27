@@ -24,10 +24,6 @@ LOG_FBACK_FILE	= 'feedback.txt'
 LOG_MESGS_FILE	= 'messages.txt'
 LOG_PARSE_FILE	= 'parser.txt'
 LOG_STATC_FILE	= 'statistic.txt'
-
-# Enable/disable test mode
-TEST = False
-
 SCHEDULE_DIR = 'schedules/'
 
 # Commands (CMD)
@@ -145,7 +141,7 @@ CHAT_KEYWORDS = (
 FEEDBACK_KEYWORDS = (
 	u'разработчик', 
 	u'предложен', 
-	u'ошибка',
+	u'ошибк',
 )
 	
 # Keywords regexp for every command.
