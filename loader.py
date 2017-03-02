@@ -71,7 +71,11 @@ curMySQL = dbMySQL.cursor()
 
 logger.log(CONST.LOG_PARSE, 'Load schedule to database')
 parser = pr.Parser()
+print u'Документов:' + str(len(documents))
+count = 0 
 for doc in documents:
+	count += 1
+	print u'Загрузка документа №' + str(count) + '\r'
 	try:
 		schdl_type, schedule = parser.getSchedule(CONST.SCHEDULE_DIR + doc)	
 	except:
@@ -94,22 +98,25 @@ for doc in documents:
 			dbMySQL.commit()
 			curMySQL.execute("SELECT * FROM groups WHERE gcode = '{}';".format(group.encode('utf-8')))
 			gid, gcode = curMySQL.fetchone();
-			for event in schedule[group]:		
-				name = event['name']
-				teacher = event['teacher'].encode('utf-8') if event['teacher'] else ''
-				room = event['room'].encode('utf-8') if event['room'] else ''
-				for par in event['params']:
-					name += " (" + par + ")"
-				query = "INSERT INTO schedule (group_id, week, day, numb, name, room, teacher) VALUES ({},'{}',{},{},'{}','{}','{}');".format(
-					gid, 
-					event['week'].encode('utf-8'), 
-					event['day'], 
-					event['numb'], 
-					name.encode('utf-8'), 
-					room, 
-					teacher
-				)				
-				curMySQL.execute(query)
+			for event in schedule[group]:	
+				try:	
+					name = event['name']
+					teacher = str(event['teacher']).encode('utf-8') if event['teacher'] else ''
+					room = event['room'].encode('utf-8') if event['room'] else ''
+					for par in event['params']:
+						name += " (" + par + ")"
+					query = "INSERT INTO schedule (group_id, week, day, numb, name, room, teacher) VALUES ({},'{}',{},{},'{}','{}','{}');".format(
+						gid, 
+						event['week'].encode('utf-8'), 
+						event['day'], 
+						event['numb'], 
+						name.encode('utf-8'), 
+						room, 
+						teacher[:59]
+					)				
+					curMySQL.execute(query)
+				except:
+					continue
 			dbMySQL.commit()
 			
 			
