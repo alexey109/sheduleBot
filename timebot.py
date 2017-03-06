@@ -6,8 +6,8 @@ import time
 import string
 import sys
 import re
-import MySQLdb
 from operator import itemgetter
+import hashlib
 
 import consts as CONST
 import logger as lg
@@ -72,9 +72,9 @@ def getSchedule(params):
 	try:
 		db_user = db.Users.get(
 			db.Users.vk_id == params['vk_id'], 
-			db.Users.vk_chat == bool(params['is_chat'])
+			db.Users.vk_chat == params['is_chat']
 		)
-		schedule_user = db.UsersSchedule.filter(user = db_user.id)
+		schedule_user = db.UsersSchedule.filter(user = db_user)
 	except:
 		schedule_user = []
 	schedule = []
@@ -102,7 +102,7 @@ def getSchedule(params):
 			continue
 		event = {
 			'name'		: event_user.name,
-			'week'		: event_base.week,
+			'week'		: event_user.week,
 			'day'		: event_user.day,
 			'numb'		: event_user.numb,
 			'teacher'	: event_user.teacher,
@@ -382,6 +382,31 @@ def cmdFor7days(params):
 	
 	return text
 	
+def cmdMyid(params):
+	md5_hash = hashlib.md5()
+	free_id = False
+	counter = 0
+	while not free_id:
+		counter += 21 # Random numer
+		md5_hash.update(params['vk_id'] + 'e5cde62e4dc1c' + str(counter))
+		new_hash = md5_hash.hexdigest()
+		try:
+			user = db.Users.get(db.Users.my_id == new_id)
+		except:
+			user = False
+		if not user:
+			free_id = True
+	user = db.Users.get(
+		db.Users.vk_id == params['vk_id'], 
+		db.Users.vk_chat == params['is_chat']
+	)
+	user.my_id = new_hash
+	user.save()
+	return  CONST.USER_MESSAGE[CONST.CMD_MYID].format(new_hash)
+	
+def cmdLink(params):
+	return ''
+	
 
 functions = {
 	CONST.CMD_UNIVERSAL			: cmdUniversal,
@@ -413,6 +438,8 @@ functions = {
 	CONST.CMD_WHERE				: cmdWhere,
 	CONST.CMD_FOR7DAYS			: cmdFor7days,
 	CONST.CMD_LECTIONS			: cmdUniversal,
+	CONST.CMD_MYID				: cmdMyid,
+	CONST.CMD_LINK				: cmdLink,
 }
 
 
@@ -599,7 +626,7 @@ def analize(params):
 			else:
 				answer += CONST.ERR_MESSAGES[e.args[0]]
 		else:
-			raise e
+			raise Exception(e)
 	
 	return answer	
 

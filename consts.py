@@ -61,6 +61,8 @@ CMD_ZACHET			= 370
 CMD_WHERE			= 380
 CMD_FOR7DAYS		= 390
 CMD_LECTIONS		= 400
+CMD_MYID			= 410
+CMD_LINK			= 420
 
 
 MARKERS = [
@@ -198,6 +200,8 @@ KEYWORDS = {
 	CMD_LECTION_NUMB	: NUMB_NAMES,
 	CMD_FOR7DAYS		: [u'недел[юе]', u'[1-7]\s*дн[ея]'],
 	CMD_LECTIONS		: [u'(\s|\A)расписание\Z', u'(\s|\A)пары\Z'],
+	CMD_MYID			: [u'id', u'логин', u'пароль'],
+	CMD_LINK			: [u'ссылка', u'адрес', u'страница', u'сайт'],
 }
 
 USER_PREMESSAGE = {
@@ -242,6 +246,8 @@ USER_PREMESSAGE = {
 	CMD_WHERE			: u'',
 	CMD_FOR7DAYS		: u'',
 	CMD_LECTIONS		: u'Пары {markers}:\n',
+	CMD_MYID			: u'Ссылка: botpage.ru \n',
+	CMD_LINK			: u'botpage.ru',
 }
 
 USER_MESSAGE = {
@@ -255,6 +261,7 @@ USER_MESSAGE = {
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 	CMD_ZACHET			: u'\n{} пара{}\n{}\n',
 	CMD_WHERE			: u'Аудитория {} ({})\n',
+	CMD_MYID			: u'Ваш ID: {}',
 }
 
 # Error codes, will raise as exceptions.
@@ -280,7 +287,7 @@ ERR_MESSAGES = {
 	ERR_NO_TEACHER		: u'В расписании преподаватель не указан.',
 	ERR_NO_ROOM			: u'Аудитория на схемах не найдена',
 	ERR_PERIOD_ENDS		: u'занятий нет, смотрите расписание зачетов/экзаменов.',
-	ERR_MSG_LIMIT		: u'\n*пауза на {} сек.*'
+	ERR_MSG_LIMIT		: u'\n*пауза на {} сек.*',
 }
 
 MAP_DATA = [
