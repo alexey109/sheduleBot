@@ -25,7 +25,6 @@ def genBotID(any_string):
 	md5_hash = hashlib.md5()
 	free_id = False
 	while not free_id:
-		counter += 21 # Random numer
 		md5_hash.update(str(any_string) + 'e5cde62e4dc1c' + str(randint(0,10000)) )
 		new_hash = md5_hash.hexdigest()
 		try:
