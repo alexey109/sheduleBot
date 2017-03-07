@@ -251,7 +251,7 @@ USER_PREMESSAGE = {
 }
 
 USER_MESSAGE = {
-	CMD_UNIVERSAL		: u'\n{} пара ({}, {}):\n{}\n',
+	CMD_UNIVERSAL		: u'\n{} пара ({}{}):\n{}\n',
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
 	CMD_WHEN_EXAMS		: u'До летней сессии осталось {} недель.\nПрошло {} семестра.',
