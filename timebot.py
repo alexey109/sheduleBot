@@ -8,6 +8,7 @@ import sys
 import re
 from operator import itemgetter
 import hashlib
+from random import randint
 
 import consts as CONST
 import logger as lg
@@ -23,13 +24,12 @@ logger 		= lg.Logger()
 def genBotID(any_string):
 	md5_hash = hashlib.md5()
 	free_id = False
-	counter = 0
 	while not free_id:
 		counter += 21 # Random numer
-		md5_hash.update(str(any_string) + 'e5cde62e4dc1c' + str(counter))
+		md5_hash.update(str(any_string) + 'e5cde62e4dc1c' + str(randint(0,10000)) )
 		new_hash = md5_hash.hexdigest()
 		try:
-			user = db.Users.get(db.Users.bot_id == new_id)
+			user = db.Users.get(db.Users.bot_id == new_hash)
 		except:
 			user = False
 		if not user:
