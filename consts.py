@@ -261,7 +261,7 @@ USER_MESSAGE = {
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 	CMD_ZACHET			: u'\n{} пара{}\n{}\n',
 	CMD_WHERE			: u'Аудитория {} ({})\n',
-	CMD_MYID			: u'Ваш ID: {}',
+	CMD_MYID			: u'Ваш новый ID: {}',
 }
 
 # Error codes, will raise as exceptions.

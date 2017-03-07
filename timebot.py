@@ -20,6 +20,22 @@ import dbmodels as db
 attachment	= ''
 logger 		= lg.Logger()
 
+def genBotID(any_string):
+	md5_hash = hashlib.md5()
+	free_id = False
+	counter = 0
+	while not free_id:
+		counter += 21 # Random numer
+		md5_hash.update(str(any_string) + 'e5cde62e4dc1c' + str(counter))
+		new_hash = md5_hash.hexdigest()
+		try:
+			user = db.Users.get(db.Users.bot_id == new_id)
+		except:
+			user = False
+		if not user:
+			free_id = True
+	return new_hash
+
 def getLessonNumb(dt_time):
 	return {
 							dt_time < dt.time(9,0,0)  :	0,
@@ -72,7 +88,7 @@ def getSchedule(params):
 	try:
 		db_user = db.Users.get(
 			db.Users.vk_id == params['vk_id'], 
-			db.Users.vk_chat == params['is_chat']
+			db.Users.is_chat == params['is_chat']
 		)
 		schedule_user = db.UsersSchedule.filter(user = db_user)
 	except:
@@ -383,24 +399,12 @@ def cmdFor7days(params):
 	return text
 	
 def cmdMyid(params):
-	md5_hash = hashlib.md5()
-	free_id = False
-	counter = 0
-	while not free_id:
-		counter += 21 # Random numer
-		md5_hash.update(params['vk_id'] + 'e5cde62e4dc1c' + str(counter))
-		new_hash = md5_hash.hexdigest()
-		try:
-			user = db.Users.get(db.Users.my_id == new_id)
-		except:
-			user = False
-		if not user:
-			free_id = True
+	new_hash = genBotID(params['vk_id'])
 	user = db.Users.get(
 		db.Users.vk_id == params['vk_id'], 
-		db.Users.vk_chat == params['is_chat']
+		db.Users.is_chat == params['is_chat']
 	)
-	user.my_id = new_hash
+	user.bot_id = new_hash
 	user.save()
 	return  CONST.USER_MESSAGE[CONST.CMD_MYID].format(new_hash)
 	
@@ -463,7 +467,7 @@ def getGroup(params):
 	try:
 		db_user = db.Users.get(
 			db.Users.vk_id == vk_id, 
-			db.Users.vk_chat == bool(params['chat_id'])
+			db.Users.is_chat == bool(params['chat_id'])
 		)
 	except:
 		db_user = None
@@ -487,8 +491,8 @@ def getGroup(params):
 			raise Exception(CONST.ERR_NO_GROUP)	
 		db_user = db.Users(
 			vk_id			= vk_id,
-			vk_chat			= bool(params['chat_id']),
-			my_id			= hash(vk_id + 'h3d8er3f3'),
+			is_chat			= bool(params['chat_id']),
+			bot_id			= genBotID(vk_id),
 			group			= db_group.id,
 			notice_today	= False,
 			notice_tommorow	= False,

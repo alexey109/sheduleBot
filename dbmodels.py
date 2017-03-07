@@ -25,8 +25,8 @@ class Groups(peewee.Model):
 
 class Users(peewee.Model):
 	vk_id			= peewee.CharField()
-	vk_chat			= peewee.BooleanField()
-	my_id			= peewee.CharField()
+	is_chat			= peewee.BooleanField()
+	bot_id			= peewee.CharField()
 	group			= peewee.ForeignKeyField(Groups)
 	notice_today	= peewee.BooleanField()
 	notice_tommorow	= peewee.BooleanField()
