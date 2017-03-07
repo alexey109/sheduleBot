@@ -109,7 +109,7 @@ def getSchedule(params):
 			'day'		: event_base.day,
 			'numb'		: event_base.numb,
 			'teacher'	: event_base.teacher,
-			'room'		: event_base.room,
+			'room'		: event_base.room if event_base.room else '-',
 		}
 		schedule.append(event)
 	for event_user in schedule_user:
@@ -121,7 +121,7 @@ def getSchedule(params):
 			'day'		: event_user.day,
 			'numb'		: event_user.numb,
 			'teacher'	: event_user.teacher,
-			'room'		: event_user.room,
+			'room'		: event_user.room if event_base.room else '-',
 		}
 		schedule.append(event)
 	schedule = sorted(schedule, key=itemgetter('day', 'numb'))
