@@ -482,6 +482,10 @@ def getGroup(params):
 			raise Exception(CONST.ERR_NO_GROUP)		
 		db_user.group = db_group.id
 		db_user.save()
+		
+		group_id = db_user.group.id
+		group_code = db_user.group.gcode
+		
 		answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(msg_group.upper())
 	elif msg_group:
 		try:
@@ -499,6 +503,9 @@ def getGroup(params):
 			notice_map		= False
 		)
 		db_user.save()
+		
+		group_id = db_user.group.id
+		group_code = db_user.group.gcode
 		
 		answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(msg_group.upper())
 		answer += CONST.USER_PREMESSAGE[CONST.CMD_HELP]
@@ -608,6 +615,8 @@ def analize(params):
 		'lnumb'		: lesson,
 		'keyword'	: command['keyword']
 	}
+	
+	print cmd_params
 	
 	# Check markers after apply
 	header = ''
