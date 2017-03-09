@@ -615,9 +615,7 @@ def analize(params):
 		'lnumb'		: lesson,
 		'keyword'	: command['keyword']
 	}
-	
-	print cmd_params
-	
+		
 	# Check markers after apply
 	header = ''
 	for cmd, kwd in markers.items():
