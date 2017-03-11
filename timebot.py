@@ -38,7 +38,7 @@ def genBotID(any_string):
 def getLessonNumb(dt_time):
 	return {
 							dt_time < dt.time(9,0,0)  :	0,
-		dt.time(9,0,0) 	 <= dt_time < dt.time(10,30,0): 1,
+		dt.time(8,0,0) 	 <= dt_time < dt.time(10,30,0): 1,
 		dt.time(10,30,0) <= dt_time < dt.time(12,10,0): 2,
 		dt.time(12,10,0) <= dt_time < dt.time(14,30,0): 3,
 		dt.time(14,30,0) <= dt_time < dt.time(16,10,0): 4,
@@ -361,10 +361,11 @@ def cmdWhere(params):
 	return text
 	
 def cmdFor7days(params):
+	day_amount = 7
 	try:
 		day_amount = int(re.search('[1-7]', params['keyword']['word']).group())
 	except:
-		day_amount = 7
+		pass
 	
 	text = ''
 	for i in range(0, day_amount):	
@@ -397,7 +398,7 @@ def cmdFor7days(params):
 	
 	return text
 	
-def cmdMyid(params):
+def cmdNewId(params):
 	new_hash = genBotID(params['vk_id'])
 	user = db.Users.get(
 		db.Users.vk_id == params['vk_id'], 
@@ -405,7 +406,14 @@ def cmdMyid(params):
 	)
 	user.bot_id = new_hash
 	user.save()
-	return  CONST.USER_MESSAGE[CONST.CMD_MYID].format(new_hash)
+	return  CONST.USER_MESSAGE[CONST.CMD_NEW_ID].format(new_hash)
+	
+def cmdMyid(params):
+	user = db.Users.get(
+		db.Users.vk_id == params['vk_id'], 
+		db.Users.is_chat == params['is_chat']
+	)
+	return  CONST.USER_MESSAGE[CONST.CMD_MYID].format(user.bot_id)
 	
 def cmdLink(params):
 	return ''
@@ -423,7 +431,7 @@ functions = {
 	CONST.CMD_NOW				: cmdUniversal,
 	CONST.CMD_BY_DATE			: cmdUniversal,
 	CONST.CMD_BY_TIME			: cmdUniversal,
-	CONST.CMD_LECTION_NUMB		: cmdUniversal,
+	CONST.CMD_BY_NUMB			: cmdUniversal,
 	CONST.CMD_HELP				: cmdHelp,
 	CONST.CMD_POLITE			: cmdPolite,
 	CONST.CMD_LECTIONS_TIME		: cmdLectionsTime,
@@ -441,10 +449,10 @@ functions = {
 	CONST.CMD_WHERE				: cmdWhere,
 	CONST.CMD_FOR7DAYS			: cmdFor7days,
 	CONST.CMD_LECTIONS			: cmdUniversal,
+	CONST.CMD_NEW_ID			: cmdNewId,
 	CONST.CMD_MYID				: cmdMyid,
 	CONST.CMD_LINK				: cmdLink,
 }
-
 
 def findKeywords(words, text):	
 	keyword = {}
@@ -521,6 +529,43 @@ def getGroup(params):
 	}
 	return group, answer	
 
+# Apply hot functions
+# 1 - today
+# 2 - tomorrow
+# 3 - week
+# 4 - current on map
+def applyHotFunc(command, markers):
+	func_numb = command['keyword']['word']
+	if func_numb == '1':
+		command['code'] = CONST.CMD_UNIVERSAL
+	if func_numb == '2':
+		command['code'] = CONST.CMD_UNIVERSAL
+		markers[CONST.CMD_TOMMOROW] = {'word': '', 'idx': ''}
+	if func_numb == '3':
+		command['code'] = CONST.CMD_FOR7DAYS
+		command['keyword']['word'] = ''
+	if func_numb == '4':
+		command['code'] = CONST.CMD_WHERE
+		
+	return command, markers
+
+def addZeroHourMsg(params):
+	app_msg = ''
+	db_user = db.Users.get(
+		db.Users.vk_id == params['vk_id'], 
+		db.Users.is_chat == params['is_chat']
+	)
+	current_wd = dt.datetime.now().weekday()
+	try:
+		if db_user.notice_zerohour.weekday() != current_wd:
+			app_msg = CONST.MSG_ZERO_HOUR.format(CONST.DAY_NAMES[current_wd])
+	except:
+		pass
+	db_user.notice_zerohour = dt.datetime.now()
+	db_user.save()
+	
+	return app_msg
+
 # Takes message and prepare answer for it.
 # Return type: string
 def analize(params):
@@ -550,7 +595,7 @@ def analize(params):
 			answer_ok 			= True
 	if answer_ok:
 		params['text'] = params['text'].replace(command['keyword']['word'], '')
-	
+		
 	# Find all markers
 	for cmd, keywords in CONST.KEYWORDS.items():
 		if not cmd in CONST.MARKERS:
@@ -560,9 +605,12 @@ def analize(params):
 			params['text'] = params['text'].replace(word['word'], '')
 			markers[cmd] = word
 	
+	if command['code'] == CONST.CMD_HOT_FUNC:
+		command, markers = applyHotFunc(command, markers)
+		
 	if answer_ok and not markers:
 		markers = {CONST.CMD_TODAY: default_kwd}	
-	
+		
 	# Apply markers for settings
 	for cmd_code, keyword in markers.items():
 		if cmd_code == CONST.CMD_TOMMOROW:
@@ -580,7 +628,7 @@ def analize(params):
 				if temp_date.weekday() == keyword['idx']:
 					date = temp_date
 					break
-		elif cmd_code == CONST.CMD_LECTION_NUMB:
+		elif cmd_code == CONST.CMD_BY_NUMB:
 			lesson = keyword['idx']
 			keyword['word'] = keyword['idx']
 		elif cmd_code == CONST.CMD_BY_TIME:
@@ -637,6 +685,9 @@ def analize(params):
 				answer += CONST.ERR_MESSAGES[e.args[0]]
 		else:
 			raise Exception(e)
+	
+	if dt.datetime.now().hour == 0:
+		answer += addZeroHourMsg(cmd_params)
 	
 	return answer	
 

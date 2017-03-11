@@ -32,6 +32,8 @@ class Users(peewee.Model):
 	notice_tommorow	= peewee.BooleanField()
 	notice_week		= peewee.BooleanField()
 	notice_map		= peewee.BooleanField()
+	send_time		= peewee.DateTimeField()
+	notice_zerohour = peewee.DateTimeField()
 	
 	class Meta:
 		database = db

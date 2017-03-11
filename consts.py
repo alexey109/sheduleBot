@@ -27,19 +27,20 @@ LOG_STATC_FILE	= 'statistic.txt'
 SCHEDULE_DIR = 'schedules/'
 
 # Commands (CMD)
-CMD_AFTERTOMMOROW 	= 10  
-CMD_TOMMOROW		= 20 
-CMD_YESTERDAY		= 30
-CMD_DAY_OF_WEEK 	= 40
-CMD_BY_DATE			= 50 
-CMD_BY_TIME			= 60
-CMD_LECTION_NUMB	= 70 
-CMD_TODAY 			= 80
-CMD_NOW				= 90
+CMD_AFTERTOMMOROW 	= 10010  
+CMD_TOMMOROW		= 10020 
+CMD_YESTERDAY		= 10030
+CMD_DAY_OF_WEEK 	= 10040
+CMD_BY_DATE			= 10050 
+CMD_BY_TIME			= 10060
+CMD_BY_NUMB			= 10070 
+CMD_TODAY 			= 10080
+CMD_NOW				= 10090
 
 # Command code uses as command priority number.
 # Command with lower code has higher priority.
 CMD_UNIVERSAL		= 990
+CMD_HOT_FUNC		= 90
 CMD_NEXT 			= 100
 CMD_WEEK			= 160 
 CMD_HELP			= 210
@@ -61,8 +62,9 @@ CMD_ZACHET			= 370
 CMD_WHERE			= 380
 CMD_FOR7DAYS		= 390
 CMD_LECTIONS		= 400
-CMD_MYID			= 410
-CMD_LINK			= 420
+CMD_NEW_ID			= 410
+CMD_MYID			= 420
+CMD_LINK			= 430
 
 
 MARKERS = [
@@ -72,7 +74,7 @@ MARKERS = [
 	CMD_AFTERTOMMOROW,
 	CMD_YESTERDAY,
 	CMD_DAY_OF_WEEK,
-	CMD_LECTION_NUMB,
+	CMD_BY_NUMB,
 	CMD_BY_TIME,
 	CMD_BY_DATE
 ]
@@ -175,7 +177,7 @@ KEYWORDS = {
 		u'делаешь',
 		u'команды'
 	],
-	CMD_POLITE			: [u'спас', u'спс'],
+	CMD_POLITE			: [u'спас', u'спс', u'благордар'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'преподаватель', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', u'звонк'],
 	CMD_WHEN_EXAMS		: [
@@ -197,11 +199,13 @@ KEYWORDS = {
 	CMD_CALENDAR_DC		: [u'календар.*декабр'],
 	CMD_MYGROUP			: [u'запомн',u'сохран', u'групп'],
 	CMD_WHERE			: [u'где', u'покажи'],
-	CMD_LECTION_NUMB	: NUMB_NAMES,
+	CMD_BY_NUMB			: NUMB_NAMES,
 	CMD_FOR7DAYS		: [u'недел[юе]', u'[1-7]\s*дн[ея]'],
 	CMD_LECTIONS		: [u'(\s|\A)расписание\Z', u'(\s|\A)пары\Z'],
+	CMD_NEW_ID			: [u'новый', u'генерир', u'обнови'],
 	CMD_MYID			: [u'id', u'логин', u'пароль'],
 	CMD_LINK			: [u'ссылка', u'адрес', u'страница', u'сайт'],
+	CMD_HOT_FUNC		: [u'\A[1-4]\Z'],
 }
 
 USER_PREMESSAGE = {
@@ -215,7 +219,7 @@ USER_PREMESSAGE = {
 	CMD_DAY_OF_WEEK 	: u' на {}',
 	CMD_BY_DATE			: u' {}',
 	CMD_BY_TIME			: u' в {}',
-	CMD_LECTION_NUMB	: u' номер {}',
+	CMD_BY_NUMB	: u' номер {}',
 
 	CMD_WEEK			: '',
 	CMD_NEXT 			: u'Следующие пары:\n',
@@ -246,6 +250,7 @@ USER_PREMESSAGE = {
 	CMD_WHERE			: u'',
 	CMD_FOR7DAYS		: u'',
 	CMD_LECTIONS		: u'Пары {markers}:\n',
+	CMD_NEW_ID			: u'Ссылка: botpage.ru \n',
 	CMD_MYID			: u'Ссылка: botpage.ru \n',
 	CMD_LINK			: u'botpage.ru',
 }
@@ -261,8 +266,11 @@ USER_MESSAGE = {
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 	CMD_ZACHET			: u'\n{} пара{}\n{}\n',
 	CMD_WHERE			: u'Аудитория {} ({})\n',
-	CMD_MYID			: u'Ваш новый ID: {}',
+	CMD_NEW_ID			: u'Ваш новый ID: {}',
+	CMD_MYID			: u'Ваш ID: {}',
 }
+
+MSG_ZERO_HOUR = u'\nУже {}!'
 
 # Error codes, will raise as exceptions.
 ERR_UNDEFINED 		= 0
