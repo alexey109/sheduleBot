@@ -753,7 +753,7 @@ def getNotice():
 				db.Users.notice_tommorow |
 				db.Users.notice_week |
 				db.Users.notice_map
-			), db.Users.send_time < dt.datetime(today.year, today.month, today.day+1)).limit(1)
+			), db.Users.send_time < dt.datetime(today.year, today.month, today.day)).limit(1)
 		for u in users:
 			user = u
 			notice['user_id'] = user.vk_id
