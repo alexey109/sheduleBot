@@ -50,7 +50,7 @@ msg_chat = {
 	]
 }
 
-answ =  bot.genAnswer({'chat_id': u'','text': u'пн', 'user_id': u'10151100'})
+answ =  bot.genAnswer({'chat_id': u'','text': u'губо-04-14', 'user_id': u'10151423100'})
 print answ['text']
 '''
 params = {

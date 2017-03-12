@@ -487,7 +487,7 @@ def getGroup(params):
 		try:
 			db_group = db.Groups.get(db.Groups.gcode == msg_group)
 		except:
-			raise Exception(CONST.ERR_NO_GROUP)		
+			raise Exception(CONST.ERR_GROUP_NOT_FOUND)		
 		db_user.group = db_group.id
 		db_user.save()
 		
@@ -499,7 +499,7 @@ def getGroup(params):
 		try:
 			db_group = db.Groups.get(db.Groups.gcode == msg_group)
 		except:
-			raise Exception(CONST.ERR_NO_GROUP)	
+			raise Exception(CONST.ERR_GROUP_NOT_FOUND)	
 		db_user = db.Users(
 			vk_id			= vk_id,
 			is_chat			= bool(params['chat_id']),
@@ -508,7 +508,9 @@ def getGroup(params):
 			notice_today	= False,
 			notice_tommorow	= False,
 			notice_week		= False,
-			notice_map		= False
+			notice_map		= False,
+			send_time		= dt.datetime.now(),
+			notice_zerohour = dt.datetime.now(),
 		)
 		db_user.save()
 		

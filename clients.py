@@ -104,7 +104,7 @@ class ClientVK:
 				answer['text'] = CONST.ERR_MESSAGES[e.args[0]]
 			else:
 				self.logger.log(CONST.LOG_ERROR, e)
-				return
+				answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
 
 		if answer['text'] or answer['attachment']: 
 			fullmsg = str(params['user_id']) + answer['text'] + answer['attachment'] 
