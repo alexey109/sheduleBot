@@ -9,9 +9,10 @@ import timebot as bot
 import logger as lg
 import consts as CONST
 
+
 def waitNextCall(lastCall, delta):
 	while (time.time() - lastCall) < delta:
-		time.sleep(0.1)
+		time.sleep(0.1)	
 
 class UsersStack:
 	def __init__(self):
@@ -45,9 +46,9 @@ class UsersStack:
 class ClientVK:
 
 	def __init__(self):
-		self.logger    = lg.Logger()
-		self.last_call = 0
-		self.usr_stack = UsersStack()
+		self.logger    		= lg.Logger()
+		self.last_call 		= 0
+		self.usr_stack 		= UsersStack()
 
 	# Open vkAPI session
 	# Return type: vk.api object
@@ -55,7 +56,6 @@ class ClientVK:
 		success = False
 		while not success:
 			try:
-				print 'Try to open new session.'
 				session = vk.AuthSession(
 					app_id = security.app_id, 
 					user_login = security.user_login, 
@@ -63,7 +63,6 @@ class ClientVK:
 					scope = security.scope)
 				api = vk.API(session, v='5.60', lang='ru')
 				success = True
-				print 'Session opened.'
 			except Exception as e:
 				self.logger.log(CONST.LOG_ERROR, e)
 				time.sleep(3)
@@ -131,25 +130,59 @@ class ClientVK:
 			
 			self.last_call = time.time()	
 
+	def sendNotice(self, notice):
+		waitNextCall(self.last_call, CONST.NOTICE_DELAY)
+		if notice['is_chat']:
+			self.api.messages.send(
+				chat_id = notice['user_id'], 
+				message = notice['text'], 
+				attachment = notice['attachment']
+			)
+		else:
+			self.api.messages.send(
+				user_id = notice['user_id'], 
+				message = notice['text'], 
+				attachment = notice['attachment']
+			)
+		bot.saveNoticeTime(notice)
+		
+		self.last_call = time.time()
+
 	# Scan enter messages and answer
 	def run(self):		
 		self.api = self.openSession()
+		last_get_call = 0
+		toffset = time.time()
 		while 1:
 			try:
 				waitNextCall(self.last_call, 1)
-				response = self.api.messages.get(out=0, count=8, time_offset=10, preview_length=100)
-				self.last_call = time.time()
+				toffset = time.time() - last_get_call
+				response = self.api.messages.get(out=0, count=5, time_offset=toffset, preview_length=100)
+				self.last_call 	= time.time()
+				last_get_call	= time.time()
+				unread_msgs = []
 				for vk_msg in response['items']:
 					if vk_msg['read_state'] == 0:
+						unread_msgs.append(vk_msg)
+				if unread_msgs:
+					for vk_msg in unread_msgs:
 						try:
 							self.sendMyAnswer(vk_msg)
 						except Exception as e:
 							self.logger.log(CONST.LOG_ERROR, e)
 							self.api = self.openSession()
+				elif bot.isNoticeTime():
+					try:
+						self.sendNotice(bot.getNotice())
+					except:
+						pass
 						
 			except Exception as e:
+				print str(e)
+				print 'Exception! Try to open new session'
 				self.logger.log(CONST.LOG_ERROR, e)
 				self.api = self.openSession()
+				print 'Session was opened'
 
 
 vk_client = ClientVK()

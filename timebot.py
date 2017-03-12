@@ -124,18 +124,30 @@ def getSchedule(params):
 			'room'		: event_user.room,
 		}
 		schedule.append(event)
+		
+	if not schedule:
+		raise Exception(CONST.ERR_NO_LECTIONS)
+		
 	schedule = sorted(schedule, key=itemgetter('day', 'numb'))
 	return schedule
 
 def getLessons(params, lstart = 1, lfinish = 8):
 	schedule = getSchedule(params)
 	
-	lessons = []
+	lessons 	= []
 	for event in schedule:
 		if event['day'] == params['day'] and isWeeksEqual(event['week'], params['week'])	\
 		and event['numb'] >= lstart	and event['numb'] <= lfinish:
+		
+			try:
+				if params['find_first'] and lessons[-1]['day'] == event['day']:
+					continue
+			except:
+				pass
+				
 			event['time'] = CONST.LECTION_TIME[event['numb']]
 			lessons.append(event)
+			day_buff = event['day']
 
 	if not lessons:
 		raise Exception(CONST.ERR_NO_LECTIONS)
@@ -160,12 +172,6 @@ def cmdUniversal(params):
 		lesson_list = getLessons(params, lnumb, lnumb)
 	else:
 		lesson_list = getLessons(params)
-
-	return formatLessons(lesson_list)
-
-def cmdNext(params):
-	lection_start = int(getLessonNumb(dt.datetime.now().time())) + 1
-	lesson_list = getLessons(params, lection_start)
 
 	return formatLessons(lesson_list)
 
@@ -337,19 +343,22 @@ def cmdMyGroup(params):
 
 def cmdWhere(params):
 	global attachment
-
-	if params['lnumb']:
-		lnumb = params['lnumb']
-	else:
-		lnumb = int(getLessonNumb(dt.datetime.now().time())) 
 			
-	lesson = getLessons(params, lnumb, lnumb)[0]
+	lesson_numb = ''
+	if params['find_first']:
+		lesson = getLessons(params)[0]
+		lesson_numb = CONST.USER_MESSAGE[CONST.CMD_FIRST].format(lesson['numb'])
+	else:
+		lnumb = params['lnumb'] if params['lnumb'] else int(getLessonNumb(dt.datetime.now().time())) 
+		lesson = getLessons(params, lnumb, lnumb)[0]
+		
 	if not lesson.get('room', False):
 		raise Exception(CONST.ERR_NO_ROOM)
 
 	text = CONST.USER_MESSAGE[CONST.CMD_WHERE].format(
 		lesson['room'].upper(), 
 		lesson['name'], 
+		lesson_numb
 	)
 
 	floor = findFloor(lesson['room'])
@@ -421,7 +430,7 @@ def cmdLink(params):
 
 functions = {
 	CONST.CMD_UNIVERSAL			: cmdUniversal,
-	CONST.CMD_NEXT 				: cmdNext,
+	CONST.CMD_NEXT 				: cmdUniversal,
 	CONST.CMD_TODAY 			: cmdUniversal,
 	CONST.CMD_AFTERTOMMOROW 	: cmdUniversal,
 	CONST.CMD_TOMMOROW			: cmdUniversal,
@@ -585,6 +594,7 @@ def analize(params):
 	}
 	date 	= dt.datetime.today()
 	lesson 	= 0
+	find_first	= False
 	
 	# Define command
 	for cmd, keywords in CONST.KEYWORDS.items():
@@ -619,6 +629,8 @@ def analize(params):
 			date = dt.datetime.today() + dt.timedelta(days=1)
 		elif cmd_code == CONST.CMD_NOW:
 			lesson = int(getLessonNumb(dt.datetime.now().time()))
+		elif cmd_code == CONST.CMD_NEXT:
+			lesson = int(getLessonNumb(dt.datetime.now().time())) + 1
 		elif cmd_code == CONST.CMD_AFTERTOMMOROW:
 			date = dt.datetime.today() + dt.timedelta(days=2)
 		elif cmd_code == CONST.CMD_YESTERDAY:
@@ -653,6 +665,8 @@ def analize(params):
 					date = dt.date(2017, mnumb, int(day))
 				except:
 					del markers[cmd_code]
+		elif cmd_code == CONST.CMD_FIRST:
+			find_first = True
 
 	# Prepare parametrs for functions 
 	cmd_params = {
@@ -663,7 +677,8 @@ def analize(params):
 		'day' 		: date.weekday(),
 		'week'		: date.isocalendar()[1],
 		'lnumb'		: lesson,
-		'keyword'	: command['keyword']
+		'keyword'	: command['keyword'],
+		'find_first': find_first
 	}
 		
 	# Check markers after apply
@@ -718,5 +733,71 @@ def genAnswer(params):
 	
 	return answer
 
+def isNoticeTime():
+	today = dt.datetime.now()
+	return (today.hour > CONST.NOTICE_START_TIME and today.hour < CONST.NOTICE_END_TIME)
+	
+def getNotice():
+	today = dt.datetime.now()
+	notice = {
+		'user_id'		: '',
+		'is_chat'		: '',
+		'text'			: '',
+		'attachment'	: '',
+	}	
+	
+	user = None
+	try:
+		users = db.Users.select().where((
+				db.Users.notice_today |
+				db.Users.notice_tommorow |
+				db.Users.notice_week |
+				db.Users.notice_map
+			), db.Users.send_time < dt.datetime(today.year, today.month, today.day+1)).limit(1)
+		for u in users:
+			user = u
+			notice['user_id'] = user.vk_id
+			notice['is_chat'] = user.is_chat
+			break
+	except:
+		raise Exception()
+		
+	params = {
+		'user_id'	: user.vk_id,
+		'chat_id'	: user.vk_id if user.is_chat else False,
+		'text'		: ''
+	}	
+	def appendAnswer(notice, msg):
+		try:
+			params['text'] = msg
+			answer = genAnswer(params)
+			notice['text'] += '\n\n' + answer['text']
+			notice['attachment'] += '\n' + answer['attachment']
+		except:
+			pass
+			
+		return notice
+		
+	if user.notice_today and today.weekday() != 6:
+		notice = appendAnswer(notice, CONST.MSG_NOTICE_TODAY)
+	if user.notice_tommorow and today.weekday() != 5:
+		notice = appendAnswer(notice, CONST.MSG_NOTICE_TOMORROW)
+	if user.notice_week and today.weekday() == 6:
+		notice = appendAnswer(notice, CONST.MSG_NOTICE_WEEK)
+	if user.notice_map and today.weekday() != 6:
+		notice= appendAnswer(notice, CONST.MSG_NOTICE_MAP)
+		
+	if not (notice['text'] or notice['attachment']):
+		raise Exception()
+	
+	return notice
+
+def saveNoticeTime(notice):
+	try:
+		user =db.Users.get(db.Users.vk_id == notice['user_id'], db.Users.is_chat == notice['is_chat'])
+		user.send_time = dt.datetime.now()
+		user.save()
+	except:
+		pass
 				
 

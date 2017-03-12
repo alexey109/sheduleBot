@@ -34,7 +34,7 @@ class Users(peewee.Model):
 	notice_map		= peewee.BooleanField()
 	send_time		= peewee.DateTimeField()
 	notice_zerohour = peewee.DateTimeField()
-	
+		
 	class Meta:
 		database = db
 		db_table = 'users'
@@ -66,6 +66,4 @@ class UsersSchedule(peewee.Model):
 	class Meta:
 		database = db
 		db_table = 'users_schedule'
-		
-
 	

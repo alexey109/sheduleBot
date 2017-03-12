@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-STACK_LEN 		= 50 	# messages
-USERS_QUEUE_LEN = 120 	# seconds
-USER_MSG_AMOUNT	= 5		# message amount for a user in USERS_QUEUE_LEN
+STACK_LEN 			= 50 	# messages
+USERS_QUEUE_LEN 	= 120 	# seconds
+USER_MSG_AMOUNT		= 5		# message amount for a user in USERS_QUEUE_LEN
+NOTICE_START_TIME 	= 3		# Hour when notice delivery starts
+NOTICE_END_TIME		= 7		# Hour when notice delivery ends
+NOTICE_DELAY		= 20	# Seconds while waiting for next notice
 
 # Enable/disable logging everything.
 LOG	 	= True
@@ -24,7 +27,7 @@ LOG_FBACK_FILE	= 'feedback.txt'
 LOG_MESGS_FILE	= 'messages.txt'
 LOG_PARSE_FILE	= 'parser.txt'
 LOG_STATC_FILE	= 'statistic.txt'
-SCHEDULE_DIR = 'schedules/'
+SCHEDULE_DIR 	= 'schedules/'
 
 # Commands (CMD)
 CMD_AFTERTOMMOROW 	= 10010  
@@ -36,13 +39,14 @@ CMD_BY_TIME			= 10060
 CMD_BY_NUMB			= 10070 
 CMD_TODAY 			= 10080
 CMD_NOW				= 10090
+CMD_NEXT 			= 10100
+CMD_FIRST			= 10110
 
 # Command code uses as command priority number.
 # Command with lower code has higher priority.
 CMD_UNIVERSAL		= 990
-CMD_HOT_FUNC		= 90
-CMD_NEXT 			= 100
-CMD_WEEK			= 160 
+CMD_HOT_FUNC		= 190
+CMD_WEEK			= 200 
 CMD_HELP			= 210
 CMD_POLITE			= 220
 CMD_LECTIONS_TIME	= 230 
@@ -69,6 +73,7 @@ CMD_LINK			= 430
 
 MARKERS = [
 	CMD_NOW,
+	CMD_NEXT,
 	CMD_TODAY,
 	CMD_TOMMOROW,
 	CMD_AFTERTOMMOROW,
@@ -76,7 +81,8 @@ MARKERS = [
 	CMD_DAY_OF_WEEK,
 	CMD_BY_NUMB,
 	CMD_BY_TIME,
-	CMD_BY_DATE
+	CMD_BY_DATE,
+	CMD_FIRST
 ]
 
 DAY_NAMES = [
@@ -116,7 +122,7 @@ MONTH_NAMES = [
 
 NUMB_NAMES = [
 	u'((\s|\A)0(\s|\Z))|(нулевая)',
-	u'((\s|\A)1(\s|\Z))|(перв[уаоы][еюяйи])',
+	u'(\s|\A)1(\s|\Z)',
 	u'((\s|\A)2(\s|\Z))|(втор[уаоы][еюяйи])',
 	u'((\s|\A)3(\s|\Z))|(треть[юяейи]{1,2})',
 	u'((\s|\A)4(\s|\Z))|(четверт[уаоы][еюяйи])',
@@ -157,6 +163,7 @@ KEYWORDS = {
 	CMD_YESTERDAY		: [u'вчера'],
 	CMD_WEEK			: [u'неделя'],
 	CMD_NOW				: [u'сейчас', u'текущая'],
+	CMD_FIRST			: [u'перв[уаоы][еяюйи]'],
 	CMD_DAY_OF_WEEK 	: [
 		u'((\s|\A)пн(\s|\Z))|(понедельник)', 
 		u'((\s|\A)вт(\s|\Z))|(вторник)',
@@ -219,7 +226,8 @@ USER_PREMESSAGE = {
 	CMD_DAY_OF_WEEK 	: u' на {}',
 	CMD_BY_DATE			: u' {}',
 	CMD_BY_TIME			: u' в {}',
-	CMD_BY_NUMB	: u' номер {}',
+	CMD_BY_NUMB			: u' номер {}',
+	CMD_FIRST			: u' (первая)',
 
 	CMD_WEEK			: '',
 	CMD_NEXT 			: u'Следующие пары:\n',
@@ -265,12 +273,17 @@ USER_MESSAGE = {
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_SESSION			: u'\n{} января в {}, {}:\n{} "{}"\n',
 	CMD_ZACHET			: u'\n{} пара{}\n{}\n',
-	CMD_WHERE			: u'Аудитория {} ({})\n',
+	CMD_WHERE			: u'Аудитория {} ({}){}\n',
+	CMD_FIRST			: u' ({} пара)',
 	CMD_NEW_ID			: u'Ваш новый ID: {}',
 	CMD_MYID			: u'Ваш ID: {}',
 }
 
-MSG_ZERO_HOUR = u'\nУже {}!'
+MSG_NOTICE_TODAY 	= u'пары сегодня'
+MSG_NOTICE_TOMORROW = u'пары завтра'
+MSG_NOTICE_WEEK 	= u'на неделю'
+MSG_NOTICE_MAP 		= u'где первая пара'
+MSG_ZERO_HOUR = u'\n\nУже {}!'
 
 # Error codes, will raise as exceptions.
 ERR_UNDEFINED 		= 0

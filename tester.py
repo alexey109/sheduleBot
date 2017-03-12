@@ -5,8 +5,8 @@ import timebot as bot
 import consts as CONST
 import logger as lg
 import parser as pr
+import dbmodels as db
 #import clients
-
 
 # VK API responses
 msg = {
@@ -50,8 +50,12 @@ msg_chat = {
 	]
 }
 
-answ =  bot.genAnswer({'chat_id': u'','text': u'губо-04-14', 'user_id': u'10151423100'})
-print answ['text']
+notice = bot.getNotice()
+print notice['text']
+
+#answ =  bot.genAnswer({'chat_id': u'','text': u'первая пара в понедельник', 'user_id': u'10151423100'})
+#print answ['text']
+
 '''
 params = {
 	'msg_id'	: 123,
