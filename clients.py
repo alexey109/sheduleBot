@@ -151,13 +151,13 @@ class ClientVK:
 	# Scan enter messages and answer
 	def run(self):		
 		self.api = self.openSession()
-		last_get_call = 0
+		last_get_call = time.time() - 10
 		toffset = time.time()
 		while 1:
 			try:
 				waitNextCall(self.last_call, 1)
 				toffset = time.time() - last_get_call
-				response = self.api.messages.get(out=0, count=5, time_offset=toffset, preview_length=100)
+				response = self.api.messages.get(out=0, count=10, time_offset=toffset, preview_length=100)
 				self.last_call 	= time.time()
 				last_get_call	= time.time()
 				unread_msgs = []
