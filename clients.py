@@ -157,6 +157,7 @@ class ClientVK:
 			try:
 				waitNextCall(self.last_call, 1)
 				toffset = int(time.time() - last_get_call)
+				toffset = toffset if toffset > 10 else 10
 				response = self.api.messages.get(out=0, count=10, time_offset=toffset, preview_length=100)
 				self.last_call 	= time.time()
 				last_get_call	= time.time()
