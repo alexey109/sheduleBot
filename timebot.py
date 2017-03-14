@@ -724,7 +724,7 @@ def genAnswer(params):
 
 	# Check feedback
 	if any(re.search(word, params['text']) for word in CONST.FEEDBACK_KEYWORDS):
-		logger.log(CONST.LOG_FBACK, params['user_id'] + ' ' + params['text'])
+		logger.log(CONST.LOG_FBACK, str(params['user_id']) + ' ' + params['text'])
 		answer['text'] = CONST.USER_PREMESSAGE[CONST.CMD_FEEDBACK]
 		return answer
 		

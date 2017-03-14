@@ -156,7 +156,7 @@ class ClientVK:
 		while 1:
 			try:
 				waitNextCall(self.last_call, 1)
-				toffset = time.time() - last_get_call
+				toffset = int(time.time() - last_get_call)
 				response = self.api.messages.get(out=0, count=10, time_offset=toffset, preview_length=100)
 				self.last_call 	= time.time()
 				last_get_call	= time.time()
