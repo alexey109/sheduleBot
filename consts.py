@@ -279,10 +279,10 @@ USER_MESSAGE = {
 	CMD_MYID			: u'Ваш ID: {}',
 }
 
-MSG_NOTICE_TODAY 	= u'пары сегодня'
-MSG_NOTICE_TOMORROW = u'пары завтра'
-MSG_NOTICE_WEEK 	= u'на неделю'
-MSG_NOTICE_MAP 		= u'где первая пара'
+MSG_NOTICE_TODAY 	= u'бот, пары сегодня'
+MSG_NOTICE_TOMORROW = u'бот, пары завтра'
+MSG_NOTICE_WEEK 	= u'бот, на неделю'
+MSG_NOTICE_MAP 		= u'бот, где первая пара'
 MSG_ZERO_HOUR = u'\n\nУже {}!'
 
 # Error codes, will raise as exceptions.

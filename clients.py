@@ -12,7 +12,7 @@ import consts as CONST
 
 def waitNextCall(lastCall, delta):
 	while (time.time() - lastCall) < delta:
-		time.sleep(0.1)	
+		time.sleep(0.3)	
 
 class UsersStack:
 	def __init__(self):

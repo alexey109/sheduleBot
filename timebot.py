@@ -703,7 +703,7 @@ def analize(params):
 		else:
 			raise Exception(e)
 	
-	if dt.datetime.now().hour == 0:
+	if dt.datetime.now().hour < 2:
 		answer += addZeroHourMsg(cmd_params)
 	
 	return answer	
