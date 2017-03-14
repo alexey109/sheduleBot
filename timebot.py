@@ -485,6 +485,8 @@ def getGroup(params):
 			db.Users.vk_id == vk_id, 
 			db.Users.is_chat == bool(params['chat_id'])
 		)
+		db_user.bot_activity =  dt.datetime.now()
+		db_user.save()
 	except:
 		db_user = None
 
@@ -518,8 +520,9 @@ def getGroup(params):
 			notice_tommorow	= False,
 			notice_week		= False,
 			notice_map		= False,
-			send_time		= dt.datetime.now(),
-			notice_zerohour = dt.datetime.now(),
+			send_time		= None,
+			notice_zerohour = None,
+			bot_activity	= dt.datetime.now(),
 		)
 		db_user.save()
 		

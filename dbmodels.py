@@ -34,6 +34,7 @@ class Users(peewee.Model):
 	notice_map		= peewee.BooleanField()
 	send_time		= peewee.DateTimeField()
 	notice_zerohour = peewee.DateTimeField()
+	bot_activity	= peewee.DateTimeField()
 		
 	class Meta:
 		database = db
