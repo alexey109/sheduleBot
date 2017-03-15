@@ -130,7 +130,8 @@ class ClientVK:
 			
 			self.last_call = time.time()	
 
-	def sendNotice(self, notice):
+	def sendNotice(self):
+		notice = bot.getNotice()
 		waitNextCall(self.last_call, CONST.NOTICE_DELAY)
 		if notice['is_chat']:
 			self.api.messages.send(
@@ -174,13 +175,14 @@ class ClientVK:
 							self.api = self.openSession()
 				elif bot.isNoticeTime():
 					try:
-						self.sendNotice(bot.getNotice())
-					except:
-						pass
+						self.sendNotice()
+					except Exception as e:
+						self.logger.log(CONST.LOG_ERROR, e)
+						self.api = self.openSession()
 						
 			except Exception as e:
 				print str(e)
-				print 'Exception! Try to open new session'
+				print 'Try to open new session'
 				self.logger.log(CONST.LOG_ERROR, e)
 				self.api = self.openSession()
 				print 'Session was opened'

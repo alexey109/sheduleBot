@@ -738,7 +738,7 @@ def genAnswer(params):
 
 def isNoticeTime():
 	today = dt.datetime.now()
-	return (today.hour > CONST.NOTICE_START_TIME and today.hour < CONST.NOTICE_END_TIME)
+	return (today.hour >= CONST.NOTICE_START_TIME and today.hour <= CONST.NOTICE_END_TIME)
 	
 def getNotice():
 	today = dt.datetime.now()
@@ -750,19 +750,23 @@ def getNotice():
 	}	
 	
 	user = None
-	try:
-		users = db.Users.select().where((
-				db.Users.notice_today |
-				db.Users.notice_tommorow |
-				db.Users.notice_week |
-				db.Users.notice_map
-			), db.Users.send_time < dt.datetime(today.year, today.month, today.day)).limit(1)
-		for u in users:
-			user = u
-			notice['user_id'] = user.vk_id
-			notice['is_chat'] = user.is_chat
-			break
-	except:
+	users = db.Users.select().where((
+			db.Users.notice_today |
+			db.Users.notice_tommorow |
+			db.Users.notice_week |
+			db.Users.notice_map
+		), (
+			(db.Users.send_time >> None) | 
+			(db.Users.send_time < dt.datetime(today.year, today.month, today.day))
+		)).limit(1)
+		
+	for u in users:
+		user = u
+		notice['user_id'] = user.vk_id
+		notice['is_chat'] = user.is_chat
+		break
+	
+	if not user:
 		raise Exception()
 		
 	params = {
@@ -797,7 +801,7 @@ def getNotice():
 
 def saveNoticeTime(notice):
 	try:
-		user =db.Users.get(db.Users.vk_id == notice['user_id'], db.Users.is_chat == notice['is_chat'])
+		user = db.Users.get(db.Users.vk_id == notice['user_id'], db.Users.is_chat == notice['is_chat'])
 		user.send_time = dt.datetime.now()
 		user.save()
 	except:

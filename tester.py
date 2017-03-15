@@ -51,8 +51,12 @@ msg_chat = {
 }
 
 
-answ =  bot.genAnswer({'chat_id': u'','text': u'бот, ошибка', 'user_id': u'10151423100'})
-print answ['text']
+#answ =  bot.genAnswer({'chat_id': u'','text': u'завтра икбо-04-15', 'user_id': u'10151423100'})
+#print answ['text']
+
+notice = bot.getNotice()
+print notice['user_id']
+print notice['text']
 
 '''
 params = {
