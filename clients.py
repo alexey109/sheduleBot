@@ -132,6 +132,9 @@ class ClientVK:
 
 	def sendNotice(self):
 		notice = bot.getNotice()
+		if not notice['user_id']:
+			return False
+			
 		waitNextCall(self.last_call, CONST.NOTICE_DELAY)
 		if notice['is_chat']:
 			self.api.messages.send(
@@ -148,6 +151,7 @@ class ClientVK:
 		bot.saveNoticeTime(notice)
 		
 		self.last_call = time.time()
+		return True
 
 	# Scan enter messages and answer
 	def run(self):		

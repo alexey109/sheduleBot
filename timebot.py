@@ -740,6 +740,14 @@ def isNoticeTime():
 	today = dt.datetime.now()
 	return (today.hour >= CONST.NOTICE_START_TIME and today.hour <= CONST.NOTICE_END_TIME)
 	
+def saveNoticeTime(notice):
+	try:
+		user = db.Users.get(db.Users.vk_id == notice['user_id'], db.Users.is_chat == notice['is_chat'])
+		user.send_time = dt.datetime.now()
+		user.save()
+	except:
+		pass
+	
 def getNotice():
 	today = dt.datetime.now()
 	notice = {
@@ -759,7 +767,7 @@ def getNotice():
 			(db.Users.send_time >> None) | 
 			(db.Users.send_time < dt.datetime(today.year, today.month, today.day))
 		)).limit(1)
-		
+	
 	for u in users:
 		user = u
 		notice['user_id'] = user.vk_id
@@ -767,7 +775,7 @@ def getNotice():
 		break
 	
 	if not user:
-		raise Exception()
+		return notice
 		
 	params = {
 		'user_id'	: user.vk_id,
@@ -782,7 +790,6 @@ def getNotice():
 			notice['attachment'] += '\n' + answer['attachment']
 		except:
 			pass
-			
 		return notice
 		
 	if user.notice_today and today.weekday() != 6:
@@ -795,16 +802,8 @@ def getNotice():
 		notice= appendAnswer(notice, CONST.MSG_NOTICE_MAP)
 		
 	if not (notice['text'] or notice['attachment']):
+		saveNoticeTime(notice)
 		raise Exception()
 	
-	return notice
-
-def saveNoticeTime(notice):
-	try:
-		user = db.Users.get(db.Users.vk_id == notice['user_id'], db.Users.is_chat == notice['is_chat'])
-		user.send_time = dt.datetime.now()
-		user.save()
-	except:
-		pass
-				
+	return notice				
 
