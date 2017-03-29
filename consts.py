@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-STACK_LEN 			= 50 	# messages
+STACK_LEN 		= 50 	# messages
 USERS_QUEUE_LEN 	= 120 	# seconds
 USER_MSG_AMOUNT		= 5		# message amount for a user in USERS_QUEUE_LEN
 NOTICE_START_TIME 	= 3		# Hour when notice delivery starts
@@ -194,7 +194,11 @@ KEYWORDS = {
 		u'семестр',
 		u'сколько',
 		u'когда',
-		u'каникул'],
+		u'каникул',
+		u'зачет', #TODO Remove when load session schedule
+		u'экзамен',
+		u'сессия',
+	],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
 	CMD_MAP				: [u'[а-яА-Я]\-?[1-9][0-9а-я\-]{0,4}'],
@@ -267,7 +271,10 @@ USER_MESSAGE = {
 	CMD_UNIVERSAL		: u'\n{} пара ({}{}):\n{}\n',
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
-	CMD_WHEN_EXAMS		: u'До летней сессии осталось {} недель.\nПрошло {} семестра.',
+	CMD_WHEN_EXAMS		: u'До сессии осталось\nНедель: {}\nДней: {}\n\nПрошло {} семестра.\n\n'\
+		+ u'Зачеты c 29 мая\n' \
+		+ u'Экзамены c 5 июня\n' \
+        + u'*ориентировочно' ,
 	CMD_MAP				: u'{}',
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',

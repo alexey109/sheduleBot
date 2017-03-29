@@ -44,7 +44,8 @@ def getLessonNumb(dt_time):
 		dt.time(14,30,0) <= dt_time < dt.time(16,10,0): 4,
 		dt.time(16,10,0) <= dt_time < dt.time(17,50,0): 5,
 		dt.time(18,00,0) <= dt_time < dt.time(19,30,0): 6,
-		dt.time(19,30,0) <= dt_time < dt.time(20,00,0): 7,
+		dt.time(19,30,0) <= dt_time < dt.time(20
+                                        ,00,0): 7,
 		dt.time(20,00,0) <= dt_time < dt.time(21,40,0): 8,
 		dt.time(21,40,0) <= dt_time					  :	9
 	}[True]
@@ -211,19 +212,19 @@ def cmdFindTeacher(params):
 
 def cmdWhenExams(params):
 	week = params['week'] - dt.date(2017, 2, 6).isocalendar()[1] + 1
-	
+
 	now = dt.datetime.now().date()
 	start = dt.date(2017, 2, 6)
 	end = dt.date(2017, 5, 29)
 	delta = end - now
-	weeks = delta.days / 7 + 1
+	weeks = delta.days / 7
 	days  = delta.days % 7
 
 	delta = now - start
 	amount = end - start
 	percent = str(int(round((float(delta.days) / amount.days) * 100))) + '%'
 
-	return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, percent) #(weeks, days, percent)
+	return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, days, percent)
 
 def cmdMap(params):
 	global attachment
