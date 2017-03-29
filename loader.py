@@ -79,7 +79,7 @@ for doc in documents:
 					nname = event['name']
 					for par in event['params']:
 						nname += " (" + par + ")"
-					nteacher = str(event['teacher']) if event['teacher'] else ''
+					nteacher = event['teacher'] if event['teacher'] else ''
 					nroom = event['room'] if event['room'] else ''
 					schdl_obj = db.Schedule(
 						group 	= group_obj,
@@ -93,5 +93,3 @@ for doc in documents:
 					schdl_obj.save()
 				except:
 					continue
-			
-
