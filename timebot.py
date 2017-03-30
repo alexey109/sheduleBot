@@ -469,10 +469,11 @@ def cmdSearchTeacher(params):
 
 	delta_days = 0
 	answer = ''
+	answer_content = ''
 	teachers = {}
 	schedule = list(schedule)
 	lessons_found = False
-	while not answer and delta_days < 30:
+	while not answer_content and delta_days < 30:
 		date = params['date'] + dt.timedelta(days = delta_days)
 		delta_days += 1
 		for event in schedule:
@@ -480,26 +481,33 @@ def cmdSearchTeacher(params):
 			or not isWeeksEqual(event['week'], date.isocalendar()[1]):
 				continue
 
-			if not answer:
+			if not answer_content:
 				dname = CONST.DAY_NAMES_VINIT[date.weekday()]
-				answer = u'{} {}:\n\n'.format(dname, date.strftime('%d.%m') )
+				answer_content = u'Ближайшие пары в {} {}:\n\n'					\
+					.format(dname, date.strftime('%d.%m') )
 
 			name = event['name'][:20]
 			name += '..' if len(event['name']) > 20 else ''
-			answer += CONST.USER_MESSAGE[CONST.CMD_SEARCH_TEACHER]				\
+			answer_content += CONST.USER_MESSAGE[CONST.CMD_SEARCH_TEACHER]		\
 				.format(
 					event['numb'],
 					event['room'],
 					event['groups_amount'],
 					name)
 
+			teacher = event['teacher'].replace('\n', ' + ')
 			try:
-				teachers[event['teacher']] += 1
+				teachers[teacher] += 1
 			except:
-				teachers[event['teacher']] = 1
+				teachers[teacher] = 1
 			lessons_found = True
 
-	answer += u'Преподаватель ' + max(teachers)
+	if len(teachers) > 1 and not initials:
+		answer = u'Напишите инициалы, т.к. найдено несколько преподавателей:\n'
+		answer += ', '.join(teachers)
+	else:
+		answer = answer_content
+		answer += u'Преподаватель ' + max(teachers)
 
 	if not lessons_found:
 		raise Exception(CONST.ERR_NO_TEACHER_FOUND)
@@ -605,17 +613,17 @@ def getGroup(params):
 			bot_activity	= dt.datetime.now(),
 		)
 		db_user.save()
-		
+
 		group_id = db_user.group.id
 		group_code = db_user.group.gcode
-		
+
 		answer += CONST.USER_PREMESSAGE[CONST.CMD_SAVE_GROUP].format(msg_group.upper())
 		answer += CONST.USER_PREMESSAGE[CONST.CMD_HELP]
 	elif db_user:
 		group_id = db_user.group.id
 		group_code = db_user.group.gcode
 	else:
-		raise Exception(CONST.ERR_NO_GROUP)	
+		raise Exception(CONST.ERR_NO_GROUP)
 
 	group = {
 		'id' 	: group_id,
@@ -690,12 +698,12 @@ def analize(params):
 			answer_ok 			= True
 	if answer_ok:
 		params['text'] = params['text'].replace(command['keyword']['word'], '')
-		
+
 	# Find all markers
 	for cmd, keywords in CONST.KEYWORDS.items():
 		if not cmd in CONST.MARKERS:
 			continue
-		word = findKeywords(keywords, params['text']) 
+		word = findKeywords(keywords, params['text'])
 		if word:
 			params['text'] = params['text'].replace(word['word'], '')
 			markers[cmd] = word

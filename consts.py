@@ -267,7 +267,7 @@ USER_PREMESSAGE = {
 	CMD_NEW_ID			: u'Ссылка: botpage.ru \n',
 	CMD_MYID			: u'Ссылка: botpage.ru \n',
 	CMD_LINK			: u'botpage.ru',
-	CMD_SEARCH_TEACHER	: u'Ближайшие пары в ',
+	CMD_SEARCH_TEACHER	: u'',
 }
 
 USER_MESSAGE = {
