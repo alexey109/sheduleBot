@@ -430,12 +430,13 @@ def cmdLink(params):
 	
 def cmdSearchTeacher(params):
 	split_teacher = params['keyword']['word'].replace(u'найди ', '').split(' ')
-	teacher = like_string = split_teacher[0].title()
+	teacher = split_teacher[0].title()
+	like_string = split_teacher[0][:-1].title()
 	initials = split_teacher[1] if len(split_teacher) >= 2 else ''
 	initials += split_teacher[2] if len(split_teacher) >= 3 else ''
 	initials = initials.replace('.', '')
 	if initials:
-		teacher += ''
+		teacher += ' '
 		like_string += '%'
 		for l in initials:
 			like_string += l.upper() + '%'
@@ -444,6 +445,7 @@ def cmdSearchTeacher(params):
 	schedule = db.Schedule														\
 		.select(
 			db.Schedule.name,
+			db.Schedule.teacher,
 			db.Schedule.week,
 			db.Schedule.day,
 			db.Schedule.numb,
@@ -461,11 +463,13 @@ def cmdSearchTeacher(params):
 			db.Schedule.numb,
 			db.Schedule.room,
 			db.Schedule.name,
+			db.Schedule.teacher,
 		)																		\
 		.dicts()
 
 	delta_days = 0
 	answer = ''
+	teachers = {}
 	schedule = list(schedule)
 	lessons_found = False
 	while not answer and delta_days < 30:
@@ -488,9 +492,14 @@ def cmdSearchTeacher(params):
 					event['room'],
 					event['groups_amount'],
 					name)
+
+			try:
+				teachers[event['teacher']] += 1
+			except:
+				teachers[event['teacher']] = 1
 			lessons_found = True
 
-	answer += u'Преподаватель ' + teacher
+	answer += u'Преподаватель ' + max(teachers)
 
 	if not lessons_found:
 		raise Exception(CONST.ERR_NO_TEACHER_FOUND)
@@ -534,7 +543,7 @@ functions = {
 	CONST.CMD_SEARCH_TEACHER	: cmdSearchTeacher,
 }
 
-def findKeywords(words, text):	
+def findKeywords(words, text):
 	keyword = {}
 	for idx, word in enumerate(words):
 		try:
@@ -612,7 +621,7 @@ def getGroup(params):
 		'id' 	: group_id,
 		'code'	: group_code
 	}
-	return group, answer	
+	return group, answer
 
 # Apply hot functions
 # 1 - today
@@ -690,12 +699,12 @@ def analize(params):
 		if word:
 			params['text'] = params['text'].replace(word['word'], '')
 			markers[cmd] = word
-	
+
 	if command['code'] == CONST.CMD_HOT_FUNC:
 		command, markers = applyHotFunc(command, markers)
-		
+
 	if answer_ok and not markers:
-		markers = {CONST.CMD_TODAY: default_kwd}	
+		markers = {CONST.CMD_TODAY: default_kwd}
 
 	# Apply markers for settings
 	for cmd_code, keyword in markers.items():
