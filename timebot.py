@@ -23,8 +23,8 @@ logger 		= lg.Logger()
 
 def genBotID(any_string):
 	md5_hash = hashlib.md5()
-	free_id = False
-	while not free_id:
+	id_free = False
+	while not id_free:
 		md5_hash.update(str(any_string) + 'e5cde62e4dc1c' + str(randint(0,10000)) )
 		new_hash = md5_hash.hexdigest()
 		try:
@@ -32,7 +32,7 @@ def genBotID(any_string):
 		except:
 			user = False
 		if not user:
-			free_id = True
+			id_free = True
 	return new_hash
 
 def getLessonNumb(dt_time):
@@ -428,6 +428,75 @@ def cmdMyid(params):
 def cmdLink(params):
 	return ''
 	
+def cmdSearchTeacher(params):
+	split_teacher = params['keyword']['word'].replace(u'найди ', '').split(' ')
+	teacher = like_string = split_teacher[0].title()
+	initials = split_teacher[1] if len(split_teacher) >= 2 else ''
+	initials += split_teacher[2] if len(split_teacher) >= 3 else ''
+	initials = initials.replace('.', '')
+	if initials:
+		teacher += ''
+		like_string += '%'
+		for l in initials:
+			like_string += l.upper() + '%'
+			teacher +=  l.upper() + '.'
+
+	schedule = db.Schedule														\
+		.select(
+			db.Schedule.name,
+			db.Schedule.week,
+			db.Schedule.day,
+			db.Schedule.numb,
+			db.Schedule.room,
+			db.fn.COUNT(db.Schedule.room).alias('groups_amount')
+			)																	\
+		.where(db.Schedule.teacher.contains(like_string))						\
+		.order_by(
+			+db.Schedule.day,
+			+db.Schedule.numb
+        )																		\
+		.group_by(
+			db.Schedule.week,
+			db.Schedule.day,
+			db.Schedule.numb,
+			db.Schedule.room,
+			db.Schedule.name,
+		)																		\
+		.dicts()
+
+	delta_days = 0
+	answer = ''
+	schedule = list(schedule)
+	lessons_found = False
+	while not answer and delta_days < 30:
+		date = params['date'] + dt.timedelta(days = delta_days)
+		delta_days += 1
+		for event in schedule:
+			if date.weekday() != event['day']									\
+			or not isWeeksEqual(event['week'], date.isocalendar()[1]):
+				continue
+
+			if not answer:
+				dname = CONST.DAY_NAMES_VINIT[date.weekday()]
+				answer = u'{} {}:\n\n'.format(dname, date.strftime('%d.%m') )
+
+			name = event['name'][:20]
+			name += '..' if len(event['name']) > 20 else ''
+			answer += CONST.USER_MESSAGE[CONST.CMD_SEARCH_TEACHER]				\
+				.format(
+					event['numb'],
+					event['room'],
+					event['groups_amount'],
+					name)
+			lessons_found = True
+
+	answer += u'Преподаватель ' + teacher
+
+	if not lessons_found:
+		raise Exception(CONST.ERR_NO_TEACHER_FOUND)
+
+	return answer
+
 
 functions = {
 	CONST.CMD_UNIVERSAL			: cmdUniversal,
@@ -462,6 +531,7 @@ functions = {
 	CONST.CMD_NEW_ID			: cmdNewId,
 	CONST.CMD_MYID				: cmdMyid,
 	CONST.CMD_LINK				: cmdLink,
+	CONST.CMD_SEARCH_TEACHER	: cmdSearchTeacher,
 }
 
 def findKeywords(words, text):	
@@ -626,7 +696,7 @@ def analize(params):
 		
 	if answer_ok and not markers:
 		markers = {CONST.CMD_TODAY: default_kwd}	
-		
+
 	# Apply markers for settings
 	for cmd_code, keyword in markers.items():
 		if cmd_code == CONST.CMD_TOMMOROW:
@@ -696,16 +766,7 @@ def analize(params):
 
 	# Perform command and check for result
 	answer += CONST.USER_PREMESSAGE[command['code']].format(markers = header)
-	try:
-		answer += functions[command['code']](cmd_params)
-	except Exception as e:
-		if isinstance(e.args[0], int):
-			if e.args[0] == CONST.ERR_GROUP_NOT_FOUND:
-				answer = CONST.ERR_MESSAGES[e.args[0]].format(cmd_params['group'].upper())
-			else:
-				answer += CONST.ERR_MESSAGES[e.args[0]]
-		else:
-			raise Exception(e)
+	answer += functions[command['code']](cmd_params)
 	
 	if dt.datetime.now().hour < 2:
 		answer += addZeroHourMsg(cmd_params)

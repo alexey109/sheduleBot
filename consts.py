@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
-STACK_LEN 		= 50 	# messages
+STACK_LEN 			= 50 	# messages
 USERS_QUEUE_LEN 	= 120 	# seconds
 USER_MSG_AMOUNT		= 5		# message amount for a user in USERS_QUEUE_LEN
 NOTICE_START_TIME 	= 3		# Hour when notice delivery starts
@@ -69,6 +69,7 @@ CMD_LECTIONS		= 400
 CMD_NEW_ID			= 410
 CMD_MYID			= 420
 CMD_LINK			= 430
+CMD_SEARCH_TEACHER	= 440
 
 
 MARKERS = [
@@ -201,7 +202,7 @@ KEYWORDS = {
 	],
 	CMD_BY_TIME			: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
 	CMD_BY_DATE			: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(MONTH_NAMES) + ')))'],
-	CMD_MAP				: [u'[а-яА-Я]\-?[1-9][0-9а-я\-]{0,4}'],
+	CMD_MAP				: [u'[а-я]\-?[1-9][0-9а-я\-]{0,4}'],
 	#CMD_ZACHET			: [u'зач[её]т'],
 	#CMD_EXAMS			: [u'экзамен'],
 	#CMD_CONSULT			: [u'консул'],
@@ -214,9 +215,10 @@ KEYWORDS = {
 	CMD_FOR7DAYS		: [u'недел[юе]', u'[1-7]\s*дн[ея]'],
 	CMD_LECTIONS		: [u'(\s|\A)расписание\Z', u'(\s|\A)пары\Z'],
 	CMD_NEW_ID			: [u'новый', u'генерир', u'обнови'],
-	CMD_MYID			: [u'id', u'логин', u'пароль', u'айди'],
+	CMD_MYID			: [u'id', u'логин', u'пароль'],
 	CMD_LINK			: [u'ссылка', u'адрес', u'страница', u'сайт'],
 	CMD_HOT_FUNC		: [u'\A[1-4]\Z'],
+	CMD_SEARCH_TEACHER	: [u'найди\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
 }
 
 USER_PREMESSAGE = {
@@ -265,6 +267,7 @@ USER_PREMESSAGE = {
 	CMD_NEW_ID			: u'Ссылка: botpage.ru \n',
 	CMD_MYID			: u'Ссылка: botpage.ru \n',
 	CMD_LINK			: u'botpage.ru',
+	CMD_SEARCH_TEACHER	: u'Ближайшие пары в ',
 }
 
 USER_MESSAGE = {
@@ -284,6 +287,7 @@ USER_MESSAGE = {
 	CMD_FIRST			: u' ({} пара)',
 	CMD_NEW_ID			: u'Ваш новый ID: {}',
 	CMD_MYID			: u'Ваш ID: {}',
+	CMD_SEARCH_TEACHER	: u'{} пара в {} (групп {})\n{}\n\n'
 }
 
 MSG_NOTICE_TODAY 	= u'бот, пары сегодня'
@@ -303,11 +307,12 @@ ERR_NO_TEACHER		= 6
 ERR_NO_ROOM			= 7
 ERR_PERIOD_ENDS		= 8
 ERR_MSG_LIMIT		= 9
-	
+ERR_NO_TEACHER_FOUND= 10
+
 ERR_MESSAGES = {
 	ERR_UNDEFINED		: u'Что-то пошло не так, повторите запрос еще раз.',
 	ERR_SKIP			: '',
-	ERR_GROUP_NOT_FOUND	: u'Расписание для группы {} недоступно.',
+	ERR_GROUP_NOT_FOUND	: u'Расписание для группы недоступно.\nВозможно группа написана с ошибками (образец: ИКБО-04-15).',
 	ERR_NO_GROUP		: u'Напишите из какой вы группы.\nОбразец: расписание, ИКБО-04-15\n\n'\
 		+ u'Бот должен ответить, что он вас запомнил.\nНезабудьте символ "-" и нули, если есть.',
 	ERR_NO_COMMAND		: u'Неизвестная команда.',
@@ -316,6 +321,7 @@ ERR_MESSAGES = {
 	ERR_NO_ROOM			: u'Аудитория на схемах не найдена',
 	ERR_PERIOD_ENDS		: u'занятий нет, смотрите расписание зачетов/экзаменов.',
 	ERR_MSG_LIMIT		: u'\n*пауза на {} сек.*',
+	ERR_NO_TEACHER_FOUND: u'Расписание для преподавателя не найдено.',
 }
 
 MAP_DATA = [

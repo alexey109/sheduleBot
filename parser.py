@@ -142,7 +142,7 @@ class Parser:
 				group = cell.internal_value.lower()
 				lections = []
 				maybe_room	= sheet.cell(row = 3, column = j + 3).internal_value
-				if maybe_room and u'ауд' in maybe_room:
+				if maybe_room and (u'ауд' in maybe_room):
 					lector_flag = True
 				
 				for i in range(4, 76):
