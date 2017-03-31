@@ -220,7 +220,7 @@ KEYWORDS = {
 	CMD_MYID			: [u'id', u'логин', u'пароль'],
 	CMD_LINK			: [u'ссылка', u'адрес', u'страница', u'сайт'],
 	CMD_HOT_FUNC		: [u'\A[1-4]\Z'],
-	CMD_SEARCH_TEACHER	: [u'найди\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
+	CMD_SEARCH_TEACHER	: [u'най[тд]и\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
 }
 
 USER_PREMESSAGE = {

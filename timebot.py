@@ -429,7 +429,7 @@ def cmdLink(params):
 	return ''
 	
 def cmdSearchTeacher(params):
-	split_teacher = params['keyword']['word'].replace(u'найди ', '').split(' ')
+	split_teacher = params['keyword']['word'][6:].split(' ')
 	teacher = split_teacher[0].title()
 	like_string = split_teacher[0][:-1].title()
 	initials = split_teacher[1] if len(split_teacher) >= 2 else ''
