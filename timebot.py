@@ -451,7 +451,7 @@ def cmdSearchTeacher(params):
 			db.Schedule.numb,
 			db.Schedule.room,
 			db.fn.COUNT(db.Schedule.room).alias('groups_amount')
-			)																	\
+		)																		\
 		.where(db.Schedule.teacher.contains(like_string))						\
 		.order_by(
 			+db.Schedule.day,
@@ -514,6 +514,32 @@ def cmdSearchTeacher(params):
 
 	return answer
 
+def cmdMyTeachers(params):
+	schedule_full = getSchedule(params)
+	teachers_lessons = {}
+	noteacher_counter = 0
+	for event in schedule_full:
+		if not event['teacher'] or len(event['teacher']) < 4:
+			noteacher_counter += 1
+			continue
+		if teachers_lessons.get(event['teacher'], False):
+			teachers_lessons[event['teacher']].append(event['name'])
+		else:
+			teachers_lessons[event['teacher']] = [event['name']]
+
+	if not teachers_lessons:
+		raise Exception(CONST.ERR_NO_TEACHER)
+
+	answer = ''
+	for teacher, lessons in teachers_lessons.items():
+		lstr = '\n'.join(lessons)
+		answer += CONST.USER_MESSAGE[CONST.CMD_MY_TEACHERS].format(teacher, lstr)
+
+  	answer += CONST.USER_POSTMESSAGES[CONST.CMD_MY_TEACHERS] 					\
+		.format(noteacher_counter)
+
+	return answer
+
 
 functions = {
 	CONST.CMD_UNIVERSAL			: cmdUniversal,
@@ -549,6 +575,7 @@ functions = {
 	CONST.CMD_MYID				: cmdMyid,
 	CONST.CMD_LINK				: cmdLink,
 	CONST.CMD_SEARCH_TEACHER	: cmdSearchTeacher,
+	CONST.CMD_MY_TEACHERS		: cmdMyTeachers,
 }
 
 def findKeywords(words, text):

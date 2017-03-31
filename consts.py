@@ -50,6 +50,7 @@ CMD_WEEK			= 200
 CMD_HELP			= 210
 CMD_POLITE			= 220
 CMD_LECTIONS_TIME	= 230 
+CMD_MY_TEACHERS		= 235
 CMD_TEACHER			= 240 
 CMD_FIND_LECTION	= 250 #TODO write
 CMD_WHEN_EXAMS		= 260
@@ -186,6 +187,7 @@ KEYWORDS = {
 		u'команды'
 	],
 	CMD_POLITE			: [u'спас', u'спс', u'благордар'],
+	CMD_MY_TEACHERS		: [u'преподаватели', u'учителя', u'преподы'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'препод', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', u'звонк'],
 	CMD_WHEN_EXAMS		: [
@@ -268,6 +270,7 @@ USER_PREMESSAGE = {
 	CMD_MYID			: u'Ссылка: botpage.ru \n',
 	CMD_LINK			: u'botpage.ru',
 	CMD_SEARCH_TEACHER	: u'',
+	CMD_MY_TEACHERS		: u'Список преподавателей:\n\n',
 }
 
 USER_MESSAGE = {
@@ -287,14 +290,19 @@ USER_MESSAGE = {
 	CMD_FIRST			: u' ({} пара)',
 	CMD_NEW_ID			: u'Ваш новый ID: {}',
 	CMD_MYID			: u'Ваш ID: {}',
-	CMD_SEARCH_TEACHER	: u'{} пара в {} (групп {})\n{}\n\n'
+	CMD_SEARCH_TEACHER	: u'{} пара в {} (групп {})\n{}\n\n',
+	CMD_MY_TEACHERS		: u'{}\n{}\n\n',
+}
+
+USER_POSTMESSAGES = {
+    CMD_MY_TEACHERS		: u'Для {} пар преподаватель не написан.'
 }
 
 MSG_NOTICE_TODAY 	= u'бот, пары сегодня'
 MSG_NOTICE_TOMORROW = u'бот, пары завтра'
 MSG_NOTICE_WEEK 	= u'бот, на неделю'
 MSG_NOTICE_MAP 		= u'бот, где первая пара'
-MSG_ZERO_HOUR = u'\n\nУже {}!'
+MSG_ZERO_HOUR 		= u'\n\nУже {}!'
 
 # Error codes, will raise as exceptions.
 ERR_UNDEFINED 		= 0
@@ -312,7 +320,8 @@ ERR_NO_TEACHER_FOUND= 10
 ERR_MESSAGES = {
 	ERR_UNDEFINED		: u'Что-то пошло не так, повторите запрос еще раз.',
 	ERR_SKIP			: '',
-	ERR_GROUP_NOT_FOUND	: u'Расписание для группы недоступно.\nВозможно группа написана с ошибками (образец: ИКБО-04-15).',
+	ERR_GROUP_NOT_FOUND	: u'Расписание для группы недоступно.\n'				\
+		+ u'Возможно группа указана с ошибками (образец: ИКБО-04-15).',
 	ERR_NO_GROUP		: u'Напишите из какой вы группы.\nОбразец: расписание, ИКБО-04-15\n\n'\
 		+ u'Бот должен ответить, что он вас запомнил.\nНезабудьте символ "-" и нули, если есть.',
 	ERR_NO_COMMAND		: u'Неизвестная команда.',
