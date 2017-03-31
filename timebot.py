@@ -522,7 +522,11 @@ def cmdMyTeachers(params):
 		if not event['teacher'] or len(event['teacher']) < 4:
 			noteacher_counter += 1
 			continue
+
 		if teachers_lessons.get(event['teacher'], False):
+			for name in teachers_lessons[event['teacher']]:
+				if name == event['name']:
+					continue
 			teachers_lessons[event['teacher']].append(event['name'])
 		else:
 			teachers_lessons[event['teacher']] = [event['name']]
