@@ -505,6 +505,9 @@ def cmdSearchTeacher(params):
 	if not lessons_found:
 		raise Exception(CONST.ERR_NO_TEACHER_FOUND)
 
+	if len(teachers) > 10:
+		raise Exception(CONST.ERR_UNDEFINED)
+
 	if len(teachers) > 1 and not initials:
 		answer = u'Напишите инициалы, т.к. найдено несколько преподавателей:\n'
 		answer += ', '.join(teachers)
