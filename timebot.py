@@ -524,9 +524,13 @@ def cmdMyTeachers(params):
 			continue
 
 		if teachers_lessons.get(event['teacher'], False):
+			dublicate = False
 			for name in teachers_lessons[event['teacher']]:
 				if name == event['name']:
-					continue
+					dublicate = True
+					break
+			if dublicate:
+				continue
 			teachers_lessons[event['teacher']].append(event['name'])
 		else:
 			teachers_lessons[event['teacher']] = [event['name']]
