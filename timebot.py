@@ -502,15 +502,15 @@ def cmdSearchTeacher(params):
 				teachers[teacher] = 1
 			lessons_found = True
 
+	if not lessons_found:
+		raise Exception(CONST.ERR_NO_TEACHER_FOUND)
+
 	if len(teachers) > 1 and not initials:
 		answer = u'Напишите инициалы, т.к. найдено несколько преподавателей:\n'
 		answer += ', '.join(teachers)
 	else:
 		answer = answer_content
 		answer += u'Преподаватель ' + max(teachers)
-
-	if not lessons_found:
-		raise Exception(CONST.ERR_NO_TEACHER_FOUND)
 
 	return answer
 
