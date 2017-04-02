@@ -197,6 +197,9 @@ def cmdTeacher(params):
 	return teacher
 
 def cmdHelp(params):
+	global attachment
+	attachment = 'wall385457066_127'
+
 	return ''
 
 def cmdPolite(params):
