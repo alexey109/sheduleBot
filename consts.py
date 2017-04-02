@@ -281,7 +281,7 @@ USER_MESSAGE = {
 	CMD_WHERE			: u'Аудитория {} ({}){}\n',
 	CMD_FIRST			: u' ({} пара)',
 	CMD_NEW_ID			: u'Ваш новый ID: {}',
-	CMD_MYID			: u'Ваш ID: {}',
+	CMD_MYID			: u'Ваш ID: {}\n\nУведомления включаются в разделе "редактор"',
 	CMD_SEARCH_TEACHER	: u'{} пара в {} (групп {})\n{}\n\n',
 	CMD_MY_TEACHERS		: u'{}\n{}\n\n',
 }
