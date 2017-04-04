@@ -227,6 +227,9 @@ def cmdWhenExams(params):
 	amount = end - start
 	percent = str(int(round((float(delta.days) / amount.days) * 100))) + '%'
 
+	global attachment
+	attachment = 'wall385457066_137'
+
 	return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks, days, percent)
 
 def cmdMap(params):
