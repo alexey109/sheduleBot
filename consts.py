@@ -206,7 +206,7 @@ KEYWORDS = {
 	CMD_MY_TEACHERS		: [u'преподаватели', u'учителя', u'преподы', u'список'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'препод', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', u'звонк'],
-	CMD_LECTION_COUNTER : [u'((счетчик)|(сколько)|(осталось)|(количество)).*((пар)|(занятий))'],
+	CMD_LECTION_COUNTER : [u'счетчик', u'((сколько)|(осталось)|(количество)).*((пар)|(занятий))'],
 	CMD_WHEN_EXAMS		: [
 		u'осталось',
 		u'прошло[^й]?', 
@@ -304,7 +304,7 @@ USER_MESSAGE = {
 
 USER_POSTMESSAGES = {
     CMD_MY_TEACHERS		: u'Для {} пар преподаватель не написан.',
-	CMD_LECTION_COUNTER : u'\n*без учета праздничных дней.',
+	CMD_LECTION_COUNTER : u'\n*без учета праздничных дней*',
 }
 
 MSG_NOTICE_TODAY 	= u'бот, пары сегодня'
