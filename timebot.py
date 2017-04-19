@@ -213,6 +213,39 @@ def cmdFindTeacher(params):
 	raise Exception(CONST.ERR_SKIP)
 	return ''
 
+def cmdLectionCounter(params):
+	schedule = getSchedule(params)
+
+	events_amount = {}
+	for event in schedule:
+		events_amount[event['name']] = 0
+
+	date_iter = dt.datetime.now().date()
+	try:
+		end = params['date'].date()
+	except:
+		end = params['date']
+	if date_iter >= end:
+		end = dt.date(2017, 5, 29)
+	while date_iter != end:
+		day = date_iter.weekday()
+		week = date_iter.isocalendar()[1]
+		for event in schedule:
+			if event['day'] == day								\
+			and isWeeksEqual(event['week'], week):
+				events_amount[event['name']] += 1
+		date_iter = date_iter + + dt.timedelta(days = 1)
+
+	month_name = CONST.MONTH_NAMES_RODIT[end.month - 1]
+	answer = u'{} {}.\n\n'.format(end.day, month_name)
+	for name in sorted(events_amount):
+		answer += CONST.USER_MESSAGE[CONST.CMD_LECTION_COUNTER]					\
+			.format(name, events_amount[name])
+
+	answer += CONST.USER_POSTMESSAGES[CONST.CMD_LECTION_COUNTER]
+
+	return answer
+
 def cmdWhenExams(params):
 	week = params['week'] - dt.date(2017, 2, 6).isocalendar()[1] + 1
 
@@ -576,6 +609,7 @@ functions = {
 	CONST.CMD_LECTIONS_TIME		: cmdLectionsTime,
 	CONST.CMD_TEACHER			: cmdTeacher,
 	CONST.CMD_FIND_LECTION		: cmdFindLection,
+	CONST.CMD_LECTION_COUNTER	: cmdLectionCounter,
 	CONST.CMD_WHEN_EXAMS		: cmdWhenExams,
 	CONST.CMD_MAP				: cmdMap,
 	CONST.CMD_EXAMS				: cmdExams,

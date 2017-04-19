@@ -53,6 +53,7 @@ CMD_LECTIONS_TIME	= 230
 CMD_MY_TEACHERS		= 235
 CMD_TEACHER			= 240 
 CMD_FIND_LECTION	= 250 #TODO write
+CMD_LECTION_COUNTER = 255
 CMD_WHEN_EXAMS		= 260
 CMD_FEEDBACK		= 270  
 CMD_MYGROUP			= 290
@@ -120,6 +121,21 @@ MONTH_NAMES = [
 	u'октябр[яь]',
 	u'ноябр[яь]',
 	u'декабр[яь]',
+]
+
+MONTH_NAMES_RODIT = [
+	u'января',
+	u'февраля',
+	u'мартa',
+	u'апреля',
+	u'мая',
+	u'июня',
+	u'июля',
+	u'августа',
+	u'сентября',
+	u'октября',
+	u'ноября',
+	u'декабря',
 ]
 
 NUMB_NAMES = [
@@ -190,6 +206,7 @@ KEYWORDS = {
 	CMD_MY_TEACHERS		: [u'преподаватели', u'учителя', u'преподы', u'список'],
 	CMD_TEACHER			: [u'кто', u'лектор', u'препод', u'учитель', u'ведет'],
 	CMD_LECTIONS_TIME	: [u'время', u'во\s?сколько', u'звонк'],
+	CMD_LECTION_COUNTER : [u'((счетчик)|(сколько)|(осталось)|(количество)).*((пар)|(занятий))'],
 	CMD_WHEN_EXAMS		: [
 		u'осталось',
 		u'прошло[^й]?', 
@@ -207,8 +224,8 @@ KEYWORDS = {
 	CMD_MAP				: [u'[а-я]\-?[1-9][0-9а-я\-]{0,4}'],
 	#CMD_ZACHET			: [u'зач[её]т'],
 	#CMD_EXAMS			: [u'экзамен'],
-	#CMD_CONSULT			: [u'консул'],
-	#CMD_SESSION			: [u'сесси[яи]'],
+	#CMD_CONSULT		: [u'консул'],
+	#CMD_SESSION		: [u'сесси[яи]'],
 	CMD_CALENDAR_JN		: [u'календар.*январ'],
 	CMD_CALENDAR_DC		: [u'календар.*декабр'],
 	CMD_MYGROUP			: [u'запомн',u'сохран', u'групп'],
@@ -245,6 +262,7 @@ USER_PREMESSAGE = {
 	CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
 	CMD_SAVE_GROUP		: u'Я запомнил группу {}.\n\n',
 	CMD_TEACHER			: u'Преподаватель на паре{markers}:\n',
+	CMD_LECTION_COUNTER	: u'Количество оставшихся пар до ',
 	CMD_WHEN_EXAMS		: u'',
 	CMD_FIND_LECTION	: u'',
 	CMD_MAP				: u'',
@@ -269,7 +287,8 @@ USER_MESSAGE = {
 	CMD_UNIVERSAL		: u'\n{} пара ({}{}):\n{}\n',
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
-	CMD_WHEN_EXAMS		: u'До сессии осталось\nнедель: {}\nдней: {}\n\nПрошло {} семестра.',
+	CMD_LECTION_COUNTER	: u'{}: {}\n',
+	CMD_WHEN_EXAMS		: u'До сессии осталось недель: {}, дней: {}.\nПрошло {} семестра.',
 	CMD_MAP				: u'{}',
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
@@ -284,7 +303,8 @@ USER_MESSAGE = {
 }
 
 USER_POSTMESSAGES = {
-    CMD_MY_TEACHERS		: u'Для {} пар преподаватель не написан.'
+    CMD_MY_TEACHERS		: u'Для {} пар преподаватель не написан.',
+	CMD_LECTION_COUNTER : u'\n*без учета праздничных дней.',
 }
 
 MSG_NOTICE_TODAY 	= u'бот, пары сегодня'
