@@ -291,7 +291,7 @@ USER_MESSAGE = {
 	CMD_UNIVERSAL		: u'\n{} пара ({}{}):\n{}\n',
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
-	CMD_LECTION_COUNTER	: u'{}: {} {}\n',
+	CMD_LECTION_COUNTER	: u'{} - {} {}\n',
 	CMD_WHEN_EXAMS		: u'До сессии осталось недель: {}, дней: {}.\nПрошло {} семестра.',
 	CMD_MAP				: u'{}',
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',

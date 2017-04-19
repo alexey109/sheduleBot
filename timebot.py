@@ -230,8 +230,8 @@ def cmdLectionCounter(params):
 	while date_iter != end:
 		day = date_iter.weekday()
 		week = date_iter.isocalendar()[1]
-		month_name = CONST.MONTH_NAMES_RODIT[end.month - 1]
-		date_name = u'({} {})'.format(day, month_name)
+		month_name = CONST.MONTH_NAMES_RODIT[date_iter.month - 1]
+		date_name = u'({} {})'.format(date_iter.day, month_name)
 		for event in schedule:
 			if event['day'] == day												\
 			and isWeeksEqual(event['week'], week):
@@ -240,7 +240,7 @@ def cmdLectionCounter(params):
 		date_iter = date_iter + + dt.timedelta(days = 1)
 
 	month_name = CONST.MONTH_NAMES_RODIT[end.month - 1]
-	answer = u'{} {}.\n\n'.format(end.day, month_name)
+	answer = u'{} {}:\n\n'.format(end.day, month_name)
 	for name in sorted(ev_amount):
 		last_date = ''
 		if ev_amount[name]['amount'] == 1:
