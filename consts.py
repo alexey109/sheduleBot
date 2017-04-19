@@ -266,7 +266,7 @@ USER_PREMESSAGE = {
 	CMD_POLITE			: u'Пожалуйста, обращайся ещё :)',
 	CMD_SAVE_GROUP		: u'Я запомнил группу {}.\n\n',
 	CMD_TEACHER			: u'Преподаватель на паре{markers}:\n',
-	CMD_LECTION_COUNTER	: u'Оставшееся кол-во пар до ',
+	CMD_LECTION_COUNTER	: u'Осталось пар до ',
 	CMD_WHEN_EXAMS		: u'',
 	CMD_FIND_LECTION	: u'',
 	CMD_MAP				: u'',
