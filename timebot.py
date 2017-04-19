@@ -216,9 +216,9 @@ def cmdFindTeacher(params):
 def cmdLectionCounter(params):
 	schedule = getSchedule(params)
 
-	events_amount = {}
+	ev_amount = {}
 	for event in schedule:
-		events_amount[event['name']] = 0
+		ev_amount[event['name']] = {'amount': 0, 'last_date': ''}
 
 	date_iter = dt.datetime.now().date()
 	try:
@@ -230,17 +230,23 @@ def cmdLectionCounter(params):
 	while date_iter != end:
 		day = date_iter.weekday()
 		week = date_iter.isocalendar()[1]
+		month_name = CONST.MONTH_NAMES_RODIT[end.month - 1]
+		date_name = u'({} {})'.format(day, month_name)
 		for event in schedule:
-			if event['day'] == day								\
+			if event['day'] == day												\
 			and isWeeksEqual(event['week'], week):
-				events_amount[event['name']] += 1
+				ev_amount[event['name']]['amount'] += 1
+				ev_amount[event['name']]['last_date'] = date_name
 		date_iter = date_iter + + dt.timedelta(days = 1)
 
 	month_name = CONST.MONTH_NAMES_RODIT[end.month - 1]
 	answer = u'{} {}.\n\n'.format(end.day, month_name)
-	for name in sorted(events_amount):
+	for name in sorted(ev_amount):
+		last_date = ''
+		if ev_amount[name]['amount'] == 1:
+			last_date = ev_amount[name]['last_date']
 		answer += CONST.USER_MESSAGE[CONST.CMD_LECTION_COUNTER]					\
-			.format(name, events_amount[name])
+			.format(name, ev_amount[name]['amount'], last_date)
 
 	answer += CONST.USER_POSTMESSAGES[CONST.CMD_LECTION_COUNTER]
 
