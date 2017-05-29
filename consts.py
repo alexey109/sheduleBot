@@ -219,7 +219,7 @@ KEYWORDS = {
 		u'сколько',
 		u'когда',
 		u'каникул',
-		u'зачет', #TODO Remove when load session schedule
+		u'зачет',
 		u'экзамен',
 		u'сессия',
 	],
@@ -292,7 +292,7 @@ USER_MESSAGE = {
 	CMD_WEEK			: u'{} неделя.',	
 	CMD_LECTIONS_TIME	: u'{} пара: {}\n',
 	CMD_LECTION_COUNTER	: u'{} - {} {}\n',
-	CMD_WHEN_EXAMS		: u'До сессии осталось недель: {}, дней: {}.\nПрошло {} семестра.',
+	CMD_WHEN_EXAMS		: u'До сессии осталось недель: 0, дней: 0.\nСеместр пройден на 100%.',
 	CMD_MAP				: u'{}',
 	CMD_EXAMS			: u'\n{} января в {}, {}:\n{}\n',
 	CMD_CONSULT			: u'\n{} января в {}, {}:\n{}\n',
