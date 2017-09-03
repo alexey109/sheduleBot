@@ -54,6 +54,7 @@ class Parser:
         try:
             self.wb = load_workbook(filename=doc_name)
         except Exception as e:
+            print doc_name
             print e
             result = False
         return result
@@ -222,9 +223,15 @@ class Parser:
                         # fill lesson number
                         cur_cell = sheet.cell(row=i, column=cell.col_idx)
                         if cur_cell.internal_value:
-                            lessons_numbers[i] = int(cur_cell.internal_value)
+                            lessons_numbers[i] = {
+                                'numb': int(cur_cell.internal_value),
+                                'type': 'I'
+                            }
                         else:
-                            lessons_numbers[i] = lessons_numbers[i-1]
+                            lessons_numbers[i] = {
+                                'numb': lessons_numbers[i-1]['numb'],
+                                'type': 'II'
+                            }
                         # fill days number
                         cur_cell = sheet.cell(row=i, column=cell.col_idx-1)
                         if cur_cell.internal_value:
@@ -266,9 +273,8 @@ class Parser:
                     rooms = sheet.cell(row=i, column=j + 3).internal_value
 
                     cell_day = days_numbers[i]
-                    cell_numb = lessons_numbers[i]
-                    cell_week = 'I' if (i - cell_day * 12) % 2 == 0 \
-                        else 'II'
+                    cell_numb = lessons_numbers[i]['numb']
+                    cell_week = lessons_numbers[i]['type']
                     info = self.splitBody(content)
 
                     if len(info) > 1:

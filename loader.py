@@ -4,9 +4,10 @@
 import urllib2
 import re
 import codecs
-from os import listdir
+from os import listdir, makedirs
 from os.path import isfile, join
 from optparse import OptionParser
+import shutil
 
 import consts as CONST
 import parser as pr
@@ -27,36 +28,36 @@ optparser.add_option("-d", "--download",
 if user_options.download:
     print "Try to get html code from mirea schedule page."
     try:
-        response = urllib2.urlopen(
-            'https://www.mirea.ru/education/schedule-main/schedule/')
+        response = urllib2.urlopen('https://www.mirea.ru/education/schedule-main/schedule/')
         html = response.read()
         print 'HTML got succesfull.'
         response.close()
     except Exception as e:
         print 'HTML got with errors!'
-        logger.log(CONST.LOG_ERROR, e)
 
     print 'Try to load excel documents.'
     counter = 0
+    doc_urls = re.findall('[^"]*\.xlsx?', html)
+    print 'Document amount = ' + str(len(doc_urls))
     try:
-        doc_urls = re.findall('[^"]*\.xlsx?', html)
-        print 'Document amount = ' + str(len(doc_urls))
-        for i, url in enumerate(doc_urls):
+        shutil.rmtree(CONST.SCHEDULE_DIR)
+    except:
+        pass
+    makedirs(CONST.SCHEDULE_DIR)
+    for i, url in enumerate(doc_urls):
+        try:
+            ftype = re.search('\.[a-z]*\Z', url).group()
             try:
-                ftype = re.search('\.[a-z]*\Z', url).group()
-                with open(CONST.SCHEDULE_DIR + str(i) + ftype,
-                          'wb') as f:
-                    f.write(urllib2.urlopen(url).read())
-                    f.close()
-                counter += 1
+                doc = urllib2.urlopen(url).read()
             except Exception as e:
-                print '--- Exception\n' + url + '\n' + str(
-                    e) + '\n---\n'
-        print 'Document loaded succesfull. Count = ' + str(counter)
-    except Exception as e:
-        print 'Documents loaded with errors. Last document No ' + str(
-            counter)
-        logger.log(CONST.LOG_ERROR, e)
+                print '--- Exception\n' + url + '\n' + str(e) + '\n---\n'
+            with open(CONST.SCHEDULE_DIR + str(i) + ftype,'wb') as f:
+                f.write(doc)
+                f.close()
+            counter += 1
+        except Exception as e:
+            print '--- Exception\n' + url + '\n' + str(e) + '\n---\n'
+    print 'Document loaded succesfull. Count = ' + str(counter)
 
 documents = [f for f in listdir(CONST.SCHEDULE_DIR) if
              isfile(join(CONST.SCHEDULE_DIR, f))]
@@ -68,17 +69,17 @@ count = 0
 for doc in documents:
     count += 1
     print u'Загрузка документа №' + str(count) + '\r'
-    #try:
-    schdl_type, schedule = parser.getSchedule(
-        CONST.SCHEDULE_DIR + doc)
-    #except Exception as e:
-    #    print e
-    #    continue
+    try:
+        schdl_type, schedule = parser.getSchedule(
+            CONST.SCHEDULE_DIR + doc)
+    except Exception as e:
+        print e
+        continue
 
     if schdl_type == user_options.type == 'lections':
         for group, events in schedule.items():
             try:
-                group_obj, flag = db.Groups.get_or_create(gcode=group)
+                group_obj, flag = db.Groups.get_or_create(gcode=group[:20])
                 query = db.Schedule.delete().where(db.Schedule.group == group_obj.id)
                 query.execute()
             except Exception as e:
@@ -92,7 +93,7 @@ for doc in documents:
                         nname += " (" + par + ")"
                     nteacher = event['teacher'] if event[
                         'teacher'] else ''
-                    nroom = event['room'] if event['room'] else ''
+                    nroom = unicode(event['room'])[:20] if event['room'] else ''
                     schdl_obj = db.Schedule(
                         group=group_obj,
                         week=event['week'],
