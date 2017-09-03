@@ -290,7 +290,7 @@ USER_MESSAGE = {
     CMD_LESSONS_TIME: u'{} пара: {}\n',
     CMD_LESSONS_COUNTER: u'{} - {} {}\n',
     CMD_WHEN_EXAMS: u'До сессии осталось недель: {}, дней: {}.'
-                    + u'\nСеместр пройден на {}%.',
+                    + u'\nСеместр пройден на {}.',
     CMD_MAP: u'{}',
     CMD_EXAMS: u'\n{} января в {}, {}:\n{}\n',
     CMD_CONSULT: u'\n{} января в {}, {}:\n{}\n',
