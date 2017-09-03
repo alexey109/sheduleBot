@@ -477,7 +477,7 @@ def cmdWhereLesson(params):
     floor = findFloor(lesson['room'])
     if floor:
         if params['new_group']:
-            attachment = 'photo-' + floor.photo_id_
+            attachment = 'photo-' + floor.photo_id
         else:
             attachment = 'photo385457066_' + floor.old_photo_id
     else:
