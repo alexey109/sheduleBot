@@ -284,7 +284,7 @@ class Parser:
                     else:
                         lectors = [lectors] if lectors else ['']
                         etype = [etype] if etype else ['']
-                        rooms = [str(rooms).replace('\n', ' ')] if rooms else ['']
+                        rooms = [unicode(rooms).replace('\n', ' ')] if rooms else ['']
                     for i in range(0, len(info)):
                         if len(info[i]['name']) < 2 or checkSkipWords(info[i]['name']):
                             continue
