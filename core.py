@@ -417,13 +417,13 @@ def cmdMap(params):
     :rtype: str
     """
 
-    floor = findFloor(params['keyword']['word'])
-
-    if str(floor).startswith(u'ивц'):
+    if params['keyword']['word'].startswith(u'ивц'):
         return {
             'text': u'Спускаться до самого конца по главной лестнице, слева будет серая, металлическая дверь с неработающим электронным замком, после нее идти по небольшому коридору (метров 50). 👻',
             'attachment': ''
         }
+
+    floor = findFloor(params['keyword']['word'])
 
     if floor:
         if params['new_group']:
