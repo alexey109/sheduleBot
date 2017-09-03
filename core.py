@@ -604,7 +604,10 @@ def cmdSearchTeacher(params):
     :return: formatted for user list of teacher's lessons
     :rtype: str
     """
-    split_teacher = params['keyword']['word'][6:].split(' ')
+    native_teacher = params['keyword']['word']
+    if native_teacher.startswith(u'най'):
+        native_teacher = native_teacher[6:]
+    split_teacher = native_teacher.split(' ')
     teacher = split_teacher[0].title()
     like_string = split_teacher[0][:-1].title()
     initials = split_teacher[1] if len(split_teacher) >= 2 else ''
@@ -980,7 +983,6 @@ def analize(params):
     if answer_ok:
         params['text'] = params['text'].replace(
             command['keyword']['word'], '')
-
     # 4. Define command's datetime markers.
     for cmd, keywords in CONST.KEYWORDS.items():
         if not cmd in CONST.MARKERS:
@@ -1046,8 +1048,7 @@ def analize(params):
 
     # Prepare parametrs for functions 
     cmd_params = {
-        'vk_id': params['chat_id'] if params['chat_id'] else params[
-            'user_id'],
+        'vk_id': params['chat_id'] if params['chat_id'] else params['user_id'],
         'is_chat': bool(params['chat_id']),
         'group': group,
         'date': date,
