@@ -282,9 +282,9 @@ class Parser:
                         etype = re.split('\n|\s{3,10}', etype) if etype else ''
                         rooms = re.split('\n|\s{3,10}', unicode(rooms)) if rooms else []
                     else:
-                        lectors = [lectors]
+                        lectors = [lectors] if lectors else ['']
                         etype = [etype] if etype else ['']
-                        rooms = [rooms]
+                        rooms = [str(rooms).replace('\n', ' ')] if rooms else ['']
                     for i in range(0, len(info)):
                         if len(info[i]['name']) < 2 or checkSkipWords(info[i]['name']):
                             continue
@@ -299,10 +299,10 @@ class Parser:
                         event = {
                             'day': cell_day,
                             'numb': cell_numb,
-                            'room': room.replace('\n', ' ') if room else '',
+                            'room': room,
                             'week': week,
                             'name': info[i]['name'] + ' ' + event_type.replace('\n', ''),
-                            'teacher': lector.replace('\n', ' ') if lector else '',
+                            'teacher': lector,
                             'params': info[i]['params']
                         }
                         append_flag = True
