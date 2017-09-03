@@ -105,7 +105,10 @@ def findFloor(room_name):
                 if room_number == map_room.replace(' ', ''):
                     found_floor = floor
     else:
-        found_floor = DB.Scheme.filter(name_ru=(campus + room_number[:1])).get()
+        try:
+            found_floor = DB.Scheme.filter(name_ru=(campus + room_number[:1])).get()
+        except:
+            pass
 
     if not found_floor:
         raise Exception(CONST.ERR_NO_ROOM)
@@ -1059,7 +1062,6 @@ def analize(params):
         'find_first': find_first,
         'new_group': params['new_group']
     }
-
     # 6. Perform command and generate answer message for user.
     # Check markers after apply
     markers_text = ''
