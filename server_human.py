@@ -23,7 +23,7 @@ def main():
                 'user_id': event.user_id,
                 'chat_id': event.chat_id,
                 'text': event.text,
-                'new_group': True
+                'new_group': False
             }
 
             answer = {
@@ -48,6 +48,7 @@ def main():
                 peer = 2000000000 + event.chat_id
             else:
                 peer = event.user_id
+                answer['text'] += u'\n\nУбедительная просьба, писать личные сообщения через новое сообщество vk.com/mtu_timetable.'
 
             if time.time() - answer_time < 0.3:
                 time.sleep(time.time() - answer_time)
