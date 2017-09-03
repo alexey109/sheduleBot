@@ -286,23 +286,23 @@ class Parser:
                         etype = [etype] if etype else ['']
                         rooms = [rooms]
                     for i in range(0, len(info)):
+                        if len(info[i]['name']) < 2 or checkSkipWords(info[i]['name']):
+                            continue
                         event_type = safeGet(etype, i, '')
                         lector = safeGet(lectors, i, '-')
                         room = safeGet(rooms, i, '-')
+
                         week = info[i]['week'] if info[i]['week'] else cell_week
                         if '-' in week:
                             week = ','.join([str(iw) for iw in range(int(week.split('-')[0]), 18, 2)])
 
-                        if len(info[i]['name']) < 2:
-                            continue
-
                         event = {
                             'day': cell_day,
                             'numb': cell_numb,
-                            'room': room,
+                            'room': room.replace('\n', ' '),
                             'week': week,
                             'name': info[i]['name'] + ' ' + event_type.replace('\n', ''),
-                            'teacher': lector,
+                            'teacher': lector.replace('\n', ' '),
                             'params': info[i]['params']
                         }
                         append_flag = True
@@ -312,8 +312,6 @@ class Parser:
                                 append_flag = False
 
                         if append_flag:
-                            if checkSkipWords(event['name']):
-                                continue
                             lections.append(event)
                 schedule[group] = lections
 
