@@ -299,10 +299,10 @@ class Parser:
                         event = {
                             'day': cell_day,
                             'numb': cell_numb,
-                            'room': room.replace('\n', ' '),
+                            'room': room.replace('\n', ' ') if room else '',
                             'week': week,
                             'name': info[i]['name'] + ' ' + event_type.replace('\n', ''),
-                            'teacher': lector.replace('\n', ' '),
+                            'teacher': lector.replace('\n', ' ') if lector else '',
                             'params': info[i]['params']
                         }
                         append_flag = True
