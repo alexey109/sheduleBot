@@ -70,3 +70,16 @@ class UsersSchedule(peewee.Model):
     class Meta:
         database = db
         db_table = 'users_schedule'
+
+
+class Scheme(peewee.Model):
+    photo_id = peewee.CharField()
+    old_photo_id = peewee.CharField()
+    name = peewee.CharField()
+    name_ru = peewee.CharField()
+    rooms = peewee.CharField()
+    desc = peewee.CharField()
+
+    class Meta:
+        database = db
+        db_table = 'schemes'

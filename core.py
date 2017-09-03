@@ -71,7 +71,7 @@ def isWeeksEqual(doc_week, cal_week):
     :return: is document's week value match calendar's week
     :rtype: bool
     """
-    cal_week = cal_week - dt.date(2017, 2, 6).isocalendar()[1] + 1
+    cal_week = cal_week - dt.date(2017, 9, 1).isocalendar()[1] + 1
 
     if doc_week == '':
         result = True
@@ -92,7 +92,7 @@ def findFloor(room_name):
     :param room_name: room to find, could be in any format
     :type room_name: str
     :return: floor (global map's part)
-    :rtype: dict
+    :rtype: DB.Scheme
     """
     room_name = room_name.lower().replace('-', '')
     campus = room_name[:1]
@@ -100,15 +100,15 @@ def findFloor(room_name):
 
     found_floor = {}
     if campus == u'а':
-        for floor in CONST.MAP_DATA:
-            if floor['nam_ru'][:1] == campus:
-                for map_room in floor['rooms'].split(','):
-                    if room_number == map_room.replace(' ', ''):
-                        found_floor = floor
+        for floor in DB.Scheme.filter(name_ru=u'а'):
+            for map_room in floor.rooms.split(','):
+                if room_number == map_room.replace(' ', ''):
+                    found_floor = floor
     else:
-        for floor in CONST.MAP_DATA:
-            if floor['nam_ru'] == (campus + room_number[:1]):
-                found_floor = floor
+        found_floor = DB.Scheme.filter(name_ru=(campus + room_number[:1])).get()
+
+    if not found_floor:
+        raise Exception(CONST.ERR_NO_ROOM)
 
     return found_floor
 
@@ -239,7 +239,10 @@ def cmdLessons(params):
     else:
         lesson_list = getLessons(params)
 
-    return formatLessons(lesson_list)
+    return {
+        'text': formatLessons(lesson_list),
+        'attachment': ''
+    }
 
 
 def cmdWeek(params):
@@ -250,9 +253,12 @@ def cmdWeek(params):
     :return: formatted for user week number
     :rtype: str
     """
-    weeks = (params['date'].date() - dt.date(2017, 2, 5)).days / 7 + 1
+    weeks = (params['date'].date() - dt.date(2017, 9, 1)).days / 7 + 1
 
-    return CONST.USER_MESSAGE[CONST.CMD_WEEK].format(weeks)
+    return {
+        'text': CONST.USER_MESSAGE[CONST.CMD_WEEK].format(weeks),
+        'attachment': ''
+    }
 
 
 def cmdLessonsTime(params):
@@ -268,7 +274,10 @@ def cmdLessonsTime(params):
         msg += CONST.USER_MESSAGE[CONST.CMD_LESSONS_TIME]\
             .format(i, CONST.LECTION_TIME[i])
 
-    return msg
+    return {
+        'text': msg,
+        'attachment': ''
+    }
 
 
 def cmdTeacher(params):
@@ -284,7 +293,10 @@ def cmdTeacher(params):
     if not teacher:
         raise Exception(CONST.ERR_NO_TEACHER)
 
-    return teacher
+    return {
+        'text': teacher,
+        'attachment': ''
+    }
 
 
 def cmdHelp(params):
@@ -295,10 +307,10 @@ def cmdHelp(params):
     :return: blank string
     :rtype: str
     """
-    global attachment
-    attachment = 'wall385457066_127'
-
-    return ''
+    return {
+        'text': '',
+        'attachment': 'wall385457066_127'
+    }
 
 
 def cmdPolite(params):
@@ -310,7 +322,10 @@ def cmdPolite(params):
     :rtype: str
     """
 
-    return ''
+    return {
+        'text': '',
+        'attachment': ''
+    }
 
 
 def cmdLessonsCounter(params):
@@ -333,7 +348,7 @@ def cmdLessonsCounter(params):
     except:
         end = params['date']
     if date_iter >= end:
-        end = dt.date(2017, 5, 29)
+        end = dt.date(2017, 12, 22)
     while date_iter != end:
         day = date_iter.weekday()
         week = date_iter.isocalendar()[1]
@@ -357,7 +372,10 @@ def cmdLessonsCounter(params):
 
     answer += CONST.USER_POSTMESSAGES[CONST.CMD_LESSONS_COUNTER]
 
-    return answer
+    return {
+        'text': answer,
+        'attachment': ''
+    }
 
 
 def cmdWhenExams(params):
@@ -369,8 +387,8 @@ def cmdWhenExams(params):
     :rtype: str
     """
     now = dt.datetime.now().date()
-    start = dt.date(2017, 2, 6)
-    end = dt.date(2017, 5, 29)
+    start = dt.date(2017, 9, 1)
+    end = dt.date(2017, 12, 22)
     delta = end - now
     weeks = delta.days / 7
     days = delta.days % 7
@@ -380,12 +398,11 @@ def cmdWhenExams(params):
     percent = str(
         int(round((float(delta.days) / amount.days) * 100))) + '%'
 
-    global attachment
-    attachment = 'wall385457066_137'
-
-    return CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS].format(weeks,
-                                                           days,
-                                                           percent)
+    msg_templ = CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS]
+    return {
+        'text': msg_templ.format(weeks, days, percent),
+        'attachment': 'wall385457066_137'
+    }
 
 
 def cmdMap(params):
@@ -396,16 +413,22 @@ def cmdMap(params):
     :return: formatted for user room location
     :rtype: str
     """
-    global attachment
 
     floor = findFloor(params['keyword']['word'])
 
     if floor:
-        attachment = 'photo385457066_' + floor['vk_id']
+        if params['new_group']:
+            attachment = 'photo-' + floor.photo_id
+        else:
+            attachment = 'photo385457066_' + floor.old_photo_id
     else:
         raise Exception(CONST.ERR_NO_ROOM)
 
-    return CONST.USER_MESSAGE[CONST.CMD_MAP].format(floor['desc'])
+    msg_template = CONST.USER_MESSAGE[CONST.CMD_MAP]
+    return {
+        'text': msg_template.format(floor.desc),
+        'attachment': attachment
+    }
 
 
 def cmdMyGroup(params):
@@ -416,7 +439,10 @@ def cmdMyGroup(params):
     :return: user group code
     :rtype: str
     """
-    return params['group']['code'].upper()
+    return {
+        'text': params['group']['code'].upper(),
+        'attachment': ''
+    }
 
 
 # noinspection PyTypeChecker
@@ -428,7 +454,6 @@ def cmdWhereLesson(params):
     :return: formatted for user lesson location
     :rtype: str
     """
-    global attachment
 
     lesson_numb = ''
     if params['find_first']:
@@ -451,11 +476,17 @@ def cmdWhereLesson(params):
 
     floor = findFloor(lesson['room'])
     if floor:
-        attachment = 'photo385457066_' + floor['vk_id']
+        if params['new_group']:
+            attachment = 'photo-' + floor.photo_id_
+        else:
+            attachment = 'photo385457066_' + floor.old_photo_id
     else:
         text += CONST.ERR_MESSAGES[CONST.ERR_NO_ROOM]
 
-    return text
+    return {
+        'text': text,
+        'attachment': attachment
+    }
 
 
 def cmdFor7Days(params):
@@ -505,7 +536,10 @@ def cmdFor7Days(params):
     if len(text) == 0:
         raise Exception(CONST.ERR_NO_LECTIONS)
 
-    return text
+    return {
+        'text': text,
+        'attachment': ''
+    }
 
 
 def cmdNewId(params):
@@ -523,7 +557,10 @@ def cmdNewId(params):
     )
     user.bot_id = new_hash
     user.save()
-    return CONST.USER_MESSAGE[CONST.CMD_NEW_ID].format(new_hash)
+    return {
+        'text': CONST.USER_MESSAGE[CONST.CMD_NEW_ID].format(new_hash),
+        'attachment': ''
+    }
 
 
 def cmdMyid(params):
@@ -538,7 +575,10 @@ def cmdMyid(params):
         DB.Users.vk_id == params['vk_id'],
         DB.Users.is_chat == params['is_chat']
     )
-    return CONST.USER_MESSAGE[CONST.CMD_MYID].format(user.bot_id)
+    return {
+        'text': CONST.USER_MESSAGE[CONST.CMD_MYID].format(user.bot_id),
+        'attachment': ''
+    }
 
 
 def cmdLink(params):
@@ -550,7 +590,10 @@ def cmdLink(params):
     :rtype: str
     """
 
-    return CONST.USER_MESSAGE[CONST.CMD_LINK]
+    return {
+        'text': CONST.USER_MESSAGE[CONST.CMD_LINK],
+        'attachment': ''
+    }
 
 
 def cmdSearchTeacher(params):
@@ -647,7 +690,10 @@ def cmdSearchTeacher(params):
         answer = answer_content
         answer += u'Преподаватель ' + max(teachers)
 
-    return answer
+    return {
+        'text': answer,
+        'attachment': ''
+    }
 
 
 def cmdMyTeachers(params):
@@ -690,7 +736,10 @@ def cmdMyTeachers(params):
     answer += CONST.USER_POSTMESSAGES[CONST.CMD_MY_TEACHERS] \
         .format(noteacher_counter)
 
-    return answer
+    return {
+        'text': answer,
+        'attachment': ''
+    }
 
 # associate commands codes with their functions
 cmd_functions = {
@@ -1006,7 +1055,8 @@ def analize(params):
         'week': date.isocalendar()[1],
         'lnumb': lesson,
         'keyword': command['keyword'],
-        'find_first': find_first
+        'find_first': find_first,
+        'new_group': params['new_group']
     }
 
     # 6. Perform command and generate answer message for user.
@@ -1053,6 +1103,11 @@ def genAnswer(params):
         'text': '',
         'attachment': ''
     }
+
+    try:
+        DB.Users.get()
+    except:
+        DB.db.connect()
 
     params['text'] = params['text'].lower()
 

@@ -135,7 +135,8 @@ class ClientVK:
             'msg_id': vk_msg['id'],
             'user_id': vk_msg.get('user_id', 0),
             'chat_id': vk_msg.get('chat_id', 0),
-            'text': msg_text
+            'text': msg_text,
+            'new_group': False
         }
 
         if not params['chat_id']:

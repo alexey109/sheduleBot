@@ -226,7 +226,7 @@ KEYWORDS = {
     CMD_BY_TIME: ['(([01]?\d|2[0-3]):([0-5]\d)|24:00)'],
     CMD_BY_DATE: ['(\d{1,2}\.\d{2})|(\d{1,2}\s*((' + ")|(".join(
         MONTH_NAMES) + ')))'],
-    CMD_MAP: [u'[а-я]\-?[1-9][0-9а-я\-]{0,4}'],
+    CMD_MAP: [u'[Aaа-я]\-?[1-9][0-9Aaа-я\-]{0,4}'],
     CMD_MYGROUP: [u'запомн', u'сохран', u'групп'],
     CMD_WHERE_LESSON: [u'где', u'покажи'],
     CMD_BY_NUMB: NUMB_NAMES,
@@ -238,6 +238,7 @@ KEYWORDS = {
     CMD_LINK: [u'ссылка', u'адрес', u'страница', u'сайт'],
     CMD_HOT_FUNC: [u'\A[1-4]\Z'],
     CMD_SEARCH_TEACHER: [
+        u'[а-я]*\s[а-я]\.?\s?[а-я]\.?'
         u'най[тд]и\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
 }
 
@@ -329,9 +330,12 @@ ERR_NO_ROOM = 7
 ERR_PERIOD_ENDS = 8
 ERR_MSG_LIMIT = 9
 ERR_NO_TEACHER_FOUND = 10
+ERR_DUMMY = 11
 
 ERR_MESSAGES = {
-    ERR_UNDEFINED: u'Что-то пошло не так, повторите запрос еще раз.',
+    ERR_UNDEFINED: u'Что-то пошло не так, повторите запрос еще раз.\n'
+                    + u'Если сообщение повторяется, напишите на '
+                    + u'timetable.bot@yandex.ru',
     ERR_SKIP: '',
     ERR_GROUP_NOT_FOUND: u'Расписание для группы недоступно.\n'
                          + u'Возможно группа указана с ошибками '
@@ -348,4 +352,6 @@ ERR_MESSAGES = {
                      + u'зачетов/экзаменов.',
     ERR_MSG_LIMIT: u'\n* пауза на {} сек. *',
     ERR_NO_TEACHER_FOUND: u'Расписание для преподавателя не найдено.',
+    ERR_DUMMY: u"Кажется сообщение не "
+               u"относится к расписанию. "
 }

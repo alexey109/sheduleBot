@@ -9,7 +9,6 @@ from os.path import isfile, join
 from optparse import OptionParser
 
 import consts as CONST
-import logger as lg
 import parser as pr
 import dbmodels as db
 
@@ -24,7 +23,6 @@ optparser.add_option("-d", "--download",
                      default=False)
 (user_options, args) = optparser.parse_args()
 
-logger = lg.Logger()
 
 if user_options.download:
     print "Try to get html code from mirea schedule page."
@@ -70,18 +68,23 @@ count = 0
 for doc in documents:
     count += 1
     print u'Загрузка документа №' + str(count) + '\r'
-    try:
-        schdl_type, schedule = parser.getSchedule(
-            CONST.SCHEDULE_DIR + doc)
-    except:
-        continue
+    #try:
+    schdl_type, schedule = parser.getSchedule(
+        CONST.SCHEDULE_DIR + doc)
+    #except Exception as e:
+    #    print e
+    #    continue
 
     if schdl_type == user_options.type == 'lections':
         for group, events in schedule.items():
-            group_obj, flag = db.Groups.get_or_create(gcode=group)
-            query = db.Schedule.delete().where(
-                db.Schedule.group == group_obj)
-            query.execute()
+            try:
+                group_obj, flag = db.Groups.get_or_create(gcode=group)
+                query = db.Schedule.delete().where(db.Schedule.group == group_obj.id)
+                query.execute()
+            except Exception as e:
+                print e
+                continue
+
             for event in events:
                 try:
                     nname = event['name']
@@ -100,5 +103,6 @@ for doc in documents:
                         teacher=nteacher,
                     )
                     schdl_obj.save()
-                except:
+                except Exception as e:
+                    print e
                     continue
