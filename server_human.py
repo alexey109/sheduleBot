@@ -108,7 +108,7 @@ def main():
 
 
             if time.time() - answer_time < 0.3:
-                time.sleep(time.time() - answer_time)
+                time.sleep(1)
             if answer['attachment']:
                 vk.messages.send(
                     peer_id=peer,
