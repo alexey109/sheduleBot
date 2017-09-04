@@ -3,6 +3,7 @@
 
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
+import time
 
 import security
 import core
