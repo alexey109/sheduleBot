@@ -20,6 +20,7 @@ def main():
             chat_notice = False
             vk_session = vk_api.VkApi(token=security.group_token)
             vk = vk_session.get_api()
+            continue
         elif not notice['user_id']:
             have_notice = False
             break

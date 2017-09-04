@@ -1203,9 +1203,11 @@ def getNotice(for_chat=False):
         return notice
 
     params = {
+        'msg_id': None,
         'user_id': user.vk_id,
         'chat_id': user.vk_id if user.is_chat else False,
-        'text': ''
+        'text': '',
+        'new_group': not for_chat
     }
 
     def appendAnswer(notice, msg):
