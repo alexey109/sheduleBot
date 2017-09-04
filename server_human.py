@@ -67,60 +67,62 @@ def main():
     usr_stack = UsersStack()
     answer_time = time.time()
     for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-            params = {
-                'msg_id': None,
-                'user_id': event.user_id,
-                'chat_id': event.chat_id,
-                'text': event.text,
-                'new_group': False
-            }
+        if not (event.type == VkEventType.MESSAGE_NEW and event.to_me):
+            continue
 
-            answer = {
-                'text': '',
-                'attachment': ''
-            }
-            try:
-                answer = core.genAnswer(params)
-            except Exception as e:
-                if e.args[0] == CONST.ERR_SKIP:
-                    continue
-                if e.args[0] in CONST.ERR_MESSAGES.keys():
-                    answer['text'] = CONST.ERR_MESSAGES[e.args[0]]
-                else:
-                    answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
-                print str(e)
+        params = {
+            'msg_id': None,
+            'user_id': event.user_id,
+            'chat_id': event.chat_id,
+            'text': event.text,
+            'new_group': False
+        }
 
-            if not answer['text'] and not answer['attachment']:
-                answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_DUMMY]
-
-            if event.chat_id:
-                peer = 2000000000 + event.chat_id
-            else:
-                peer = event.user_id
-                answer['text'] += u'\n\nУбедительная просьба писать личные сообщения через новое сообщество vk.com/mtu_timetable.'
-
-            msg_rest, time_rest = usr_stack.getRest(peer)
-            if msg_rest == 0:
+        answer = {
+            'text': '',
+            'attachment': ''
+        }
+        try:
+            answer = core.genAnswer(params)
+        except Exception as e:
+            if e.args[0] == CONST.ERR_SKIP:
                 continue
-            if msg_rest == 1:
-                answer['text'] += CONST.ERR_MESSAGES[CONST.ERR_MSG_LIMIT].format(time_rest)
-
-
-            if time.time() - answer_time < 0.3:
-                time.sleep(1)
-            if answer['attachment']:
-                vk.messages.send(
-                    peer_id=peer,
-                    attachment=answer['attachment'],
-                    message=answer['text']
-                )
+            if e.args[0] in CONST.ERR_MESSAGES.keys():
+                answer['text'] = CONST.ERR_MESSAGES[e.args[0]]
             else:
-                vk.messages.send(
-                    peer_id=peer,
-                    message=answer['text']
-                )
-            answer_time = time.time()
+                answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
+            print str(e)
+
+        if not answer['text'] and not answer['attachment']:
+            answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_DUMMY]
+
+        if event.chat_id:
+            peer = 2000000000 + event.chat_id
+        else:
+            peer = event.user_id
+            answer['text'] += u'\n\nУбедительная просьба писать личные сообщения через новое сообщество vk.com/mtu_timetable.'
+
+        msg_rest, time_rest = usr_stack.getRest(peer)
+        if msg_rest == 0:
+            continue
+        if msg_rest == 1:
+            answer['text'] += CONST.ERR_MESSAGES[CONST.ERR_MSG_LIMIT].format(time_rest)
+
+
+        if time.time() - answer_time < 0.3:
+            time.sleep(1)
+        if answer['attachment']:
+            vk.messages.send(
+                peer_id=peer,
+                attachment=answer['attachment'],
+                message=answer['text']
+            )
+        else:
+            vk.messages.send(
+                peer_id=peer,
+                message=answer['text']
+            )
+        answer_time = time.time()
 
 
 if __name__ == '__main__':

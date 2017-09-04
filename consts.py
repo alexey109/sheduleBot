@@ -68,6 +68,7 @@ CMD_NEW_ID = 410  # new web page ID
 CMD_MYID = 420
 CMD_LINK = 430
 CMD_SEARCH_TEACHER = 440
+CMD_NOTICE = 450
 
 # Time markers. Could be with base command.
 MARKERS = [
@@ -176,7 +177,7 @@ KEYWORDS = {
     CMD_TODAY: [u'сегодня'],
     CMD_AFTERTOMMOROW: [u'послезавтра'],
     CMD_YESTERDAY: [u'вчера'],
-    CMD_WEEK: [u'неделя'],
+    CMD_WEEK: [u'неделя', u'номер.*недел'],
     CMD_NOW: [u'сейчас', u'текущая'],
     CMD_FIRST: [u'перв[уаоы][еяюйи]'],
     CMD_DAY_OF_WEEK: [
@@ -233,13 +234,13 @@ KEYWORDS = {
     CMD_FOR7DAYS: [u'недел[юе]', u'[1-7]\s*дн[ея]'],
     CMD_JUST_LESSONS: [u'(\s|\A)расписание\Z', u'(\s|\A)пары\Z'],
     CMD_NEW_ID: [u'новый', u'генерир', u'обнови'],
-    CMD_MYID: [u'id', u'логин', u'пароль', u'уведомления',
-               u'напомин'],
+    CMD_MYID: [u'id', u'логин', u'пароль'],
     CMD_LINK: [u'ссылка', u'адрес', u'страница', u'сайт'],
     CMD_HOT_FUNC: [u'\A[1-4]\Z'],
     CMD_SEARCH_TEACHER: [
         u'[а-я]+\s[а-я]\.\s?[а-я]\.',
         u'най[тд]и\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
+    CMD_NOTICE: [u'уведомлен', u'напомин']
 }
 
 # Some text, which automatically enters before answer body.
@@ -281,6 +282,7 @@ USER_PREMESSAGE = {
     CMD_LINK: u'',
     CMD_SEARCH_TEACHER: u'',
     CMD_MY_TEACHERS: u'Список преподавателей:\n\n',
+    CMD_NOTICE: u''
 }
 
 # Templates for command's body text.
@@ -298,12 +300,25 @@ USER_MESSAGE = {
     CMD_ZACHET: u'\n{} пара{}\n{}\n',
     CMD_WHERE_LESSON: u'Аудитория {} ({}){}\n',
     CMD_FIRST: u' ({} пара)',
+    CMD_HELP: u'Бот может:\n'
+        + u'- найти преподавателя "найди антика"\n'
+        + u'- показать расписание пар "пары на завтра"\n'
+        + u'- показать аудиторию "где а-9а" (только для МИРЭА)\n'
+        + u'- уведомлять о парах "уведомления"\n'
+        + u'- посчитать оставшиеся пары "счетчик"\n'
+        + u'- сообщить номер недели\n'
+        + u'- вывести список преподавателей "мои учителя"️\n'
+        + u'- показать время начала и конца пар\n\n'
+        + u'Больше примеров сообщений можно найти на странице бота, '
+        + u'а еще можно заглянуть на botpage.ru - там есть расписание по неделям, '
+        + u'возможность редактирования и схема кампуса МИРЭА!',
     CMD_NEW_ID: u'Ваш новый ID: {}',
-    CMD_MYID: u'Ваш ID: {}\n\n'
-              + u'Уведомления включаются в разделе "редактор"',
+    CMD_MYID: u'Ваш ID: {}',
     CMD_SEARCH_TEACHER: u'{} пара в {} (групп {})\n{}\n\n',
     CMD_MY_TEACHERS: u'{}\n{}\n\n',
     CMD_LINK: u'botpage.ru',
+    CMD_NOTICE: u'Уведомления {}.\n\nПо умолчанию включаются "пары на день" и "схема с первой аудиторией", но '
+        + u'это можно изменить на botpage.ru/editor.'
 }
 
 USER_POSTMESSAGES = {
@@ -351,6 +366,6 @@ ERR_MESSAGES = {
                      + u'зачетов/экзаменов.',
     ERR_MSG_LIMIT: u'\n* пауза на {} сек. *',
     ERR_NO_TEACHER_FOUND: u'Расписание для преподавателя не найдено.',
-    ERR_DUMMY: u"Кажется сообщение с ошибками или не "
+    ERR_DUMMY: u"Кажется, сообщение с ошибками или не "
                u"относится к расписанию. "
 }

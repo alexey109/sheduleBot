@@ -311,8 +311,8 @@ def cmdHelp(params):
     :rtype: str
     """
     return {
-        'text': '',
-        'attachment': 'wall385457066_127'
+        'text': CONST.USER_MESSAGE[CONST.CMD_HELP],
+        'attachment': ''
     }
 
 
@@ -753,6 +753,32 @@ def cmdMyTeachers(params):
         'attachment': ''
     }
 
+
+def cmdNotice(params):
+    db_user = DB.Users.get(
+        DB.Users.vk_id == params['vk_id'],
+        DB.Users.is_chat == params['is_chat']
+    )
+
+    if db_user.notice_today or db_user.notice_tommorow or db_user.notice_week or db_user.notice_map:
+        db_user.notice_today = False
+        db_user.notice_tommorow = False
+        db_user.notice_week = False
+        db_user.notice_map = False
+        action = u'выключены'
+    else:
+        db_user.notice_today = True
+        db_user.notice_tommorow = False
+        db_user.notice_week = False
+        db_user.notice_map = True
+        action = u'включены'
+    db_user.save()
+
+    return {
+        'text': CONST.USER_MESSAGE[CONST.CMD_NOTICE].format(action),
+        'attachment': ''
+    }
+
 # associate commands codes with their functions
 cmd_functions = {
     CONST.CMD_LESSONS: cmdLessons,
@@ -783,6 +809,7 @@ cmd_functions = {
     CONST.CMD_LINK: cmdLink,
     CONST.CMD_SEARCH_TEACHER: cmdSearchTeacher,
     CONST.CMD_MY_TEACHERS: cmdMyTeachers,
+    CONST.CMD_NOTICE: cmdNotice,
 }
 
 
@@ -1138,38 +1165,7 @@ def genAnswer(params):
     return answer
 
 
-def isNoticeTime():
-    """ Check current time to be in notice time range.
-    
-    :return: true if in range, false if not
-    :rtype: bool
-    """
-    today = dt.datetime.now()
-    return (
-        CONST.NOTICE_START_HOUR <= today.hour <= CONST.NOTICE_END_HOUR)
-
-
-def saveNoticeTime(notice):
-    """ Saves in database time of last user notice.
-    
-    :param notice: notice parameters
-    :type notice: dict
-    :return: was it successful or not
-    :rtype: bool
-    """
-    try:
-        user = DB.Users.get(DB.Users.vk_id == notice['user_id'],
-                            DB.Users.is_chat == notice['is_chat'])
-        user.send_time = dt.datetime.now()
-        user.save()
-        success = True
-    except:
-        success = False
-
-    return success
-
-
-def getNotice():
+def getNotice(for_chat = False):
     """ Retrieve notice code from database and perform it.
     
     :return: notice, witch looks like bot answer for user
@@ -1229,8 +1225,10 @@ def getNotice():
     if user.notice_map and today.weekday() != 6:
         notice = appendAnswer(notice, CONST.MSG_NOTICE_MAP)
 
+    user.send_time = dt.datetime.now()
+    user.save()
+
     if not (notice['text'] or notice['attachment']):
-        saveNoticeTime(notice)
         raise Exception()
 
     return notice
