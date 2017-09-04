@@ -240,7 +240,7 @@ KEYWORDS = {
     CMD_SEARCH_TEACHER: [
         u'[а-я]+\s[а-я]\.\s?[а-я]\.',
         u'най[тд]и\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
-    CMD_NOTICE: [u'уведомлен', u'напомин']
+    CMD_NOTICE: [u'уведомлен', u'напомин', u'🔔']
 }
 
 # Some text, which automatically enters before answer body.
