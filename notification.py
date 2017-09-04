@@ -27,7 +27,7 @@ def main():
 
         time.sleep(30)
         if notice['is_chat']:
-            peer = 2000000000 + notice['user_id']
+            peer = 2000000000 + int(notice['user_id'])
         else:
             peer = notice['user_id']
 
