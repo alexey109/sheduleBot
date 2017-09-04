@@ -1165,7 +1165,7 @@ def genAnswer(params):
     return answer
 
 
-def getNotice(for_chat = False):
+def getNotice(for_chat=False):
     """ Retrieve notice code from database and perform it.
     
     :return: notice, witch looks like bot answer for user
@@ -1189,6 +1189,8 @@ def getNotice(for_chat = False):
         (DB.Users.send_time >> None) |
         (DB.Users.send_time < dt.datetime(today.year, today.month,
                                           today.day))
+    ), (
+        DB.Users.is_chat == for_chat
     )).limit(1)
 
     for u in users:
