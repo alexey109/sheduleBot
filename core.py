@@ -256,7 +256,7 @@ def cmdWeek(params):
     :return: formatted for user week number
     :rtype: str
     """
-    weeks = (params['date'].date() - dt.date(2017, 9, 1)).days / 7 + 1
+    weeks = (params['date'].date() - dt.date(2017, 8, 28)).days / 7 + 1
 
     return {
         'text': CONST.USER_MESSAGE[CONST.CMD_WEEK].format(weeks),
