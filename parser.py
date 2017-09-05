@@ -256,64 +256,66 @@ class Parser:
                         continue
                 except:
                     continue
-                j = cell.col_idx
-                row_start = cell.row + 2
-                group = cell.internal_value.lower()
-                lections = []
-                maybe_room = sheet.cell(row=3,
-                                        column=j + 3).internal_value
-
-                for i in range(row_start, 77):
-                    content = sheet.cell(row=i, column=j).internal_value
-                    if not content:
-                        continue
-
-                    etype = sheet.cell(row=i, column=j + 1).internal_value
-                    lectors = sheet.cell(row=i, column=j + 2).internal_value
-                    rooms = sheet.cell(row=i, column=j + 3).internal_value
-
-                    cell_day = days_numbers[i]
-                    cell_numb = lessons_numbers[i]['numb']
-                    cell_week = lessons_numbers[i]['type']
-                    info = self.splitBody(content)
-
-                    if len(info) > 1:
-                        lectors = re.split('\n|\s{3,10}', lectors) if lectors else []
-                        etype = re.split('\n|\s{3,10}', etype) if etype else ''
-                        rooms = re.split('\n|\s{3,10}', unicode(rooms)) if rooms else []
-                    else:
-                        lectors = [lectors] if lectors else ['']
-                        etype = [etype] if etype else ['']
-                        rooms = [unicode(rooms).replace('\n', ' ')] if rooms else ['']
-                    for i in range(0, len(info)):
-                        if len(info[i]['name']) < 2 or checkSkipWords(info[i]['name']):
+                try:
+                    j = cell.col_idx
+                    row_start = cell.row + 2
+                    group = cell.internal_value.lower()
+                    lections = []
+                    for i in range(row_start, 77):
+                        content = sheet.cell(row=i, column=j).internal_value
+                        if not content:
                             continue
-                        event_type = safeGet(etype, i, '')
-                        lector = safeGet(lectors, i, '-')
-                        room = safeGet(rooms, i, '-')
 
-                        week = info[i]['week'] if info[i]['week'] else cell_week
-                        if '-' in week:
-                            week = ','.join([str(iw) for iw in range(int(week.split('-')[0]), 18, 2)])
+                        etype = sheet.cell(row=i, column=j + 1).internal_value
+                        lectors = sheet.cell(row=i, column=j + 2).internal_value
+                        rooms = sheet.cell(row=i, column=j + 3).internal_value
 
-                        event = {
-                            'day': cell_day,
-                            'numb': cell_numb,
-                            'room': room,
-                            'week': week,
-                            'name': info[i]['name'] + ' ' + event_type.replace('\n', ''),
-                            'teacher': lector,
-                            'params': info[i]['params']
-                        }
-                        append_flag = True
-                        for l in lections:
-                            if isEventEqual(l, event):
-                                l['week'] = ''
-                                append_flag = False
+                        cell_day = days_numbers[i]
+                        cell_numb = lessons_numbers[i]['numb']
+                        cell_week = lessons_numbers[i]['type']
+                        info = self.splitBody(content)
 
-                        if append_flag:
-                            lections.append(event)
-                schedule[group] = lections
+                        if len(info) > 1:
+                            lectors = re.split('\n|\s{3,10}', lectors) if lectors else []
+                            etype = re.split('\n|\s{3,10}', etype) if etype else ''
+                            rooms = re.split('\n|\s{3,10}', unicode(rooms)) if rooms else []
+                        else:
+                            lectors = [lectors] if lectors else ['']
+                            etype = [etype] if etype else ['']
+                            rooms = [unicode(rooms).replace('\n', ' ')] if rooms else ['']
+                        for i in range(0, len(info)):
+                            if len(info[i]['name']) < 2 or checkSkipWords(info[i]['name']):
+                                continue
+                            event_type = safeGet(etype, i, '')
+                            lector = safeGet(lectors, i, '-')
+                            room = safeGet(rooms, i, '-')
+
+                            week = info[i]['week'] if info[i]['week'] else cell_week
+                            if '-' in week:
+                                week = ','.join([str(iw) for iw in range(int(week.split('-')[0]), 18, 2)])
+
+                            event = {
+                                'day': cell_day,
+                                'numb': cell_numb,
+                                'room': room,
+                                'week': week,
+                                'name': info[i]['name'] + ' ' + event_type.replace('\n', ''),
+                                'teacher': lector,
+                                'params': info[i]['params']
+                            }
+                            append_flag = True
+                            for l in lections:
+                                if isEventEqual(l, event):
+                                    l['week'] = ''
+                                    append_flag = False
+
+                            if append_flag:
+                                lections.append(event)
+
+                    schedule[group] = lections
+                except Exception as e:
+                    print 'Exception when parse group schdl:'+str(e)
+                    continue
 
         return schedule
 
