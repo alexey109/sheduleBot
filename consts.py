@@ -69,6 +69,7 @@ CMD_MYID = 420
 CMD_LINK = 430
 CMD_SEARCH_TEACHER = 440
 CMD_NOTICE = 450
+CMD_CHANGES = 460
 
 # Time markers. Could be with base command.
 MARKERS = [
@@ -93,6 +94,16 @@ DAY_NAMES = [
     u'пятница',
     u'суббота',
     u'воскресение',
+]
+
+DAY_NAMES_SHORT = [
+    u'пн',
+    u'вт',
+    u'ср',
+    u'чт',
+    u'пт',
+    u'сб',
+    u'вс',
 ]
 
 DAY_NAMES_VINIT = [
@@ -240,7 +251,8 @@ KEYWORDS = {
     CMD_SEARCH_TEACHER: [
         u'[а-я]+\s[а-я]\.\s?[а-я]\.',
         u'най[тд]и\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
-    CMD_NOTICE: [u'уведомлен', u'напомин', u'🔔']
+    CMD_NOTICE: [u'уведомлен', u'напомин', u'🔔'],
+    CMD_CHANGES: [u'обновлен', u'изменен', u'истори']
 }
 
 # Some text, which automatically enters before answer body.
@@ -282,7 +294,8 @@ USER_PREMESSAGE = {
     CMD_LINK: u'',
     CMD_SEARCH_TEACHER: u'',
     CMD_MY_TEACHERS: u'Список преподавателей:\n\n',
-    CMD_NOTICE: u''
+    CMD_NOTICE: u'',
+    CMD_CHANGES: u'История изменений расписания:\n'
 }
 
 # Templates for command's body text.
@@ -318,7 +331,8 @@ USER_MESSAGE = {
     CMD_MY_TEACHERS: u'{}\n{}\n\n',
     CMD_LINK: u'botpage.ru',
     CMD_NOTICE: u'Уведомления {}.\n\nПо умолчанию включаются "пары на день" и "схема с первой парой", но '
-        + u'это можно изменить на botpage.ru/editor.'
+        + u'это можно изменить на botpage.ru/editor.',
+    CMD_CHANGES: u'_________\n{}\n{}\n\n{}\n\n'
 }
 
 USER_POSTMESSAGES = {

@@ -779,6 +779,22 @@ def cmdNotice(params):
         'attachment': ''
     }
 
+
+def cmdChanges(params):
+    history = DB.History.filter(group=params['group']['id'])
+    message = ''
+    for record in history:
+        message += CONST.USER_MESSAGE[CONST.CMD_CHANGES].format(
+            record.date.strftime('%d.%m.%y'),
+            record.new_fields.replace(';', '\n'),
+            record.old_fields.replace(';', '\n'),
+        )
+
+    return {
+        'text': message,
+        'attachment': ''
+    }
+
 # associate commands codes with their functions
 cmd_functions = {
     CONST.CMD_LESSONS: cmdLessons,
@@ -810,6 +826,7 @@ cmd_functions = {
     CONST.CMD_SEARCH_TEACHER: cmdSearchTeacher,
     CONST.CMD_MY_TEACHERS: cmdMyTeachers,
     CONST.CMD_NOTICE: cmdNotice,
+    CONST.CMD_CHANGES: cmdChanges
 }
 
 

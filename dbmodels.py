@@ -83,3 +83,14 @@ class Scheme(peewee.Model):
     class Meta:
         database = db
         db_table = 'schemes'
+
+
+class History(peewee.Model):
+    date = peewee.DateField()
+    old_fields = peewee.CharField()
+    new_fields = peewee.CharField()
+    group = peewee.ForeignKeyField(Groups)
+
+    class Meta:
+        database = db
+        db_table = 'history'

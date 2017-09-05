@@ -3,15 +3,24 @@
 
 import urllib2
 import re
-import codecs
 from os import listdir, makedirs
 from os.path import isfile, join
 from optparse import OptionParser
 import shutil
+import datetime as dt
 
 import consts as CONST
 import parser as pr
 import dbmodels as db
+
+
+def adjustText(text, max_len=20, end_len=-4):
+    if len(text) < max_len:
+        return text
+    start = text[:(max_len + end_len - 2)] + '..'
+    end = text[end_len:]
+
+    return start + end
 
 optparser = OptionParser()
 optparser.add_option("-t", "--type",
@@ -80,12 +89,14 @@ for doc in documents:
         for group, events in schedule.items():
             try:
                 group_obj, flag = db.Groups.get_or_create(gcode=group[:20])
+                old_gschedule = list(db.Schedule.select().where(db.Schedule.group == group_obj.id))
                 query = db.Schedule.delete().where(db.Schedule.group == group_obj.id)
                 query.execute()
             except Exception as e:
                 print e
                 continue
 
+            not_found_events = []
             for event in events:
                 try:
                     nname = event['name']
@@ -103,7 +114,52 @@ for doc in documents:
                         room=nroom,
                         teacher=nteacher,
                     )
+                    find = False
+                    i = 0
+                    while i < len(old_gschedule):
+                        old_event = old_gschedule[i]
+                        if old_event.day == schdl_obj.day \
+                            and old_event.numb == schdl_obj.numb \
+                            and old_event.week == schdl_obj.week \
+                            and old_event.name == schdl_obj.name \
+                            and old_event.room == schdl_obj.room \
+                            and old_event.teacher == schdl_obj.teacher:
+                            find = True
+                            old_gschedule.pop(i)
+                            continue
+                        i += 1
+
+                    if not find:
+                        not_found_events.append(schdl_obj)
+
                     schdl_obj.save()
                 except Exception as e:
                     print e
                     continue
+
+            if not (old_gschedule or not_found_events):
+                continue
+
+            old_fields = ';'.join(
+                [u'- "{}., {} пара, {} н., {}, ауд. {}"'.format(
+                    CONST.DAY_NAMES_SHORT[i.day],
+                    i.numb,
+                    adjustText(i.week, 8, -3),
+                    adjustText(i.name),
+                    i.room if i.room else '-'
+                ) for i in old_gschedule])
+            new_fields = ';'.join(
+                [u'+ "{}., {} пара, {} н., {}, ауд. {}"'.format(
+                    CONST.DAY_NAMES_SHORT[i.day],
+                    i.numb,
+                    adjustText(i.week, 8, -3),
+                    adjustText(i.name),
+                    i.room if i.room else '-'
+                ) for i in not_found_events])
+            his_rec = db.History(
+                group=group_obj,
+                old_fields=old_fields[:999],
+                new_fields=new_fields[:999],
+                date=dt.datetime.today().date()
+            )
+            his_rec.save()
