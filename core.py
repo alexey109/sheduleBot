@@ -791,7 +791,7 @@ def cmdChanges(params):
         )
 
     return {
-        'text': message,
+        'text': message if message else u'изменений нет',
         'attachment': ''
     }
 
