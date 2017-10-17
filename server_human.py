@@ -58,8 +58,21 @@ class UsersStack:
 
         return msg_rest, CONST.USERS_QUEUE_LEN - max_time
 
+
+def captcha_handler(captcha):
+    """ При возникновении капчи вызывается эта функция и ей передается объект
+        капчи. Через метод get_url можно получить ссылку на изображение.
+        Через метод try_again можно попытаться отправить запрос с кодом капчи
+    """
+
+    key = input("Enter captcha code {0}: ".format(captcha.get_url())).strip()
+
+    # Пробуем снова отправить запрос с капчей
+    return captcha.try_again(key)
+
+
 def main():
-    vk_session = vk_api.VkApi(security.user_login, security.user_password)
+    vk_session = vk_api.VkApi(security.user_login, security.user_password, captcha_handler=captcha_handle)
     vk_session.auth()
     vk = vk_session.get_api()
     longpoll = VkLongPoll(vk_session)
