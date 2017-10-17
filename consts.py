@@ -3,7 +3,7 @@
 
 STACK_LEN = 50  # messages
 USERS_QUEUE_LEN = 60  # seconds
-USER_MSG_AMOUNT = 3  # message amount for a user in USERS_QUEUE_LEN
+USER_MSG_AMOUNT = 2  # message amount for a user in USERS_QUEUE_LEN
 NOTICE_START_HOUR = 3  # Hour when notice delivery starts
 NOTICE_END_HOUR = 6  # Hour when notice delivery ends
 NOTICE_DELAY = 20  # Seconds while waiting for next notice
