@@ -72,7 +72,7 @@ def captcha_handler(captcha):
 
 
 def main():
-    vk_session = vk_api.VkApi(security.user_login, security.user_password, captcha_handler=captcha_handle)
+    vk_session = vk_api.VkApi(security.user_login, security.user_password, captcha_handler=captcha_handler)
     vk_session.auth()
     vk = vk_session.get_api()
     longpoll = VkLongPoll(vk_session)
