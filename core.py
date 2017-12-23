@@ -400,7 +400,7 @@ def cmdWhenExams(params):
     delta = now - start
     amount = end - start
     percent = str(
-        int(round((float(delta.days) / amount.days) * 100))) + '%'
+        int(round((float(delta.days) / amount.days) * 100)))
 
     msg_templ = CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS]
     return {
