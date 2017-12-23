@@ -390,11 +390,12 @@ def cmdWhenExams(params):
     :rtype: str
     """
     now = dt.datetime.now().date()
-    start = dt.date(2017, 9, 1)
-    end = dt.date(2017, 12, 22)
+    start = dt.date(2017, 12, 22)
+    end = dt.date(2018, 1, 30)
     delta = end - now
     weeks = delta.days / 7
-    days = delta.days % 7
+    #days = delta.days % 7
+    days = delta.days
 
     delta = now - start
     amount = end - start
