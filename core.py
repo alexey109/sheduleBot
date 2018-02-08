@@ -71,7 +71,7 @@ def isWeeksEqual(doc_week, cal_week):
     :return: is document's week value match calendar's week
     :rtype: bool
     """
-    cal_week = cal_week - dt.date(2017, 9, 1).isocalendar()[1] + 1
+    cal_week = cal_week - dt.date(2018, 2, 9).isocalendar()[1] + 1
 
     if doc_week == '':
         result = True
@@ -256,7 +256,7 @@ def cmdWeek(params):
     :return: formatted for user week number
     :rtype: str
     """
-    weeks = (params['date'].date() - dt.date(2017, 8, 28)).days / 7 + 1
+    weeks = (params['date'].date() - dt.date(2018, 2, 9)).days / 7 + 1
 
     return {
         'text': CONST.USER_MESSAGE[CONST.CMD_WEEK].format(weeks),
@@ -351,7 +351,7 @@ def cmdLessonsCounter(params):
     except:
         end = params['date']
     if date_iter >= end:
-        end = dt.date(2017, 12, 22)
+        end = dt.date(2018, 6, 8)
     while date_iter != end:
         day = date_iter.weekday()
         week = date_iter.isocalendar()[1]
@@ -390,12 +390,11 @@ def cmdWhenExams(params):
     :rtype: str
     """
     now = dt.datetime.now().date()
-    start = dt.date(2017, 12, 22)
-    end = dt.date(2018, 1, 30)
+    start = dt.date(2018, 2, 9)
+    end = dt.date(2018, 6, 8)
     delta = end - now
     weeks = delta.days / 7
-    #days = delta.days % 7
-    days = delta.days
+    days = delta.days % 7
 
     delta = now - start
     amount = end - start
@@ -404,8 +403,7 @@ def cmdWhenExams(params):
 
     msg_templ = CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS]
     return {
-        #'text': msg_templ.format(weeks, days, percent),
-        'text': msg_templ.format(days, percent),
+        'text': msg_templ.format(weeks, days, percent),
         'attachment': ''
     }
 
@@ -1095,7 +1093,7 @@ def analize(params):
                         if re.search(name, month):
                             mnumb = idx + 1
                             break
-                    date = dt.date(2017, mnumb, int(day))
+                    date = dt.date(2018, mnumb, int(day))
                 except:
                     del markers[cmd_code]
         elif cmd_code == CONST.CMD_FIRST:
