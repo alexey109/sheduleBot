@@ -2,8 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 STACK_LEN = 500  # messages
-USERS_QUEUE_LEN = 120  # seconds
-USER_MSG_AMOUNT = 2  # message amount for a user in USERS_QUEUE_LEN
+USERS_QUEUE_LEN = 600  # seconds
+USER_MSG_AMOUNT = 1  # message amount for a user in USERS_QUEUE_LEN
 NOTICE_START_HOUR = 3  # Hour when notice delivery starts
 NOTICE_END_HOUR = 6  # Hour when notice delivery ends
 NOTICE_DELAY = 20  # Seconds while waiting for next notice
