@@ -38,6 +38,7 @@ def main():
                 answer['text'] = CONST.ERR_MESSAGES[e.args[0]]
             else:
                 answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
+                raise Exception(str(e))
             print str(e)
 
         if not answer['text'] and not answer['attachment']:
