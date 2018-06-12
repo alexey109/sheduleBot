@@ -9,10 +9,14 @@ import security
 import core
 import consts as CONST
 
+
 def main():
-    vk_session = vk_api.VkApi(token=security.group_token)
-    vk = vk_session.get_api()
-    longpoll = VkLongPoll(vk_session)
+    try:
+        vk_session = vk_api.VkApi(token=security.group_token)
+        vk = vk_session.get_api()
+        longpoll = VkLongPoll(vk_session)
+    except:
+        pass
 
     answer_time = time.time()
     for event in longpoll.listen():
