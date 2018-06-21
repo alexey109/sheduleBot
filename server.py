@@ -15,8 +15,9 @@ def main():
         vk_session = vk_api.VkApi(token=security.group_token)
         vk = vk_session.get_api()
         longpoll = VkLongPoll(vk_session)
-    except:
-        pass
+    except Exception as e:
+        longpoll = None
+        raise Exception(e)
 
     answer_time = time.time()
     for event in longpoll.listen():
@@ -42,7 +43,8 @@ def main():
                 answer['text'] = CONST.ERR_MESSAGES[e.args[0]]
             else:
                 answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
-                raise Exception(str(e))
+                continue
+                #raise Exception(str(e))
             print str(e)
 
         if not answer['text'] and not answer['attachment']:
