@@ -107,7 +107,8 @@ def main():
                 answer['text'] = CONST.ERR_MESSAGES[e.args[0]]
             else:
                 answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
-                raise Exception(str(e))
+                continue
+                # raise Exception(str(e))
             print str(e)
 
         if not answer['text'] and not answer['attachment']:
@@ -124,7 +125,6 @@ def main():
             continue
         if msg_rest == 1:
             answer['text'] += CONST.ERR_MESSAGES[CONST.ERR_MSG_LIMIT].format(time_rest)
-
 
         if time.time() - answer_time < 0.3:
             time.sleep(1)
