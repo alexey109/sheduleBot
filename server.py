@@ -16,8 +16,7 @@ def main():
         vk = vk_session.get_api()
         longpoll = VkLongPoll(vk_session)
     except Exception as e:
-        longpoll = None
-        raise Exception(e)
+        pass
 
     answer_time = time.time()
     for event in longpoll.listen():
