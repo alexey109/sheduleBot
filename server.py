@@ -25,7 +25,7 @@ def main():
     vk = vk_session.get_api()
     answer_time = time.time()
     for event in longpoll.listen():
-        if not (event.type == VkBotEventType.MESSAGE_NEW and event.to_me):
+        if not (event.type == VkBotEventType.MESSAGE_NEW):
             continue
 
         params = {
