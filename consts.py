@@ -272,7 +272,7 @@ USER_PREMESSAGE = {
 
     CMD_WEEK: '',
     CMD_NEXT: u' следующая',
-    CMD_LESSONS_TIME: u'Время начала-конца пар\n\n',
+    CMD_LESSONS_TIME: u'# пара: начало-конец\n\n',
     CMD_FEEDBACK: u'Сообщение принято. Спасибо :)',
     CMD_HELP: u'',
     CMD_POLITE: u'Пожалуйста, обращайся ещё :)',

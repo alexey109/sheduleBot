@@ -28,7 +28,7 @@ def main():
     keyboard.add_button('кто сейчас лектор', color=VkKeyboardColor.DEFAULT)
     keyboard.add_button('список учителей', color=VkKeyboardColor.DEFAULT)
     keyboard.add_line()
-    keyboard.add_button('время пар', color=VkKeyboardColor.DEFAULT)
+    keyboard.add_button('время звонков', color=VkKeyboardColor.DEFAULT)
     keyboard.add_button('сколько осталось', color=VkKeyboardColor.DEFAULT)
 
     vk = vk_session.get_api()

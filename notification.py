@@ -7,9 +7,9 @@ import time
 import security
 import core
 
+
 def main():
-    vk_session = vk_api.VkApi(security.user_login, security.user_password)
-    vk_session.auth()
+    vk_session = vk_api.VkApi(token=security.group_token)
     vk = vk_session.get_api()
 
     have_notice = True
@@ -25,7 +25,7 @@ def main():
             have_notice = False
             break
 
-        time.sleep(30)
+        time.sleep(5)
         if notice['is_chat']:
             peer = 2000000000 + int(notice['user_id'])
         else:
