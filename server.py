@@ -30,9 +30,9 @@ def main():
 
         params = {
             'msg_id': None,
-            'user_id': event.user_id,
+            'user_id': event.obj.from_id,
             'chat_id': None,
-            'text': event.text,
+            'text': event.obj.text,
             'new_group': True
         }
 
@@ -58,14 +58,14 @@ def main():
 
         if answer['attachment']:
             vk.messages.send(
-                user_id=event.user_id,
+                user_id=event.obj.from_id,
                 attachment=answer['attachment'],
                 message=answer['text'],
                 keyboard=keyboard.get_keyboard()
             )
         else:
             vk.messages.send(
-                user_id=event.user_id,
+                user_id=event.obj.from_id,
                 message=answer['text'],
                 keyboard=keyboard.get_keyboard()
             )
