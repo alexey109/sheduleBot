@@ -404,8 +404,7 @@ def cmdWhenExams(params):
 
     msg_templ = CONST.USER_MESSAGE[CONST.CMD_WHEN_EXAMS]
     return {
-        # msg_templ.format(weeks, days, percent),
-        'text': 'https://www.mirea.ru/education/schedule-main/schedule/',
+        'text': msg_templ.format(weeks, days, percent),
         'attachment': ''
     }
 
