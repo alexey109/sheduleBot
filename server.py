@@ -2,7 +2,8 @@
 # -*- coding: UTF-8 -*-
 
 import vk_api
-from vk_api.longpoll import VkLongPoll, VkEventType
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import time
 
 import security
@@ -11,16 +12,20 @@ import consts as CONST
 
 
 def main():
-    try:
-        vk_session = vk_api.VkApi(token=security.group_token)
-        vk = vk_session.get_api()
-        longpoll = VkLongPoll(vk_session)
-    except Exception as e:
-        pass
+    vk_session = vk_api.VkApi(token=security.group_token)
+    longpoll = VkBotLongPoll(vk_session, security.group_id)
 
+    keyboard = VkKeyboard(one_time=False)
+    keyboard.add_button('Сегодня', color=VkKeyboardColor.DEFAULT)
+    keyboard.add_button('Завтра', color=VkKeyboardColor.DEFAULT)
+    keyboard.add_line()
+    keyboard.add_button('Где сейчас пара', color=VkKeyboardColor.DEFAULT)
+    keyboard.add_button('Где будет пара', color=VkKeyboardColor.DEFAULT)
+
+    vk = vk_session.get_api()
     answer_time = time.time()
     for event in longpoll.listen():
-        if not (event.type == VkEventType.MESSAGE_NEW and event.to_me):
+        if not (event.type == VkBotEventType.MESSAGE_NEW and event.to_me):
             continue
 
         params = {
@@ -43,7 +48,6 @@ def main():
             else:
                 answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
                 continue
-                #raise Exception(str(e))
             print str(e)
 
         if not answer['text'] and not answer['attachment']:
@@ -51,16 +55,19 @@ def main():
 
         if time.time() - answer_time < 0.3:
             time.sleep(0.4)
+
         if answer['attachment']:
             vk.messages.send(
                 user_id=event.user_id,
                 attachment=answer['attachment'],
-                message=answer['text']
+                message=answer['text'],
+                keyboard=keyboard.get_keyboard()
             )
         else:
             vk.messages.send(
                 user_id=event.user_id,
-                message=answer['text']
+                message=answer['text'],
+                keyboard=keyboard.get_keyboard()
             )
         answer_time = time.time()
 
