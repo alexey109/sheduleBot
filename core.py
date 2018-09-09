@@ -71,7 +71,7 @@ def isWeeksEqual(doc_week, cal_week):
     :return: is document's week value match calendar's week
     :rtype: bool
     """
-    cal_week = cal_week - dt.date(2018, 2, 9).isocalendar()[1] + 1
+    cal_week = cal_week - dt.date(2018, 9, 3).isocalendar()[1]
 
     if doc_week == '':
         result = True
@@ -256,8 +256,8 @@ def cmdWeek(params):
     :return: formatted for user week number
     :rtype: str
     """
-    #weeks = (params['date'].date() - dt.date(2018, 2, 9)).days / 7 + 1
-    weeks = params['date'].date().isocalendar()[1] - dt.date(2018, 2, 9).isocalendar()[1] + 1
+    #weeks = (params['date'].date() - dt.date(2018, 9, 3)).days / 7 + 1
+    weeks = params['date'].date().isocalendar()[1] - dt.date(2018, 9, 3).isocalendar()[1]
 
     return {
         'text': CONST.USER_MESSAGE[CONST.CMD_WEEK].format(weeks),
@@ -352,7 +352,7 @@ def cmdLessonsCounter(params):
     except:
         end = params['date']
     if date_iter >= end:
-        end = dt.date(2018, 6, 8)
+        end = dt.date(2018, 12, 22)
     while date_iter != end:
         day = date_iter.weekday()
         week = date_iter.isocalendar()[1]
@@ -391,8 +391,8 @@ def cmdWhenExams(params):
     :rtype: str
     """
     now = dt.datetime.now().date()
-    start = dt.date(2018, 2, 9)
-    end = dt.date(2018, 6, 8)
+    start = dt.date(2018, 9, 3)
+    end = dt.date(2018, 12, 22)
     delta = end - now
     weeks = delta.days / 7
     days = delta.days % 7
