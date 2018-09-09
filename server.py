@@ -56,8 +56,8 @@ def main():
                 answer['text'] = CONST.ERR_MESSAGES[e.args[0]]
             else:
                 answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_UNDEFINED]
+                print str(e)
                 continue
-            print str(e)
 
         if not answer['text'] and not answer['attachment']:
             answer['text'] = CONST.ERR_MESSAGES[CONST.ERR_DUMMY]
