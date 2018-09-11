@@ -1165,12 +1165,6 @@ def genAnswer(params):
 
     params['text'] = params['text'].lower()
 
-    # Check for chat
-    if params['chat_id'] and not any(
-            re.match('^' + word, params['text']) for word in
-            CONST.CHAT_KEYWORDS):
-        raise Exception(CONST.ERR_SKIP)
-
     # Check feedback
     if any(re.search(word, params['text']) for word in
            CONST.FEEDBACK_KEYWORDS):
