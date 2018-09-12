@@ -70,18 +70,21 @@ def main():
         if time.time() - answer_time < 0.1:
             time.sleep(0.1)
 
+        msg_buttons = None
+        if event.from_user:
+            msg_buttons = keyboard.get_keyboard()
         if answer['attachment']:
             vk.messages.send(
                 peer_id=event.obj.peer_id,
                 attachment=answer['attachment'],
                 message=answer['text'],
-                keyboard=keyboard.get_keyboard()
+                keyboard=msg_buttons
             )
         else:
             vk.messages.send(
                 peer_id=event.obj.peer_id,
                 message=answer['text'],
-                keyboard=keyboard.get_keyboard()
+                keyboard=msg_buttons
             )
         answer_time = time.time()
 
