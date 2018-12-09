@@ -56,6 +56,9 @@ def main():
         }
         try:
             answer = core.genAnswer(params)
+        except CONST.GroupException as ge:
+            answer['text'] = CONST.ERR_MESSAGES[ge.args[0]]
+            answer['text'] += ge.suggestion
         except Exception as e:
             if e.args[0] in CONST.ERR_MESSAGES.keys():
                 answer['text'] = CONST.ERR_MESSAGES[e.args[0]]

@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 
+
+class GroupException(Exception):
+    def __init__(self, message, suggestion):
+        super(GroupException, self).__init__(message)
+        self.suggestion = suggestion
+
+
 STACK_LEN = 500  # messages
 USERS_QUEUE_LEN = 600  # seconds
 USER_MSG_AMOUNT = 1  # message amount for a user in USERS_QUEUE_LEN

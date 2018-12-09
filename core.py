@@ -865,6 +865,17 @@ def getGroup(params):
     :return: message, if group was updated
     :rtype: dict, str
     """
+    def group_suggestions(message):
+        match = re.search(
+            u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}',
+            message)
+        msg_group = match.group(0) if match else ''
+        db_groups = DB.Groups.select().where(DB.Groups.gcode.contains(msg_group))
+        if not db_groups:
+            return ''
+        group_list = "\n".join([g.gcode for g in db_groups])
+        return "\nВозможно, точный код есть здесь:\n" + group_list
+
     answer = ''
     vk_id = params['chat_id'] if params['chat_id'] else params[
         'user_id']
@@ -878,8 +889,9 @@ def getGroup(params):
     except:
         db_user = None
 
-    match = re.search(u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}',
-                      params['text'])
+    match = re.search(
+        u'[а-я]{4}[а-я]?-[0-9]{2}-[0-9]{2}[\s\dА-Яа-я\(\)\-\*\.]*',
+        params['text'])
     msg_group = match.group(0) if match else ''
     params['text'] = params['text'].replace(msg_group, '')
 
@@ -887,7 +899,8 @@ def getGroup(params):
         try:
             db_group = DB.Groups.get(DB.Groups.gcode == msg_group)
         except:
-            raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+            sugg = group_suggestions(params['text'])
+            raise CONST.GroupException(CONST.ERR_GROUP_NOT_FOUND, suggestion=sugg)
         db_user.group = db_group.id
         db_user.save()
 
@@ -900,7 +913,8 @@ def getGroup(params):
         try:
             db_group = DB.Groups.get(DB.Groups.gcode == msg_group)
         except:
-            raise Exception(CONST.ERR_GROUP_NOT_FOUND)
+            sugg = group_suggestions(params['text'])
+            raise CONST.GroupException(CONST.ERR_GROUP_NOT_FOUND, suggestion=sugg)
         db_user = DB.Users(
             vk_id=vk_id,
             is_chat=bool(params['chat_id']),
