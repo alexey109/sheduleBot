@@ -874,7 +874,7 @@ def getGroup(params):
         if not db_groups:
             return ''
         group_list = "\n".join([g.gcode for g in db_groups])
-        return "\nВозможно, точный код есть здесь:\n" + group_list
+        return u"\nВозможно, точный код есть здесь:\n" + group_list
 
     answer = ''
     vk_id = params['chat_id'] if params['chat_id'] else params[
