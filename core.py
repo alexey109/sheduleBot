@@ -874,7 +874,7 @@ def getGroup(params):
         if not db_groups:
             return ''
         group_list = "\n".join([g.gcode for g in db_groups])
-        return u"\nВозможно, точный код есть здесь:\n" + group_list
+        return u"\n\nСписок групп с таким же кодом:\n" + group_list
 
     answer = ''
     vk_id = params['chat_id'] if params['chat_id'] else params[
@@ -899,7 +899,7 @@ def getGroup(params):
         try:
             db_group = DB.Groups.get(DB.Groups.gcode == msg_group)
         except:
-            sugg = group_suggestions(params['text'])
+            sugg = group_suggestions(msg_group)
             raise CONST.GroupException(CONST.ERR_GROUP_NOT_FOUND, suggestion=sugg)
         db_user.group = db_group.id
         db_user.save()
@@ -913,7 +913,7 @@ def getGroup(params):
         try:
             db_group = DB.Groups.get(DB.Groups.gcode == msg_group)
         except:
-            sugg = group_suggestions(params['text'])
+            sugg = group_suggestions(msg_group)
             raise CONST.GroupException(CONST.ERR_GROUP_NOT_FOUND, suggestion=sugg)
         db_user = DB.Users(
             vk_id=vk_id,
@@ -1262,3 +1262,4 @@ def getNotice(for_chat=False):
         raise Exception()
 
     return notice
+
