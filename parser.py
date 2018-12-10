@@ -80,7 +80,7 @@ class Parser:
 
         rules = {
             ST_BODY: [
-                {'expr': u'[А-Яа-я\./\s]', 'link': ST_BODY,
+                {'expr': u'[А-Яа-я\.\s\/]', 'link': ST_BODY,
                  'ext': False, 'new_param': False},
                 {'expr': '[0-9I]', 'link': ST_WEEK, 'ext': True,
                  'new_param': False},
@@ -151,7 +151,10 @@ class Parser:
             if status == ST_BODY:
                 name += l
             elif status == ST_PARAMS:
-                params[-1] += l
+                try:
+                    params[-1] += l
+                except:
+                    params.append(l)  #  Fix if no ')' in the string
             elif status == ST_WEEK:
                 week += l
 
@@ -297,10 +300,10 @@ class Parser:
                             event = {
                                 'day': cell_day,
                                 'numb': cell_numb,
-                                'room': room,
-                                'week': week,
-                                'name': info[i]['name'] + ' ' + event_type.replace('\n', ''),
-                                'teacher': lector,
+                                'room': room[:20],
+                                'week': week[:50],
+                                'name': (info[i]['name'] + ' ' + event_type.replace('\n', ''))[:100],
+                                'teacher': lector[:60],
                                 'params': info[i]['params']
                             }
                             append_flag = True
@@ -312,9 +315,10 @@ class Parser:
                             if append_flag:
                                 lections.append(event)
 
+                    print(group)
                     schedule[group] = lections
                 except Exception as e:
-                    print 'Exception when parse group schdl:'+str(e)
+                    print 'Exception when parse group ' + group + ' schedule: ' + str(e)
                     continue
 
         return schedule
