@@ -873,7 +873,7 @@ def getGroup(params):
         db_groups = DB.Groups.select().where(DB.Groups.gcode.contains(msg_group))
         if not db_groups:
             return ''
-        group_list = "\n".join([g.gcode for g in db_groups])
+        group_list = "\n".join(['"' + g.gcode + '"' for g in db_groups])
         return u"\n\nСписок групп с таким же кодом:\n" + group_list
 
     answer = ''
