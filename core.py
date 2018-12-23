@@ -13,6 +13,14 @@ import logger as LOGGER
 import dbmodels as DB
 
 
+def getEndDate():
+    now = dt.datetime.now().date()
+    end = dt.date(2018, 12, 22)
+    if now > end:
+        raise Exception(CONST.ERR_PERIOD_ENDS)
+    return end
+
+
 def genBotID(any_string):
     """ Generates unique user ID for database.
     
@@ -352,7 +360,7 @@ def cmdLessonsCounter(params):
     except:
         end = params['date']
     if date_iter >= end:
-        end = dt.date(2018, 12, 22)
+        end = getEndDate()
     while date_iter != end:
         day = date_iter.weekday()
         week = date_iter.isocalendar()[1]
@@ -392,7 +400,7 @@ def cmdWhenExams(params):
     """
     now = dt.datetime.now().date()
     start = dt.date(2018, 9, 2)
-    end = dt.date(2018, 12, 22)
+    end = getEndDate()
     delta = end - now
     weeks = delta.days / 7
     days = delta.days % 7

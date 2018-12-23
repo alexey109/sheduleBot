@@ -381,8 +381,9 @@ ERR_MESSAGES = {
     ERR_NO_LECTIONS: u'по запросу пары не найдены',
     ERR_NO_TEACHER: u'В расписании преподаватель не указан.',
     ERR_NO_ROOM: u'Аудитория на схемах не найдена',
-    ERR_PERIOD_ENDS: u'занятий нет, смотрите расписание '
-                     + u'зачетов/экзаменов.',
+    ERR_PERIOD_ENDS: u'Семестр закончился, смотрите расписание '
+                     + u'зачетов/экзаменов на '
+                     + 'https://www.mirea.ru/education/schedule-main/schedule/',
     ERR_MSG_LIMIT: u'\n* пауза на {} сек. *',
     ERR_NO_TEACHER_FOUND: u'Расписание для преподавателя не найдено.',
     ERR_DUMMY: u"Кажется, сообщение с ошибками или не "
