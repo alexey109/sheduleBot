@@ -15,7 +15,7 @@ import dbmodels as DB
 
 def getEndDate():
     now = dt.datetime.now().date()
-    end = dt.date(2018, 12, 22)
+    end = dt.date(2019, 5, 31)
     if now > end:
         raise Exception(CONST.ERR_PERIOD_ENDS)
     return end
@@ -79,7 +79,7 @@ def isWeeksEqual(doc_week, cal_week):
     :return: is document's week value match calendar's week
     :rtype: bool
     """
-    cal_week = cal_week - dt.date(2018, 9, 2).isocalendar()[1]
+    cal_week = cal_week - dt.date(2019, 2, 8).isocalendar()[1]
 
     if doc_week == '':
         result = True
@@ -399,7 +399,7 @@ def cmdWhenExams(params):
     :rtype: str
     """
     now = dt.datetime.now().date()
-    start = dt.date(2018, 9, 2)
+    start = dt.date(2019, 2, 8)
     end = getEndDate()
     delta = end - now
     weeks = delta.days / 7
@@ -1116,7 +1116,7 @@ def analize(params):
                         if re.search(name, month):
                             mnumb = idx + 1
                             break
-                    date = dt.date(2018, mnumb, int(day))
+                    date = dt.date(2019, mnumb, int(day))
                 except:
                     del markers[cmd_code]
         elif cmd_code == CONST.CMD_FIRST:
@@ -1183,7 +1183,10 @@ def genAnswer(params):
     try:
         DB.Users.get()
     except:
-        DB.db.connect()
+        try:
+            DB.db.connect()
+        except:
+            pass
 
     params['text'] = params['text'].lower()
 
