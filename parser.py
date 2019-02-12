@@ -350,6 +350,10 @@ class Parser:
                         if u'экзамен' in group_name.lower():
                             exam = True
                             schdl_type = 'exams'
+
+                        if u'зачет' in group_name.lower():
+                            exam = True
+                            schdl_type = 'zachet'
                     except:
                         pass
 
