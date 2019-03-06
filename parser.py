@@ -337,9 +337,8 @@ class Parser:
 
         schedule = {}
         schdl_type = 'lections'
+        exam = False
         for sheet in self.wb:
-            schdl_type = 'lections'
-            exam = False
 
             for row in sheet.iter_rows(min_row=1,
                                        max_col=sheet.max_column,
@@ -359,5 +358,6 @@ class Parser:
 
             if not exam:
                 schedule = self.getGroupSchdl(schedule, sheet)
+                break
 
         return schdl_type, schedule
