@@ -71,24 +71,17 @@ def main():
         if time.time() - answer_time < 0.1:
             time.sleep(0.1)
 
-        msg_buttons = None
-        if event.from_user:
-            msg_buttons = keyboard.get_keyboard()
+        kwargs = {
+            'peer_id': event.obj.peer_id,
+            'random_id': random.randint(100000000, 2000000000),
+            'message': answer['text']
+        }
         if answer['attachment']:
-            vk.messages.send(
-                peer_id=event.obj.peer_id,
-                random_id=random.randint(100000000, 2000000000),
-                attachment=answer['attachment'],
-                message=answer['text'],
-                keyboard=msg_buttons
-            )
-        else:
-            vk.messages.send(
-                peer_id=event.obj.peer_id,
-                random_id=random.randint(100000000, 2000000000),
-                message=answer['text'],
-                keyboard=msg_buttons
-            )
+            kwargs['attachment'] = answer['attachment']
+        if event.from_user:
+            kwargs['keyboard'] = keyboard.get_keyboard()
+        vk.messages.send(**kwargs)
+
         answer_time = time.time()
 
 
