@@ -78,9 +78,8 @@ def main():
         }
         if answer['attachment']:
             kwargs['attachment'] = answer['attachment']
-        if event.from_user:
-            kwargs['keyboard'] = keyboard.get_keyboard()
-            print(kwargs['keyboard'])
+        #if event.from_user:
+        #    kwargs['keyboard'] = keyboard.get_keyboard()
         vk.messages.send(**kwargs)
 
         answer_time = time.time()
