@@ -5,6 +5,7 @@ import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import time
+import random
 
 import security
 import core
@@ -76,6 +77,7 @@ def main():
         if answer['attachment']:
             vk.messages.send(
                 peer_id=event.obj.peer_id,
+                random_id=random.randint(100000000, 2000000000),
                 attachment=answer['attachment'],
                 message=answer['text'],
                 keyboard=msg_buttons
@@ -83,6 +85,7 @@ def main():
         else:
             vk.messages.send(
                 peer_id=event.obj.peer_id,
+                random_id=random.randint(100000000, 2000000000),
                 message=answer['text'],
                 keyboard=msg_buttons
             )
