@@ -80,6 +80,7 @@ def main():
             kwargs['attachment'] = answer['attachment']
         if event.from_user:
             kwargs['keyboard'] = keyboard.get_keyboard()
+            print(kwargs['keyboard'])
         vk.messages.send(**kwargs)
 
         answer_time = time.time()
