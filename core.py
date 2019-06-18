@@ -847,7 +847,7 @@ cmd_functions = {
     CONST.CMD_SEARCH_TEACHER: cmdSearchTeacher,
     CONST.CMD_MY_TEACHERS: cmdMyTeachers,
     CONST.CMD_NOTICE: cmdNotice,
-    CONST.CMD_CHANGES: cmdChanges
+    CONST.CMD_CHANGES: cmdChanges,
     CONST.CMD_PIDR: cmdPidr
 }
 
