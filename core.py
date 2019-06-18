@@ -806,7 +806,7 @@ def cmdChanges(params):
 
 
 def cmdPidr(params):
-    text = params['keyword']['word']
+    text = params['text']
     answer = u'нет'
     if u'дима' in text or u'федя' in text:
         answer = u'да'
@@ -1146,7 +1146,8 @@ def analize(params):
         'lnumb': lesson,
         'keyword': command['keyword'],
         'find_first': find_first,
-        'new_group': params['new_group']
+        'new_group': params['new_group'],
+        'text': params['text'][:30]
     }
     # 6. Perform command and generate answer message for user.
     # Check markers after apply
