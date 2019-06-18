@@ -804,6 +804,18 @@ def cmdChanges(params):
         'attachment': ''
     }
 
+
+def cmdPidr(params):
+    text = params['keyword']['word']
+    answer = u'нет'
+    if u'дима' in text.lower() or u'федя' in text.lower():
+        answer = u'да'
+
+    return {
+        'text': answer,
+        'attachment': ''
+    }
+
 # associate commands codes with their functions
 cmd_functions = {
     CONST.CMD_LESSONS: cmdLessons,
@@ -836,6 +848,7 @@ cmd_functions = {
     CONST.CMD_MY_TEACHERS: cmdMyTeachers,
     CONST.CMD_NOTICE: cmdNotice,
     CONST.CMD_CHANGES: cmdChanges
+    CONST.CMD_PIDR: cmdPidr
 }
 
 

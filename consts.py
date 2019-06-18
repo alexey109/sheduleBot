@@ -77,6 +77,7 @@ CMD_LINK = 430
 CMD_SEARCH_TEACHER = 440
 CMD_NOTICE = 450
 CMD_CHANGES = 460
+CMD_PIDR = 470
 
 # Time markers. Could be with base command.
 MARKERS = [
@@ -261,6 +262,7 @@ KEYWORDS = {
         u'най[тд]и\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
     CMD_NOTICE: [u'уведомлен', u'напомин', u'🔔'],
     CMD_CHANGES: [u'обновлен', u'изменен', u'истори'],
+    CMD_PIDR: [u'*пидр*']
 }
 
 # Some text, which automatically enters before answer body.
