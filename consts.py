@@ -305,7 +305,8 @@ USER_PREMESSAGE = {
     CMD_SEARCH_TEACHER: u'',
     CMD_MY_TEACHERS: u'Список преподавателей:\n\n',
     CMD_NOTICE: u'',
-    CMD_CHANGES: u'История изменений расписания:\n'
+    CMD_CHANGES: u'История изменений расписания:\n',
+    CMD_PIDR: u''
 }
 
 # Templates for command's body text.
