@@ -262,7 +262,7 @@ KEYWORDS = {
         u'най[тд]и\s[а-я]*(\s[а-я]\.?\s?[а-я]\.?)?(\s|\Z)'],
     CMD_NOTICE: [u'уведомлен', u'напомин', u'🔔'],
     CMD_CHANGES: [u'обновлен', u'изменен', u'истори'],
-    CMD_PIDR: [u'*пидр*']
+    CMD_PIDR: [u'пидр']
 }
 
 # Some text, which automatically enters before answer body.
