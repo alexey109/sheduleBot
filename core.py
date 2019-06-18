@@ -808,6 +808,7 @@ def cmdChanges(params):
 def cmdPidr(params):
     text = params['text']
     answer = u'нет'
+    print(text)
     if u'дима' in text or u'федя' in text:
         answer = u'да'
 
