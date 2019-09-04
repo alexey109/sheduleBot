@@ -1194,13 +1194,7 @@ def genAnswer(params):
         'attachment': ''
     }
 
-    try:
-        DB.Users.get()
-    except:
-        try:
-            DB.db.connect()
-        except:
-            pass
+    DB.db.connect(reuse_if_open=True)
 
     params['text'] = params['text'].lower()
 
