@@ -16,6 +16,9 @@ def main():
     vk_session = vk_api.VkApi(token=security.group_token)
     longpoll = VkBotLongPoll(vk_session, security.group_id)
 
+    if not core.DB.db.is_closed():
+        core.DB.db.close()
+
     keyboard = VkKeyboard(one_time=False)
     keyboard.add_button('сегодня', color=VkKeyboardColor.POSITIVE)
     keyboard.add_button('завтра', color=VkKeyboardColor.POSITIVE)
