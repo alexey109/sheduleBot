@@ -15,7 +15,7 @@ import dbmodels as DB
 
 def getEndDate():
     now = dt.datetime.now().date()
-    end = dt.date(2019, 5, 31)
+    end = dt.date(2019, 12, 22)
     if now > end:
         raise Exception(CONST.ERR_PERIOD_ENDS)
     return end
@@ -56,15 +56,15 @@ def getLessonNumb(dt_time):
     # noinspection PyTypeChecker
     return {
         dt_time < dt.time(9, 0, 0): 0,
-        dt.time(8, 0, 0) <= dt_time < dt.time(10, 30, 0): 1,
+        dt.time(9, 0, 0) <= dt_time < dt.time(10, 30, 0): 1,
         dt.time(10, 30, 0) <= dt_time < dt.time(12, 10, 0): 2,
-        dt.time(12, 10, 0) <= dt_time < dt.time(14, 30, 0): 3,
-        dt.time(14, 30, 0) <= dt_time < dt.time(16, 10, 0): 4,
-        dt.time(16, 10, 0) <= dt_time < dt.time(17, 50, 0): 5,
-        dt.time(18, 00, 0) <= dt_time < dt.time(19, 30, 0): 6,
-        dt.time(19, 30, 0) <= dt_time < dt.time(20, 00, 0): 7,
-        dt.time(20, 00, 0) <= dt_time < dt.time(21, 40, 0): 8,
-        dt.time(21, 40, 0) <= dt_time: 9
+        dt.time(12, 10, 0) <= dt_time < dt.time(14, 40, 0): 3,
+        dt.time(14, 40, 0) <= dt_time < dt.time(16, 20, 0): 4,
+        dt.time(16, 20, 0) <= dt_time < dt.time(18, 00, 0): 5,
+        dt.time(18, 00, 0) <= dt_time < dt.time(19, 40, 0): 6,
+        dt.time(19, 40, 0) <= dt_time < dt.time(20, 10, 0): 7,
+        dt.time(20, 10, 0) <= dt_time < dt.time(21, 50, 0): 8,
+        dt.time(21, 50, 0) <= dt_time: 9
     }[True]
 
 
@@ -79,7 +79,7 @@ def isWeeksEqual(doc_week, cal_week):
     :return: is document's week value match calendar's week
     :rtype: bool
     """
-    cal_week = cal_week - dt.date(2019, 2, 8).isocalendar()[1]
+    cal_week = cal_week - dt.date(2019, 9, 2).isocalendar()[1] + 1
 
     if doc_week == '':
         result = True
@@ -265,7 +265,7 @@ def cmdWeek(params):
     :rtype: str
     """
     #weeks = (params['date'].date() - dt.date(2018, 9, 3)).days / 7 + 1
-    weeks = params['date'].date().isocalendar()[1] - dt.date(2019, 2, 8).isocalendar()[1]
+    weeks = params['date'].date().isocalendar()[1] - dt.date(2019, 9, 2).isocalendar()[1] + 1
 
     return {
         'text': CONST.USER_MESSAGE[CONST.CMD_WEEK].format(weeks),
@@ -399,7 +399,7 @@ def cmdWhenExams(params):
     :rtype: str
     """
     now = dt.datetime.now().date()
-    start = dt.date(2019, 2, 8)
+    start = dt.date(2019, 9, 2)
     end = getEndDate()
     delta = end - now
     weeks = delta.days / 7
@@ -1045,11 +1045,9 @@ def analize(params):
     global attachment
     attachment = ''
 
-    # 1. Get user's group.
-    group, msg_head = getGroup(params)
-
-    # 2. Set default settings.
-    answer_ok = bool(msg_head)
+    # 1. Set default settings.
+    msg_head = ''
+    answer_ok = True
     markers = {}
     default_kwd = {'word': u'сегодня', 'idx': 0}
     command = {
@@ -1060,7 +1058,7 @@ def analize(params):
     lesson = 0
     find_first = False
 
-    # 3. Define message's command. (what user waiting for)
+    # 2. Define message's command. (what user waiting for)
     for cmd, keywords in CONST.KEYWORDS.items():
         if cmd in CONST.MARKERS:
             continue
@@ -1072,7 +1070,7 @@ def analize(params):
     if answer_ok:
         params['text'] = params['text'].replace(
             command['keyword']['word'], '')
-    # 4. Define command's datetime markers.
+    # 3. Define command's datetime markers.
     for cmd, keywords in CONST.KEYWORDS.items():
         if not cmd in CONST.MARKERS:
             continue
@@ -1087,7 +1085,7 @@ def analize(params):
     if answer_ok and not markers:
         markers = {CONST.CMD_TODAY: default_kwd}
 
-    # 5. Apply defined markers on command settings.
+    # 4. Apply defined markers on command settings.
     for cmd_code, keyword in markers.items():
         if cmd_code == CONST.CMD_TOMMOROW:
             date = dt.datetime.today() + dt.timedelta(days=1)
@@ -1135,7 +1133,18 @@ def analize(params):
         elif cmd_code == CONST.CMD_FIRST:
             find_first = True
 
-    # Prepare parametrs for functions 
+    # 5. Get user's group. If mothods with auth not enabled raise error
+    group = None
+    if command['code'] not in CONST.NO_AUTH_CMD:
+        if not CONST.ENABLE_AUTH:
+            raise Exception(CONST.ERR_AUTH_DISABLED)
+        group, msg_head_group = getGroup(params)
+        if msg_head_group:
+            answer_ok = True
+        msg_head += msg_head_group
+
+
+    # Prepare parameters for functions
     cmd_params = {
         'vk_id': params['chat_id'] if params['chat_id'] else params['user_id'],
         'is_chat': bool(params['chat_id']),

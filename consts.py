@@ -79,6 +79,18 @@ CMD_NOTICE = 450
 CMD_CHANGES = 460
 CMD_PIDR = 470
 
+NO_AUTH_CMD = [
+    CMD_WEEK,
+    CMD_HELP,
+    CMD_POLITE,
+    CMD_LESSONS_TIME,
+    CMD_WHEN_EXAMS,
+    CMD_MAP,
+    CMD_PIDR
+]
+
+ENABLE_AUTH = False
+
 # Time markers. Could be with base command.
 MARKERS = [
     CMD_NOW,
@@ -168,12 +180,10 @@ NUMB_NAMES = [
 LECTION_TIME = {
     1: '9:00-10:30',
     2: '10:40-12:10',
-    3: '13:00-14:30',
-    4: '14:40-16:10',
-    5: '16:20-17:50',
-    6: '18:00-19:30',
-    7: '18:30-20:00',
-    8: '20:10-21:40',
+    3: '13:10-14:40',
+    4: '14:50-16:20',
+    5: '16:30-18:00',
+    6: '18:10-19:40',
 }
 
 # Keywords using when get message from group's chat.
@@ -368,6 +378,7 @@ ERR_PERIOD_ENDS = 8
 ERR_MSG_LIMIT = 9
 ERR_NO_TEACHER_FOUND = 10
 ERR_DUMMY = 11
+ERR_AUTH_DISABLED = 12
 
 ERR_MESSAGES = {
     ERR_UNDEFINED: u'Что-то пошло не так, повторите запрос еще раз.\n'
@@ -390,5 +401,10 @@ ERR_MESSAGES = {
     ERR_MSG_LIMIT: u'\n* пауза на {} сек. *',
     ERR_NO_TEACHER_FOUND: u'Расписание для преподавателя не найдено.',
     ERR_DUMMY: u"Кажется, сообщение с ошибками или не "
-               u"относится к расписанию. "
+               u"относится к расписанию. ",
+    ERR_AUTH_DISABLED: u'На этой неделе доступны только:\n' \
+                       + u'- поиск аудитории кампуса МИРЭА ("А-18")\n' \
+                       + u'- номер недели ("неделя")\n' \
+                       + u'- расписание звонков ("звонки")\n\n' \
+                       + u'(надо проверить корректно ли импортируется расписание)',
 }
