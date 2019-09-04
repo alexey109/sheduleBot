@@ -221,13 +221,13 @@ class Parser:
         gotit = False
         for row in sheet.iter_rows(min_row=2, max_col=sheet.max_column, max_row=4):
             for cell in row:
-                if cell.internal_value and unicode(cell.internal_value).find(u'пары') > 0:
+                if cell.value and unicode(cell.value).find(u'пары') > 0:
                     for i in range(cell.row+1, 77):
                         # fill lesson number
                         cur_cell = sheet.cell(row=i, column=cell.col_idx)
-                        if cur_cell.internal_value:
+                        if cur_cell.value:
                             lessons_numbers[i] = {
-                                'numb': int(cur_cell.internal_value),
+                                'numb': int(cur_cell.value),
                                 'type': 'I'
                             }
                         else:
@@ -237,8 +237,8 @@ class Parser:
                             }
                         # fill days number
                         cur_cell = sheet.cell(row=i, column=cell.col_idx-1)
-                        if cur_cell.internal_value:
-                            days_numbers[i] = getDayNumber(cur_cell.internal_value)
+                        if cur_cell.value:
+                            days_numbers[i] = getDayNumber(cur_cell.value)
                         else:
                             days_numbers[i] = days_numbers[i - 1]
                     gotit = True
@@ -249,12 +249,12 @@ class Parser:
         for row in sheet.iter_rows(min_row=2, max_col=sheet.max_column, max_row=3):
             for cell in row:
                 lector_flag = False
-                if not cell.internal_value:
+                if not cell.value:
                     continue
                 try:
                     match = re.search(
                         u"[А-Яа-я]{4}[А-Яа-я]?-[0-9]{2}-[0-9]{2}",
-                        cell.internal_value)
+                        cell.value)
                     if not match:
                         continue
                 except:
@@ -262,16 +262,16 @@ class Parser:
                 try:
                     j = cell.col_idx
                     row_start = cell.row + 2
-                    group = cell.internal_value.lower()
+                    group = cell.value.lower()
                     lections = []
                     for i in range(row_start, 77):
-                        content = sheet.cell(row=i, column=j).internal_value
+                        content = sheet.cell(row=i, column=j).value
                         if not content:
                             continue
 
-                        etype = sheet.cell(row=i, column=j + 1).internal_value
-                        lectors = sheet.cell(row=i, column=j + 2).internal_value
-                        rooms = sheet.cell(row=i, column=j + 3).internal_value
+                        etype = sheet.cell(row=i, column=j + 1).value
+                        lectors = sheet.cell(row=i, column=j + 2).value
+                        rooms = sheet.cell(row=i, column=j + 3).value
 
                         cell_day = days_numbers[i]
                         cell_numb = lessons_numbers[i]['numb']
@@ -345,7 +345,7 @@ class Parser:
                                        max_row=3):
                 for cell in row:
                     try:
-                        group_name = cell.internal_value
+                        group_name = cell.value
                         if u'экзамен' in group_name.lower():
                             exam = True
                             schdl_type = 'exams'
