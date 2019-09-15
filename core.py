@@ -1049,9 +1049,9 @@ def analize(params):
     msg_head = ''
     answer_ok = True
     markers = {}
-    default_kwd = {'word': u'сегодня', 'idx': 0}
+    default_kwd = {'word': u'неделю', 'idx': 0}
     command = {
-        'code': CONST.CMD_LESSONS,
+        'code': CONST.CMD_FOR7DAYS,
         'keyword': default_kwd
     }
     date = dt.datetime.today()
