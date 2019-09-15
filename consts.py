@@ -89,7 +89,7 @@ NO_AUTH_CMD = [
     CMD_PIDR
 ]
 
-ENABLE_AUTH = False
+ENABLE_AUTH = True
 
 # Time markers. Could be with base command.
 MARKERS = [
