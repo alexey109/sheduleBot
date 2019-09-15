@@ -55,12 +55,12 @@ if user_options.download:
     makedirs(CONST.SCHEDULE_DIR)
     for i, url in enumerate(doc_urls):
         try:
-            ftype = re.search('\.[a-z]*\Z', url).group()
             try:
                 doc = urllib2.urlopen(url).read()
             except Exception as e:
                 print '--- Exception\n' + url + '\n' + str(e) + '\n---\n'
-            with open(CONST.SCHEDULE_DIR + str(i) + ftype,'wb') as f:
+            name = url.split('/')[-1]
+            with open(CONST.SCHEDULE_DIR + name, 'wb') as f:
                 f.write(doc)
                 f.close()
             counter += 1
