@@ -1049,14 +1049,16 @@ def analize(params):
     msg_head = ''
     answer_ok = True
     markers = {}
-    default_kwd = {'word': u'неделю', 'idx': 0}
+    default_kwd = {'word': u'сегодня', 'idx': 0}
     command = {
-        'code': CONST.CMD_FOR7DAYS,
+        'code': CONST.CMD_LESSONS,
         'keyword': default_kwd
     }
     date = dt.datetime.today()
     lesson = 0
     find_first = False
+    got_user_command = False
+    got_user_markers = False
 
     # 2. Define message's command. (what user waiting for)
     for cmd, keywords in CONST.KEYWORDS.items():
@@ -1067,9 +1069,11 @@ def analize(params):
             command['code'] = cmd
             command['keyword'] = word
             answer_ok = True
+            got_user_command = True
     if answer_ok:
         params['text'] = params['text'].replace(
             command['keyword']['word'], '')
+
     # 3. Define command's datetime markers.
     for cmd, keywords in CONST.KEYWORDS.items():
         if not cmd in CONST.MARKERS:
@@ -1078,6 +1082,14 @@ def analize(params):
         if word:
             params['text'] = params['text'].replace(word['word'], '')
             markers[cmd] = word
+            got_user_markers = True
+
+    if not (got_user_command or got_user_markers):
+        default_kwd = {'word': u'3 дня', 'idx': 0}
+        command = {
+            'code': CONST.CMD_FOR7DAYS,
+            'keyword': default_kwd
+        }
 
     if command['code'] == CONST.CMD_HOT_FUNC:
         command, markers = applyHotFunc(command, markers)

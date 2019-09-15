@@ -50,7 +50,7 @@ CMD_FIRST = 10110
 
 # Command code uses as command priority number.
 # Command with lower code has higher priority.
-CMD_LESSONS = 390  # base command for showing lessons
+CMD_LESSONS = 990  # base command for showing lessons
 CMD_HOT_FUNC = 190
 CMD_WEEK = 200  # get semester's week number from date
 CMD_HELP = 210
@@ -69,7 +69,7 @@ CMD_CONSULT = 330
 CMD_SESSION = 340
 CMD_ZACHET = 370
 CMD_WHERE_LESSON = 380  # search lesson's room on the map
-CMD_FOR7DAYS = 990  # lesson for several days (7 - default)
+CMD_FOR7DAYS = 390  # lesson for several days (7 - default)
 CMD_JUST_LESSONS = 400  # if no any other words in the message
 CMD_NEW_ID = 410  # new web page ID
 CMD_MYID = 420
