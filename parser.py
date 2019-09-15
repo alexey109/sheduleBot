@@ -78,6 +78,13 @@ class Parser:
         teacher_kwd = [u'асс', u'доц', u'проф', u'ст.', u'ст ',
                        u'преп']
 
+        # вычленяем шаблон "кр 10" (кроме 10 недели)
+        exclude_week = None
+        match = re.search(u'кр\.?\s?[1-9][0-9]?', text)
+        if match:
+            exclude_week = match.group(0)
+            text = text.replace(exclude_week, '')
+
         rules = {
             ST_BODY: [
                 {'expr': u'[А-Яа-я\.\s\/]', 'link': ST_BODY,
@@ -137,7 +144,7 @@ class Parser:
                         body[i]['name'] = name.strip()
                         body[i]['teacher'] = teacher.strip()
                         body[i]['params'] = params
-                        body[i]['week'] = week.strip()
+                        body[i]['week'] = exclude_week if exclude_week else week.strip()
                         name = week = teacher = ''
                         params = []
                         i += 1
@@ -295,7 +302,10 @@ class Parser:
 
                             week = info[i]['week'] if info[i]['week'] else cell_week
                             if '-' in week:
-                                week = ','.join([str(iw) for iw in range(int(week.split('-')[0]), 18, 2)])
+                                week = ','.join([str(iw) for iw in range(int(week.split('-')[0]), int(week.split('-')[1])+1, 2)])
+                            if u'кр' in week:
+                                number = int(re.sub('[^0-1]', '', week))
+                                week = ','.join([str(iw) for iw in range(1, 18) if iw != number])
 
                             event = {
                                 'day': cell_day,
