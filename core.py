@@ -1059,6 +1059,16 @@ def analize(params):
     find_first = False
     got_user_command = False
     got_user_markers = False
+    group = None
+    msg_head_group = None
+    group_exception = None
+
+    # Сначала пытаемся получить группу, но не пропускаем ошибку, на случай, если
+    # команда не требует авторизации. Потом используем полученные данные в п.5
+    try:
+        group, msg_head_group = getGroup(params)
+    except Exception as e:
+        group_exception = e
 
     # 2. Define message's command. (what user waiting for)
     for cmd, keywords in CONST.KEYWORDS.items():
@@ -1146,11 +1156,13 @@ def analize(params):
             find_first = True
 
     # 5. Get user's group. If mothods with auth not enabled raise error
-    group = None
     if command['code'] not in CONST.NO_AUTH_CMD:
         if not CONST.ENABLE_AUTH:
             raise Exception(CONST.ERR_AUTH_DISABLED)
-        group, msg_head_group = getGroup(params)
+
+        if group_exception:
+            raise group_exception
+
         if msg_head_group:
             answer_ok = True
         msg_head += msg_head_group
