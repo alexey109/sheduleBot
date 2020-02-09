@@ -304,7 +304,7 @@ class Parser:
                             if '-' in week:
                                 week = ','.join([str(iw) for iw in range(int(week.split('-')[0]), int(week.split('-')[1])+1, 2)])
                             if u'кр' in week:
-                                number = int(re.sub('[^0-1]', '', week))
+                                number = int(re.sub('[^0-9]', '', week))
                                 week = ','.join([str(iw) for iw in range(1, 18) if iw != number])
 
                             event = {
