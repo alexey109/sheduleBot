@@ -184,6 +184,8 @@ LECTION_TIME = {
     4: '14:50-16:20',
     5: '16:30-18:00',
     6: '18:10-19:40',
+    7: '19:50-21:20',
+    8: '21:30-21:40',
 }
 
 # Keywords using when get message from group's chat.
