@@ -226,10 +226,11 @@ class Parser:
         lessons_numbers = {}
         days_numbers = {}
         gotit = False
+        max_rows = 300
         for row in sheet.iter_rows(min_row=2, max_col=sheet.max_column, max_row=4):
             for cell in row:
                 if cell.value and unicode(cell.value).find(u'пары') > 0:
-                    for i in range(cell.row+1, 77):
+                    for i in range(cell.row+1, max_rows):
                         # fill lesson number
                         cur_cell = sheet.cell(row=i, column=cell.col_idx)
                         if cur_cell.value:
@@ -271,7 +272,7 @@ class Parser:
                     row_start = cell.row + 2
                     group = cell.value.lower()
                     lections = []
-                    for i in range(row_start, 77):
+                    for i in range(row_start, max_rows):
                         content = sheet.cell(row=i, column=j).value
                         if not content:
                             continue
